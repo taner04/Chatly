@@ -1,20 +1,60 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:vm="using:Chatly.Desktop.ViewModels"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        xmlns:vm="using:Chatly.Desktop.ViewModels"
+        xmlns:views="using:Chatly.Desktop.Views"
         x:Class="Chatly.Desktop.Views.MainWindow"
         x:DataType="vm:MainWindowViewModel"
+        mc:Ignorable="d"
+        d:DesignWidth="1100"
+        d:DesignHeight="700"
         Icon="/Assets/avalonia-logo.ico"
-        Title="Chatly.Desktop">
+        Title="Chatly">
 
-    <Design.DataContext>
-        <!-- This only sets the DataContext for the previewer in an IDE,
-             to set the actual DataContext for runtime, set the DataContext property in code (look at App.axaml.cs) -->
-        <vm:MainWindowViewModel />
-    </Design.DataContext>
+    <Grid ColumnDefinitions="260,*" Background="#0F172A">
+        <Border Grid.Column="0"
+                Background="#111827"
+                Padding="24">
+            <StackPanel Spacing="20">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Chatly"
+                               FontSize="28"
+                               FontWeight="SemiBold"
+                               Foreground="White" />
+                    <TextBlock Text="Workspace navigation"
+                               Foreground="#94A3B8" />
+                </StackPanel>
 
-    <ContentControl x:Name="PageHost" />
+                <ItemsControl ItemsSource="{Binding NavigationItems}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="10" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button 
+                                Content="{Binding Title}"
+                                Click="Button_OnClick" 
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Left"
+                                    Padding="14,12"
+                                    Background="#1F2937"
+                                    BorderBrush="#334155"
+                                    Foreground="White" />
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+
+        <Border Grid.Column="1"
+                Background="#F8FAFC"
+                Padding="24">
+            <ContentControl x:Name="PageHost" />
+        </Border>
+    </Grid>
 
 </Window>

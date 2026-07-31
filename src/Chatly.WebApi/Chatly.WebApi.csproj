@@ -12,17 +12,17 @@
           <PrivateAssets>all</PrivateAssets>
           <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
-        <PackageReference Include="Microsoft.EntityFrameworkCore"/>
-        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" />
         <PackageReference Include="Scalar.AspNetCore" />
-        <PackageReference Include="Vogen"/>
-        <PackageReference Include="Microsoft.AspNetCore.OpenApi"/>
+        <PackageReference Include="Vogen" />
+        <PackageReference Include="Microsoft.AspNetCore.OpenApi" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
         </PackageReference>
-        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools">
             <PrivateAssets>all</PrivateAssets>
             <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -30,13 +30,17 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\tools\Chatly.ServiceDefaults\Chatly.ServiceDefaults.csproj"/>
+        <ProjectReference Include="..\..\tools\Chatly.ServiceDefaults\Chatly.ServiceDefaults.csproj" />
         <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
       <Folder Include="Common\Composition\Services\" />
       <Folder Include="Common\Infrastructure\Persistence\Migrations\" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Content Remove="app.manifest.json" />
     </ItemGroup>
 
 </Project>

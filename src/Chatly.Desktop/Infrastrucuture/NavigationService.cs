@@ -1,94 +1,100 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
-using System.Linq;
+using Avalonia.Controls;
 using Chatly.Desktop.Abstractions;
 
 namespace Chatly.Desktop.Infrastrucuture;
 
-public sealed class NavigationService(
-    IEnumerable<INavigationParameterAware> navigationParameterAwaresPages,
-    INavigationView navigationControl)
+public sealed class NavigationService(PageService pageService) 
 {
     private readonly Stack<Type> _backStack = new();
     private readonly Stack<Type> _forwardStack = new();
+    private ContentControl? _pageHost;
 
-    private bool CanGoBack => _backStack.Count > 0;
-    private bool CanGoForward => _forwardStack.Count > 0;
+    public Type? CurrentPage { get; private set; }
 
-    public Type? CurrentPage { get; set; }
-
-    public bool NavigateTo(Type pageType)
+    public void SetNavigationView(INavigationView navigationView)
     {
-        if (CurrentPage == pageType)
-        {
-            return false;
-        }
-
-        if (CurrentPage != null)
-        {
-            _backStack.Push(CurrentPage);
-        }
-
-        _forwardStack.Clear();
-
-        return navigationControl.Navigate(pageType);
+        ArgumentNullException.ThrowIfNull(navigationView);
+        _pageHost = navigationView.GetPageHost();
     }
 
-    public bool NavigateTo(Type pageType, object parameter)
+    public bool NavigateTo(Type pageType) => NavigateToCore(pageType, null);
+
+    public bool NavigateTo(Type pageType, object parameter) =>
+        NavigateToCore(pageType, parameter);
+
+    public bool GoBack()
     {
-        var page = navigationParameterAwaresPages.FirstOrDefault(p => p.GetType() == pageType);
-        if (page is null)
-        {
-            return false;
-        }
-
-        page.SetNavigationParameter(parameter);
-
-        if (CurrentPage == pageType)
-        {
-            return true;
-        }
-
-        if (CurrentPage != null)
-        {
-            _backStack.Push(CurrentPage);
-        }
-
-        _forwardStack.Clear();
-        return NavigateTo(pageType);
-    }
-
-    public new bool GoBack()
-    {
-        if (!CanGoBack)
+        if (_pageHost is null || _backStack.Count == 0)
         {
             return false;
         }
 
         var target = _backStack.Pop();
 
-        if (CurrentPage != null)
+        if (CurrentPage is not null)
         {
             _forwardStack.Push(CurrentPage);
         }
 
-        return navigationControl.Navigate(target);
+        ShowPage(target);
+        return true;
     }
 
     public bool GoForward()
     {
-        if (!CanGoForward)
+        if (_pageHost is null || _forwardStack.Count == 0)
         {
             return false;
         }
 
         var target = _forwardStack.Pop();
 
-        if (CurrentPage != null)
+        if (CurrentPage is not null)
         {
             _backStack.Push(CurrentPage);
         }
 
-        return navigationControl.Navigate(target);
+        ShowPage(target);
+        return true;
+    }
+
+    private bool NavigateToCore(Type pageType, object? parameter)
+    {
+        if (_pageHost is null || CurrentPage == pageType)
+        {
+            return false;
+        }
+
+        var page = pageService.GetPage(pageType);
+
+        if (parameter is not null)
+        {
+            if (page is not INavigationParameterAware parameterAware)
+            {
+                return false;
+            }
+
+            parameterAware.SetNavigationParameter(parameter);
+        }
+
+        if (CurrentPage is not null)
+        {
+            _backStack.Push(CurrentPage);
+        }
+
+        _forwardStack.Clear();
+        
+        _pageHost.Content = page;
+        CurrentPage = pageType;
+        
+        return true;
+    }
+
+    private void ShowPage(Type pageType)
+    {
+        _pageHost!.Content = pageService.GetPage(pageType);
+        CurrentPage = pageType;
     }
 }

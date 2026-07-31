@@ -13,8 +13,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\..\src\Chatly.WebApi\Chatly.WebApi.csproj"/>
+        <ProjectReference Include="..\..\src\Chatly.WebApi\Chatly.WebApi.csproj" />
         <ProjectReference Include="..\Chatly.ServiceDefaults\Chatly.ServiceDefaults.csproj"/>
-        <ProjectReference Include="..\src\Chatly.Desktop\Chatly.WebApi\Chatly.WebApi.csproj"/>
     </ItemGroup>
 </Project>

@@ -1,9 +1,8 @@
-﻿using System;
+﻿using Avalonia.Controls;
 
 namespace Chatly.Desktop.Abstractions;
 
 public interface INavigationView
 {
-    bool Navigate(Type pageType);
-    bool Navigate(Type pageType, object parameter);
+    ContentControl GetPageHost();
 }
