@@ -9,7 +9,14 @@ namespace Chatly.Desktop.Views;
 
 public partial class MainWindow : Window, INavigationView
 {
+    private const double CollapsedSidebarWidth = 48;
+    private const double ExpandedSidebarWidth = 220;
+
     private readonly NavigationService _navigationService;
+    private readonly Border _sidebar;
+    private readonly TextBlock _appTitle;
+    private readonly TextBlock _sidebarToggleIcon;
+    private bool _isSidebarExpanded;
 
     public MainWindow(
         NavigationService navigationService,
@@ -22,6 +29,10 @@ public partial class MainWindow : Window, INavigationView
 
         InitializeComponent();
         _navigationService.SetNavigationView(this);
+
+        _sidebar = this.FindControl<Border>("Sidebar") ?? throw new InvalidOperationException("Sidebar not found.");
+        _appTitle = this.FindControl<TextBlock>("AppTitle") ?? throw new InvalidOperationException("AppTitle not found.");
+        _sidebarToggleIcon = this.FindControl<TextBlock>("SidebarToggleIcon") ?? throw new InvalidOperationException("SidebarToggleIcon not found.");
     }
 
     public MainWindowViewModel ViewModel { get; }
@@ -30,9 +41,25 @@ public partial class MainWindow : Window, INavigationView
 
     private void Button_OnClick(object? sender, RoutedEventArgs e)
     {
-        if(sender is Button { DataContext: NavigationItemViewModel navigationItem } && navigationItem.Page != _navigationService.CurrentPage)
+        if (sender is not Button { DataContext: NavigationItemViewModel navigationItem } || navigationItem.Page == _navigationService.CurrentPage)
         {
-            _navigationService.NavigateTo(navigationItem.Page);
+            return;
         }
+
+        foreach (var item in ViewModel.NavigationItems)
+        {
+            item.IsSelected = item == navigationItem;
+        }
+
+        ViewModel.CurrentNavigationItem = navigationItem;
+        _navigationService.NavigateTo(navigationItem.Page);
+    }
+
+    private void SidebarToggle_OnClick(object? sender, RoutedEventArgs e)
+    {
+        _isSidebarExpanded = !_isSidebarExpanded;
+        _sidebar.Width = _isSidebarExpanded ? ExpandedSidebarWidth : CollapsedSidebarWidth;
+        _appTitle.Opacity = _isSidebarExpanded ? 1 : 0;
+        _sidebarToggleIcon.Text = _isSidebarExpanded ? "<" : ">";
     }
 }

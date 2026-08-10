@@ -8,10 +8,10 @@
         <TextBlock Text="{Binding Title}"
                    FontSize="32"
                    FontWeight="SemiBold"
-                   Foreground="#0F172A" />
+                   Foreground="{DynamicResource ChatlyTextBrush}" />
         <TextBlock Text="{Binding Description}"
                    FontSize="16"
-                   Foreground="#334155" />
+                   Foreground="{DynamicResource ChatlyMutedTextBrush}" />
     </StackPanel>
 
 </UserControl>

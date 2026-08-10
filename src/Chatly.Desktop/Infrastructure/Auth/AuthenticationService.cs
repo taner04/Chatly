@@ -24,7 +24,7 @@ public sealed class AuthenticationService
         });
     }
 
-    public Task<LoginResult> LoginAsync()
+    public async Task<LoginResult> LoginAsync()
     {
         var loginRequest = new LoginRequest
         {
@@ -35,6 +35,11 @@ public sealed class AuthenticationService
             }
         };
         
-        return _client.LoginAsync(loginRequest);
+        return await _client.LoginAsync(loginRequest);
+    }
+    
+    public async Task LogoutAsync()
+    {
+        await _client.LogoutAsync();
     }
 }

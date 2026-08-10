@@ -1,20 +1,18 @@
 using System;
-using System.Windows.Input;
+using CommunityToolkit.Mvvm.ComponentModel;
+using FluentIcons.Common;
 
 namespace Chatly.Desktop.ViewModels;
 
-public sealed class NavigationItemViewModel(string title, Type page) : ViewModelBase
+public sealed partial class NavigationItemViewModel(string title, Symbol icon, Type page) : ViewModelBase
 {
-    private bool _isSelected;
-
     public string Title { get; } = title;
+
+    public Symbol Icon { get; } = icon;
 
     public Type Page { get; } = page;
 
 
-    public bool IsSelected
-    {
-        get => _isSelected;
-        set => SetProperty(ref _isSelected, value);
-    }
+    [ObservableProperty]
+    public partial bool IsSelected { get; set; }
 }
