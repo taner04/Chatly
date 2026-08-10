@@ -4,7 +4,8 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using Chatly.Contracts.Extensions;
 using Chatly.Desktop.Abstractions;
-using Chatly.Desktop.Infrastrucuture;
+using Chatly.Desktop.Infrastructure;
+using Chatly.Desktop.Infrastructure.Auth;
 using Chatly.Desktop.Options;
 using Chatly.Desktop.ViewModels;
 using Chatly.Desktop.Views;
@@ -36,6 +37,7 @@ public class App : Application
         collection.AddSingleton<HomePageViewModel>();
         collection.AddSingleton<LoginPageView>();
         collection.AddSingleton<LoginPageViewModel>();
+        collection.AddSingleton<AuthenticationService>();
         
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)

@@ -1,30 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Threading.Tasks;
-using Auth0.OidcClient;
-using Chatly.Desktop.Infrastrucuture;
-using Chatly.Desktop.Options;
-using Microsoft.Extensions.Options;
+using Chatly.Desktop.Infrastructure.Auth;
 
 namespace Chatly.Desktop.ViewModels;
 
 public sealed class LoginPageViewModel : ViewModelBase
 {
-	private readonly Auth0Option _config;
-	private readonly Dictionary<string, string> _extraParameters;
+	private readonly AuthenticationService _authenticationService;
 
 	private string _statusMessage = "Your browser will open for secure sign-in.";
 	private bool _isLoading;
 
-	public LoginPageViewModel(IOptions<Auth0Option> auth0Options)
+	public LoginPageViewModel(AuthenticationService authenticationService)
 	{
-		_config = auth0Options.Value;
-
-		_extraParameters = new Dictionary<string, string>
-		{
-			{ "connection", _config.ConnectionName },
-			{ "audience", _config.Audience }
-		};
+		_authenticationService = authenticationService;
 	}
 
 	public string StatusMessage
@@ -51,16 +40,7 @@ public sealed class LoginPageViewModel : ViewModelBase
 
 		try
 		{
-			var client = new DesktopAuth0Client(new Auth0ClientOptions
-			{
-				Domain = _config.Domain,
-				ClientId = _config.ClientId,
-				Scope = _config.Scope,
-				RedirectUri = _config.RedirectUri,
-				Browser = new SystemBrowser()
-			});
-
-			var loginResult = await client.LoginAsync(_extraParameters);
+			var loginResult = await _authenticationService.LoginAsync();
 
 			if (loginResult.IsError)
 			{
@@ -80,6 +60,4 @@ public sealed class LoginPageViewModel : ViewModelBase
 		}
 	}
 
-	private sealed class DesktopAuth0Client(Auth0ClientOptions options)
-		: Auth0ClientBase(options, "Chatly.Desktop");
 }

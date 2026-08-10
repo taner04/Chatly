@@ -2,7 +2,7 @@ using System;
 using Avalonia.Controls;
 using Avalonia.Interactivity;
 using Chatly.Desktop.Abstractions;
-using Chatly.Desktop.Infrastrucuture;
+using Chatly.Desktop.Infrastructure;
 using Chatly.Desktop.ViewModels;
 
 namespace Chatly.Desktop.Views;

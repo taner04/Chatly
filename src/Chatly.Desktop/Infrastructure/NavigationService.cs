@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using Avalonia.Controls;
 using Chatly.Desktop.Abstractions;
 
-namespace Chatly.Desktop.Infrastrucuture;
+namespace Chatly.Desktop.Infrastructure;
 
 public sealed class NavigationService(PageService pageService) 
 {

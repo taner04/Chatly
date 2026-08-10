@@ -6,11 +6,11 @@ using System.Net.Sockets;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
-using IdentityModel.OidcClient.Browser;
+using Duende.IdentityModel.OidcClient.Browser;
 
-namespace Chatly.Desktop.Infrastrucuture;
+namespace Chatly.Desktop.Infrastructure.Auth;
 
-public sealed class SystemBrowser : IBrowser
+public sealed class AvaloniaAuthenticationBrowser : IBrowser
 {
     public async Task<BrowserResult> InvokeAsync(
         BrowserOptions options,
@@ -44,8 +44,7 @@ public sealed class SystemBrowser : IBrowser
                 detectEncodingFromByteOrderMarks: false,
                 leaveOpen: true);
 
-            var requestLine = await reader.ReadLineAsync(cancellationToken);
-            var requestTarget = GetRequestTarget(requestLine);
+            var requestTarget = GetRequestTarget(await reader.ReadLineAsync(cancellationToken));
             var callbackUri = new Uri(redirectUri, requestTarget);
 
             if (!callbackUri.AbsolutePath.Equals(
@@ -55,7 +54,7 @@ public sealed class SystemBrowser : IBrowser
                 throw new InvalidOperationException("Received an unexpected loopback request.");
             }
 
-            await SendBrowserResponseAsync(stream, cancellationToken);
+            await SendCompletionPageAsync(stream, cancellationToken);
 
             return new BrowserResult
             {
@@ -65,9 +64,14 @@ public sealed class SystemBrowser : IBrowser
         }
         catch (OperationCanceledException)
         {
+            return new BrowserResult { ResultType = BrowserResultType.UserCancel };
+        }
+        catch (Exception exception)
+        {
             return new BrowserResult
             {
-                ResultType = BrowserResultType.UserCancel
+                ResultType = BrowserResultType.UnknownError,
+                Error = exception.Message
             };
         }
         finally
@@ -80,7 +84,7 @@ public sealed class SystemBrowser : IBrowser
     {
         var parts = requestLine?.Split(' ', 3, StringSplitOptions.RemoveEmptyEntries);
 
-        if (parts is not { Length: 3 } || parts[0] != "GET")
+        if (parts is not ["GET", _, _])
         {
             throw new InvalidOperationException("Received an invalid loopback request.");
         }
@@ -88,7 +92,7 @@ public sealed class SystemBrowser : IBrowser
         return parts[1];
     }
 
-    private static async Task SendBrowserResponseAsync(
+    private static async Task SendCompletionPageAsync(
         Stream stream,
         CancellationToken cancellationToken)
     {

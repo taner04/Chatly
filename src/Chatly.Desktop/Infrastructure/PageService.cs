@@ -3,7 +3,7 @@ using Avalonia.Controls;
 using Chatly.Desktop.Abstractions;
 using Microsoft.Extensions.DependencyInjection;
 
-namespace Chatly.Desktop.Infrastrucuture;
+namespace Chatly.Desktop.Infrastructure;
 
 public sealed class PageService(IServiceProvider serviceProvider)
 {
