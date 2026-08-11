@@ -14,7 +14,6 @@ public partial class MainWindow : Window, INavigationView
 
     private readonly NavigationService _navigationService;
     private readonly Border _sidebar;
-    private readonly TextBlock _appTitle;
     private readonly TextBlock _sidebarToggleIcon;
     private bool _isSidebarExpanded;
 
@@ -31,7 +30,6 @@ public partial class MainWindow : Window, INavigationView
         _navigationService.SetNavigationView(this);
 
         _sidebar = this.FindControl<Border>("Sidebar") ?? throw new InvalidOperationException("Sidebar not found.");
-        _appTitle = this.FindControl<TextBlock>("AppTitle") ?? throw new InvalidOperationException("AppTitle not found.");
         _sidebarToggleIcon = this.FindControl<TextBlock>("SidebarToggleIcon") ?? throw new InvalidOperationException("SidebarToggleIcon not found.");
     }
 
@@ -59,7 +57,6 @@ public partial class MainWindow : Window, INavigationView
     {
         _isSidebarExpanded = !_isSidebarExpanded;
         _sidebar.Width = _isSidebarExpanded ? ExpandedSidebarWidth : CollapsedSidebarWidth;
-        _appTitle.Opacity = _isSidebarExpanded ? 1 : 0;
         _sidebarToggleIcon.Text = _isSidebarExpanded ? "<" : ">";
     }
 }

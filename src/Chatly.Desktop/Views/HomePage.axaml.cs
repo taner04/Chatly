@@ -4,9 +4,9 @@ using Chatly.Desktop.ViewModels;
 
 namespace Chatly.Desktop.Views;
 
-public partial class HomePageView : UserControl, INavigavablePage
+public partial class HomePage : UserControl, INavigavablePage
 {
-    public HomePageView(HomePageViewModel viewModel)
+    public HomePage(HomePageViewModel viewModel)
     {
         ViewModel = viewModel;
         DataContext = ViewModel;

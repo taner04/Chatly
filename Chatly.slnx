@@ -2,6 +2,7 @@
     <Folder Name="/src/">
         <Project Path="src/Chatly.Contracts/Chatly.Contracts.csproj" />
         <Project Path="src/Chatly.Desktop/Chatly.Desktop.csproj" />
+        <Project Path="src/Chatly.WebApi.Client/Chatly.WebApi.Client.csproj" Id="0861591c-7751-4e67-a240-2d78d6e8c12c" />
         <Project Path="src/Chatly.WebApi/Chatly.WebApi.csproj" />
     </Folder>
     <Folder Name="/tools/">

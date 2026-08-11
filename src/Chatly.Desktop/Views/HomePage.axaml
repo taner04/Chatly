@@ -1,7 +1,7 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="using:Chatly.Desktop.ViewModels"
-             x:Class="Chatly.Desktop.Views.HomePageView"
+             x:Class="Chatly.Desktop.Views.HomePage"
              x:DataType="vm:HomePageViewModel">
 
     <StackPanel Spacing="12">

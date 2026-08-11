@@ -6,6 +6,7 @@ using Chatly.Contracts.Extensions;
 using Chatly.Desktop.Abstractions;
 using Chatly.Desktop.Infrastructure;
 using Chatly.Desktop.Infrastructure.Auth;
+using Chatly.Desktop.Infrastructure.FileService;
 using Chatly.Desktop.Options;
 using Chatly.Desktop.ViewModels;
 using Chatly.Desktop.Views;
@@ -16,28 +17,52 @@ namespace Chatly.Desktop;
 
 public class App : Application
 {
-    public static IServiceProvider Services { get; private set; } = null!;
+    private static IServiceProvider Services { get; set; } = null!;
 
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
     }
+    
+    private static bool IsMacOs()
+    {
+#if TARGET_OSX || TARGET_MACCATALYST || TARGET_IOS || TARGET_TVOS
+        return true;
+#else
+        return false;
+#endif
+    }
 
-    public override void OnFrameworkInitializationCompleted()
+    private ServiceProvider ConfigureServices()
     {
         var collection = new ServiceCollection();
-
+        
         collection.AddSingleton<MainWindow>();
         collection.AddSingleton<MainWindowViewModel>();
 
+        collection.AddSingleton<SplashScreen>();
+        collection.AddSingleton<SplashScreenViewModel>();
+        
         collection.AddSingleton<NavigationService>();
         collection.AddSingleton<PageService>();
 
-        collection.AddSingleton<HomePageView>();
+        collection.AddSingleton<HomePage>();
         collection.AddSingleton<HomePageViewModel>();
-        collection.AddSingleton<LoginPageView>();
-        collection.AddSingleton<LoginPageViewModel>();
         collection.AddSingleton<AuthenticationService>();
+        collection.AddSingleton<UserContext>(); 
+        
+        if(IsMacOs())
+        {
+            collection.AddSingleton<ISecureTokenStore, MacOsSecureTokenStore>();
+        }
+        else if(OperatingSystem.IsWindows())
+        {
+            collection.AddSingleton<ISecureTokenStore, WindowsSecureTokenStore>();
+        }
+        else
+        {
+            throw new PlatformNotSupportedException();
+        }
         
         IConfiguration configuration = new ConfigurationBuilder()
             .SetBasePath(AppContext.BaseDirectory)
@@ -47,15 +72,45 @@ public class App : Application
         collection.AddSingleton(configuration);
         collection.AddOption<Auth0Option>(configuration);
 
-        Services = collection.BuildServiceProvider();
-        
-        if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
-        {
-            desktop.MainWindow = Services.GetRequiredService<MainWindow>();
+        return collection.BuildServiceProvider();
+    }
+    
+    public override async void OnFrameworkInitializationCompleted()
+    {
+        Services = ConfigureServices();
 
-            Services
-                .GetRequiredService<NavigationService>()
-                .NavigateTo(typeof(HomePageView));
+        if (ApplicationLifetime is not IClassicDesktopStyleApplicationLifetime desktop)
+        {
+            base.OnFrameworkInitializationCompleted();
+            return;
         }
+
+        var splashScreen = Services.GetRequiredService<SplashScreen>();
+
+        desktop.MainWindow = splashScreen;
+        splashScreen.Show();
+
+        try
+        {
+            var authenticationService = Services.GetRequiredService<AuthenticationService>();
+            await authenticationService.RestoreOrLoginAsync(splashScreen.ViewModel.CancellationToken);
+        }
+        catch (OperationCanceledException)when (splashScreen.ViewModel.CancellationToken.IsCancellationRequested)
+        {
+            splashScreen.Close();
+            return;
+        }
+
+        var mainWindow =
+            Services.GetRequiredService<MainWindow>();
+
+        desktop.MainWindow = mainWindow;
+        mainWindow.Show();
+
+        splashScreen.Close();
+
+        Services.GetRequiredService<NavigationService>().NavigateTo(typeof(HomePage));
+
+        base.OnFrameworkInitializationCompleted();
     }
 }
