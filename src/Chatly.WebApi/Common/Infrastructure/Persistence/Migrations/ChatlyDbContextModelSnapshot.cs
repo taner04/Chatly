@@ -17,113 +17,10 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "10.0.8")
+                .HasAnnotation("ProductVersion", "10.0.11")
                 .HasAnnotation("Relational:MaxIdentifierLength", 63);
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.ToTable("Chats", (string)null);
-
-                    b.UseTptMappingStrategy();
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.ChatMember", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChatId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<Guid>("UserId")
-                        .HasColumnType("uuid");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("ChatMembers", (string)null);
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .HasColumnType("uuid");
-
-                    b.Property<Guid>("ChatId")
-                        .HasColumnType("uuid");
-
-                    b.Property<string>("Content")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<DateTimeOffset>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("CreatedBy")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.Property<Guid>("SenderId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTimeOffset?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("UpdatedBy")
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("SenderId");
-
-                    b.HasIndex("ChatId", "SenderId");
-
-                    b.ToTable("Messages", (string)null);
-                });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
                 {
@@ -145,8 +42,15 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 
                     b.Property<string>("Email")
                         .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
+                        .HasMaxLength(320)
+                        .HasColumnType("character varying(320)");
+
+                    b.Property<bool>("OnboardingCompleted")
+                        .HasColumnType("boolean");
+
+                    b.Property<string>("ProfilePictureKey")
+                        .HasMaxLength(512)
+                        .HasColumnType("character varying(512)");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -154,6 +58,10 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.Property<string>("UpdatedBy")
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
+
+                    b.Property<string>("Username")
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
 
                     b.HasKey("Id");
 
@@ -163,109 +71,11 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.HasIndex("Email")
                         .IsUnique();
 
+                    b.HasIndex("Username")
+                        .IsUnique()
+                        .HasFilter("\"Username\" IS NOT NULL");
+
                     b.ToTable("Users", (string)null);
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.DirectChat", b =>
-                {
-                    b.HasBaseType("Chatly.WebApi.Features.Chats.Models.Chat");
-
-                    b.Property<string>("ParticipantKey")
-                        .IsRequired()
-                        .HasMaxLength(65)
-                        .HasColumnType("character varying(65)");
-
-                    b.HasIndex("ParticipantKey")
-                        .IsUnique();
-
-                    b.ToTable("DirectChats", (string)null);
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.GroupChat", b =>
-                {
-                    b.HasBaseType("Chatly.WebApi.Features.Chats.Models.Chat");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasMaxLength(200)
-                        .HasColumnType("character varying(200)");
-
-                    b.ToTable("GroupChats", (string)null);
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.ChatMember", b =>
-                {
-                    b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", "Chat")
-                        .WithMany("Members")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "User")
-                        .WithMany("ChatMemberships")
-                        .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("User");
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
-                {
-                    b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", "Chat")
-                        .WithMany("Messages")
-                        .HasForeignKey("ChatId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "Sender")
-                        .WithMany()
-                        .HasForeignKey("SenderId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.HasOne("Chatly.WebApi.Features.Chats.Models.ChatMember", null)
-                        .WithMany()
-                        .HasForeignKey("ChatId", "SenderId")
-                        .HasPrincipalKey("ChatId", "UserId")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
-
-                    b.Navigation("Chat");
-
-                    b.Navigation("Sender");
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.DirectChat", b =>
-                {
-                    b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", null)
-                        .WithOne()
-                        .HasForeignKey("Chatly.WebApi.Features.Chats.Models.DirectChat", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.GroupChat", b =>
-                {
-                    b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", null)
-                        .WithOne()
-                        .HasForeignKey("Chatly.WebApi.Features.Chats.Models.GroupChat", "Id")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
-                {
-                    b.Navigation("Members");
-
-                    b.Navigation("Messages");
-                });
-
-            modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
-                {
-                    b.Navigation("ChatMemberships");
                 });
 #pragma warning restore 612, 618
         }

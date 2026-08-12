@@ -5,7 +5,7 @@ namespace Chatly.Contracts.Extensions;
 
 public static class OptionExtensions
 {
-    extension(IConfiguration  configuration) 
+    extension(IConfiguration configuration)
     {
         public T GetOption<T>(string? sectionName = null!) where T : class
         {
@@ -17,18 +17,19 @@ public static class OptionExtensions
             return options!;
         }
     }
-    
-    extension(IServiceCollection services) 
+
+    extension(IServiceCollection services)
     {
-        public IServiceCollection AddOption<T>(IConfiguration configuration, string? sectionName = null!) where T : class
+        public IServiceCollection AddOption<T>(IConfiguration configuration, string? sectionName = null!)
+            where T : class
         {
             sectionName ??= typeof(T).Name;
 
             services.AddOptions<T>()
-                    .BindConfiguration(sectionName)
-                    .ValidateDataAnnotations()
-                    .ValidateOnStart();
-            
+                .BindConfiguration(sectionName)
+                .ValidateDataAnnotations()
+                .ValidateOnStart();
+
             return services;
         }
     }

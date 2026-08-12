@@ -1,5 +1,5 @@
-using Chatly.WebApi.Features.Chats.Models;
 using Chatly.WebApi.Features.Users.Models;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
@@ -10,11 +10,20 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
     {
         builder.Property(user => user.Email)
             .IsRequired()
-            .HasMaxLength(256);
+            .HasMaxLength(User.MaxEmailLength);
 
         builder.Property(user => user.Auth0Id)
             .IsRequired()
-            .HasMaxLength(256);
+            .HasMaxLength(User.MaxAuth0IdLength);
+
+        builder.Property(user => user.Username)
+            .HasMaxLength(User.MaxUsernameLength);
+
+        builder.Property(user => user.ProfilePictureKey)
+            .HasMaxLength(User.MaxProfilePictureKeyLength);
+
+        builder.Property(user => user.OnboardingCompleted)
+            .IsRequired();
 
         builder.HasIndex(user => user.Email)
             .IsUnique();
@@ -22,16 +31,8 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
         builder.HasIndex(user => user.Auth0Id)
             .IsUnique();
 
-        builder.HasMany(user => user.Chats)
-            .WithMany(chat => chat.Users)
-            .UsingEntity<ChatMember>(
-                membership => membership
-                    .HasOne(member => member.Chat)
-                    .WithMany(chat => chat.Members)
-                    .HasForeignKey(member => member.ChatId),
-                membership => membership
-                    .HasOne(member => member.User)
-                    .WithMany(user => user.ChatMemberships)
-                    .HasForeignKey(member => member.UserId));
+        builder.HasIndex(user => user.Username)
+            .IsUnique()
+            .HasFilter("\"Username\" IS NOT NULL");
     }
 }

@@ -1,0 +1,6 @@
+using Chatly.Contracts.Users.Results;
+using Mediator;
+
+namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
+
+public sealed record GetCurrentUserQuery : IQuery<CurrentUserResponse>;

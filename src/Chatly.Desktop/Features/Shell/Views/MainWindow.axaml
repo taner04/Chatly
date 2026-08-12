@@ -1,0 +1,128 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="using:Chatly.Desktop.Features.Shell.ViewModels"
+        xmlns:ic="using:FluentIcons.Avalonia"
+        x:Class="Chatly.Desktop.Features.Shell.Views.MainWindow"
+        x:DataType="vm:MainWindowViewModel"
+        mc:Ignorable="d"
+        d:DesignWidth="1100"
+        d:DesignHeight="700"
+        Icon="/Assets/avalonia-logo.ico"
+        Title="Chatly"
+        Width="1100"
+        Height="700"
+        MinWidth="760"
+        MinHeight="480">
+
+    <Window.Styles>
+        <Style Selector="Border#Sidebar">
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="Width" Duration="0:0:0.08" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Button.nav-item">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Height" Value="40" />
+            <Setter Property="Margin" Value="0,1" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="Cursor" Value="Hand" />
+        </Style>
+        <Style Selector="Button.nav-item:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        </Style>
+        <Style Selector="Button.sidebar-toggle">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="Padding" Value="0" />
+        </Style>
+        <Style Selector="Button.sidebar-toggle:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        </Style>
+    </Window.Styles>
+
+    <DockPanel Background="{DynamicResource ChatlyWindowBrush}">
+        <Border x:Name="Sidebar"
+                DockPanel.Dock="Left"
+                Width="48"
+                Background="{DynamicResource ChatlySidebarBrush}"
+                BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                BorderThickness="0,0,1,0"
+                ClipToBounds="True">
+            <Grid RowDefinitions="Auto,Auto,*,Auto,Auto">
+                <ItemsControl Grid.Row="1"
+                              ItemsSource="{Binding NavigationItems}"
+                              Margin="0,8,0,0">
+                    <ItemsControl.Styles>
+                        <Style Selector="ContentPresenter">
+                            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                        </Style>
+                    </ItemsControl.Styles>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="vm:NavigationItemViewModel">
+                            <Button Classes="nav-item" Click="Button_OnClick">
+                                <Grid ColumnDefinitions="48,*">
+                                    <Border Width="3"
+                                            Height="20"
+                                            Background="{DynamicResource ChatlyAccentBrush}"
+                                            CornerRadius="2"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            IsVisible="{Binding IsSelected}" />
+                                    <ic:SymbolIcon Grid.Column="0"
+                                                   Symbol="{Binding Icon}"
+                                                   FontSize="18"
+                                                   HorizontalAlignment="Center"
+                                                   VerticalAlignment="Center"
+                                                   Foreground="{DynamicResource ChatlyTextBrush}"
+                                                   Opacity="0.85" />
+                                    <TextBlock Grid.Column="1"
+                                               Text="{Binding Title}"
+                                               FontSize="13"
+                                               Foreground="{DynamicResource ChatlyTextBrush}"
+                                               VerticalAlignment="Center"
+                                               Margin="0,0,14,0"
+                                               IsHitTestVisible="False"
+                                               TextTrimming="CharacterEllipsis" />
+                                </Grid>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Border Grid.Row="2"
+                        Height="1"
+                        Margin="120"
+                        Background="{DynamicResource ChatlyBorderBrush}" />
+
+                <Button Classes="sidebar-toggle"
+                        Grid.Row="3"
+                        HorizontalAlignment="Left"
+                        VerticalAlignment="Bottom"
+                        Click="SidebarToggle_OnClick">
+                    <TextBlock x:Name="SidebarToggleIcon"
+                               Text=">"
+                               FontSize="14"
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center" />
+                </Button>
+            </Grid>
+        </Border>
+
+        <Border Background="{DynamicResource ChatlyContentBrush}" Margin="20,28,28,28" CornerRadius="16">
+            <ContentControl x:Name="PageHost" Margin="28" />
+        </Border>
+    </DockPanel>
+
+</Window>
