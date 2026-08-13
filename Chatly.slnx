@@ -1,0 +1,12 @@
+<Solution>
+    <Folder Name="/src/">
+        <Project Path="src/Chatly.Contracts/Chatly.Contracts.csproj"/>
+        <Project Path="src/Chatly.Desktop/Chatly.Desktop.csproj"/>
+        <Project Path="src/Chatly.WebApi/Chatly.WebApi.csproj"/>
+    </Folder>
+    <Folder Name="/tools/">
+        <Project Path="tools/Chatly.AppHost/Chatly.AppHost.csproj"/>
+        <Project Path="tools/Chatly.MigrationService/Chatly.MigrationService.csproj"/>
+        <Project Path="tools/Chatly.ServiceDefaults/Chatly.ServiceDefaults.csproj"/>
+    </Folder>
+</Solution>

@@ -1,0 +1,34 @@
+using Azure.Storage.Blobs;
+using Chatly.ServiceDefaults;
+using Chatly.WebApi.Common.Composition.Extensions.ServiceCollection.Modules;
+using Chatly.WebApi.Common.Infrastructure;
+
+namespace Chatly.WebApi.Common.Composition.Extensions.ServiceCollection;
+
+public static class ServiceCollectionExtensions
+{
+    extension(IServiceCollection services)
+    {
+        public IServiceCollection RegisterChatlyServices(WebApplicationBuilder builder)
+        {
+            services.AddSingleton(provider =>
+            {
+                var connectionString = builder.Configuration.GetConnectionString(
+                    AppHostConstants.BlobServiceConnectionName)
+                    ?? throw new InvalidOperationException(
+                        $"Connection string '{AppHostConstants.BlobServiceConnectionName}' is missing.");
+
+                return new BlobServiceClient(connectionString);
+            });
+            services.AddSingleton<AzureBlobService>();
+
+            services
+                .AddChatlyConfiguration(builder.Configuration)
+                .AddChatlyAuthentication(builder.Configuration)
+                .AddChatlyDbContext(builder)
+                .AddChatlyApplicationServices();
+
+            return services;
+        }
+    }
+}

@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk.Worker">
+
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <Nullable>enable</Nullable>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <UserSecretsId>dotnet-Chatly.MigrationService-1d9d5343-86f0-4b63-b0f1-b6a2a575c51d</UserSecretsId>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
+        <PackageReference Include="Microsoft.Extensions.Hosting"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\..\src\Chatly.WebApi\Chatly.WebApi.csproj"/>
+        <ProjectReference Include="..\Chatly.ServiceDefaults\Chatly.ServiceDefaults.csproj"/>
+    </ItemGroup>
+</Project>
