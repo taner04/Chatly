@@ -9,11 +9,18 @@ using CommunityToolkit.Mvvm.Input;
 using System;
 using System.IO;
 using System.Threading.Tasks;
+using Chatly.Desktop.Shared.Abstractions;
+using Chatly.Desktop.Features.Users;
 
 namespace Chatly.Desktop.Features.Onboarding.ViewModels;
 
-public sealed partial class OnboardingPageViewModel(UserWebService userWebService) : ViewModelBase
+public sealed partial class OnboardingPageViewModel(UserSessionContext userContext, UserWebService userWebService) : ViewModelBase, IMessageOverlay
 {
+    private readonly TaskCompletionSource _completed =
+        new(TaskCreationOptions.RunContinuationsAsynchronously);
+
+    public Task Completion => _completed.Task;
+
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(CompleteOnboardingCommand))]
     public partial string Username { get; set; } = string.Empty;
@@ -34,7 +41,12 @@ public sealed partial class OnboardingPageViewModel(UserWebService userWebServic
         {
             if (ProfilePicture is null)
             {
-                await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username));
+                var onboardingResult = await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username));
+                if (onboardingResult.IsSuccess)
+                {
+                    _completed.TrySetResult();
+                }
+
                 return;
             }
 
@@ -47,7 +59,13 @@ public sealed partial class OnboardingPageViewModel(UserWebService userWebServic
                 _ => "application/octet-stream"
             };
 
-            await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username, content, ProfilePicture.Name, contentType));
+            var result = await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username, content, ProfilePicture.Name, contentType));
+
+            if (result.IsSuccess)
+            {
+                userContext.SetAuthenticated(result.Value);
+                _completed.TrySetResult();
+            }
         }
     }
 

@@ -9,6 +9,7 @@ using Chatly.Desktop.Features.Home.Views;
 using Chatly.Desktop.Features.Onboarding.ViewModels;
 using Chatly.Desktop.Features.Onboarding.Views;
 using Chatly.Desktop.Features.Popup.ViewModels;
+using Chatly.Desktop.Features.Popup;
 using Chatly.Desktop.Features.Shell.ViewModels;
 using Chatly.Desktop.Features.Shell.Views;
 using Chatly.Desktop.Features.Startup.Services;
@@ -19,6 +20,7 @@ using Chatly.Desktop.Features.Users.Api;
 using Chatly.Desktop.Features.Users.ViewModels;
 using Chatly.Desktop.Infrastructure.Authentication.Storage;
 using Chatly.Desktop.Infrastructure.Navigation;
+using Chatly.Desktop.Shared.Abstractions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
@@ -40,10 +42,9 @@ internal static class ServiceCollectionExtensions
             services.AddSingleton<SplashScreenViewModel>();
             services.AddSingleton<HomePage>();
             services.AddSingleton<HomePageViewModel>();
-            services.AddSingleton<OnboardingPage>();
-            services.AddSingleton<OnboardingPageViewModel>();
+            services.AddMessageOverlay<OnboardingPageViewModel, OnboardingPage>();
             services.AddSingleton<PopupOverlayViewModel>();
-            services.AddTransient<UserInfoPage>();
+            services.AddSingleton<UserInfoPage>();
             services.AddSingleton<UserInfoPageViewModel>();
 
             services.AddSingleton<INavigationService, NavigationService>();

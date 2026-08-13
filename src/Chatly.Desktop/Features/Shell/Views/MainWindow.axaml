@@ -150,11 +150,7 @@
         </Border>
     </DockPanel>
 
-    <popup:PopupOverlay IsOpen="{Binding Popup.IsOpen}"
-                        Title="{Binding Popup.Title}"
-                        PopupContent="{Binding Popup.Content}"
-                        IsCloseButtonVisible="{Binding Popup.IsCloseButtonVisible}"
-                        CloseCommand="{Binding Popup.CloseCommand}" />
+    <popup:PopupOverlay DataContext="{Binding Popup}" />
     </Grid>
 
 </Window>

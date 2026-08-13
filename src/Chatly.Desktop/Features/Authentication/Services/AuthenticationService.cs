@@ -77,7 +77,7 @@ public sealed class AuthenticationService
             cancellationToken);
 
         cancellationToken.ThrowIfCancellationRequested();
-        EnsureSuccessful(result.IsError, result.Error, result.ErrorDescription);
+        EnsureSuccessful(result);
 
         var accessToken = RequireToken(result.AccessToken, "access");
         var refreshToken = RequireToken(result.RefreshToken, "refresh");
@@ -101,7 +101,7 @@ public sealed class AuthenticationService
             return null;
         }
 
-        EnsureSuccessful(result.IsError, result.Error, result.ErrorDescription);
+        EnsureSuccessful(result);
 
         var accessToken = RequireToken(result.AccessToken, "access");
         var nextRefreshToken = string.IsNullOrWhiteSpace(result.RefreshToken)
@@ -112,14 +112,14 @@ public sealed class AuthenticationService
         return accessToken;
     }
 
-    private static void EnsureSuccessful(bool isError, string? error, string? description)
+    private static void EnsureSuccessful(Result result)
     {
-        if (!isError)
+        if (!result.IsError)
         {
             return;
         }
 
-        var message = string.IsNullOrWhiteSpace(description) ? error : $"{error}: {description}";
+        var message = string.IsNullOrWhiteSpace(result.ErrorDescription) ? result.Error : $"{result.Error}: {result.ErrorDescription}";
         throw new InvalidOperationException(
             $"Authentication failed: {message ?? "Unknown error"}");
     }

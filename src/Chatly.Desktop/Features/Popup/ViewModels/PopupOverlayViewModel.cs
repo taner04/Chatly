@@ -1,14 +1,33 @@
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Chatly.Desktop.Shared.Abstractions;
 using Chatly.Desktop.Shared.ViewModels.Base;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
-using System;
-using System.Threading.Tasks;
 
 namespace Chatly.Desktop.Features.Popup.ViewModels;
 
 public sealed partial class PopupOverlayViewModel : ViewModelBase
 {
+    private readonly IReadOnlyDictionary<Type, IMessageOverlayRegistration> _registrations;
     private TaskCompletionSource? _closed;
+
+    public PopupOverlayViewModel(IEnumerable<IMessageOverlayRegistration> registrations)
+    {
+        var registrationsByType = new Dictionary<Type, IMessageOverlayRegistration>();
+
+        foreach (var registration in registrations)
+        {
+            if (!registrationsByType.TryAdd(registration.OverlayType, registration))
+            {
+                throw new InvalidOperationException(
+                    $"A message overlay of type {registration.OverlayType.Name} is already registered.");
+            }
+        }
+
+        _registrations = registrationsByType;
+    }
 
     [ObservableProperty]
     public partial bool IsOpen { get; private set; }
@@ -22,26 +41,39 @@ public sealed partial class PopupOverlayViewModel : ViewModelBase
     [ObservableProperty]
     public partial bool IsCloseButtonVisible { get; private set; } = true;
 
-    public Task ShowAsync(
+    public async Task ShowAsync<T>(
         string title,
-        object content,
-        bool isCloseButtonVisible = true)
+        bool isCloseButtonVisible = true) where T : IMessageOverlay
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
-        ArgumentNullException.ThrowIfNull(content);
 
         if (IsOpen)
         {
             throw new InvalidOperationException("A popup is already open.");
         }
 
+        if (!_registrations.TryGetValue(typeof(T), out var registration))
+        {
+            throw new InvalidOperationException(
+                $"No message overlay of type {typeof(T).Name} is registered.");
+        }
+
+        var instance = registration.Create();
+
         _closed = new TaskCompletionSource(TaskCreationOptions.RunContinuationsAsynchronously);
         Title = title;
-        Content = content;
+        Content = instance.View;
         IsCloseButtonVisible = isCloseButtonVisible;
         IsOpen = true;
 
-        return _closed.Task;
+        try
+        {
+            await Task.WhenAny(instance.Overlay.Completion, _closed.Task);
+        }
+        finally
+        {
+            Close();
+        }
     }
 
     [RelayCommand]

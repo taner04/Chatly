@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
 using Chatly.Desktop.Features.Authentication.Services;
 using Chatly.Desktop.Features.Home.Views;
-using Chatly.Desktop.Features.Onboarding.Views;
+using Chatly.Desktop.Features.Onboarding.ViewModels;
 using Chatly.Desktop.Features.Popup.ViewModels;
 using Chatly.Desktop.Features.Shell.Views;
 using Chatly.Desktop.Features.Startup.Views;
@@ -18,8 +18,7 @@ public sealed class ApplicationStartupService(
     SessionService sessionService,
     UserSessionContext sessionContext,
     INavigationService navigationService,
-    PopupOverlayViewModel popup,
-    OnboardingPage onboardingPage)
+    PopupOverlayViewModel popup)
 {
     public async Task RunAsync(IClassicDesktopStyleApplicationLifetime desktop)
     {
@@ -45,9 +44,8 @@ public sealed class ApplicationStartupService(
 
         if (sessionContext.CurrentUser?.OnboardingCompleted == false)
         {
-            await popup.ShowAsync(
+            await popup.ShowAsync<OnboardingPageViewModel>(
                 "Complete your profile",
-                onboardingPage,
                 isCloseButtonVisible: false);
         }
     }

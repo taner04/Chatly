@@ -1,8 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="using:Chatly.Desktop.Features.Popup.ViewModels"
              x:Class="Chatly.Desktop.Features.Popup.Views.PopupOverlay"
-             x:Name="Root"
-             IsVisible="{Binding IsOpen, ElementName=Root}">
+             x:DataType="vm:PopupOverlayViewModel"
+             IsVisible="{Binding IsOpen}">
     <Grid Background="#99000000">
         <Border Width="560"
                 MaxWidth="760"
@@ -17,7 +18,7 @@
                 BoxShadow="0 12 32 0 #66000000">
             <Grid RowDefinitions="Auto,*">
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
-                    <TextBlock Text="{Binding Title, ElementName=Root}"
+                    <TextBlock Text="{Binding Title}"
                                FontSize="20"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource ChatlyTextBrush}"
@@ -29,13 +30,13 @@
                             Padding="0"
                             Background="Transparent"
                             BorderThickness="0"
-                            IsVisible="{Binding IsCloseButtonVisible, ElementName=Root}"
-                            Command="{Binding CloseCommand, ElementName=Root}"
+                            IsVisible="{Binding IsCloseButtonVisible}"
+                            Command="{Binding CloseCommand}"
                             Content="&#x2715;" />
                 </Grid>
 
                 <ContentControl Grid.Row="1"
-                                Content="{Binding PopupContent, ElementName=Root}" />
+                                Content="{Binding Content}" />
             </Grid>
         </Border>
     </Grid>
