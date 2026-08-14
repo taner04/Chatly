@@ -23,6 +23,58 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("FirstUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("RequestedByUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SecondUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FirstUserId", "SecondUserId")
+                        .IsUnique();
+
+                    b.HasIndex("RequestedByUserId", "Status");
+
+                    b.HasIndex("SecondUserId", "Status");
+
+                    b.ToTable("FriendRequests", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_FriendRequests_DistinctUsers", "\"FirstUserId\" <> \"SecondUserId\"");
+
+                            t.HasCheckConstraint("CK_FriendRequests_RequesterIsParticipant", "\"RequestedByUserId\" = \"FirstUserId\" OR \"RequestedByUserId\" = \"SecondUserId\"");
+
+                            t.HasCheckConstraint("CK_FriendRequests_ValidStatus", "\"Status\" IN ('Pending', 'Accepted', 'Rejected')");
+                        });
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
                 {
                     b.Property<Guid>("Id")
@@ -77,6 +129,27 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .HasFilter("\"Username\" IS NOT NULL");
 
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("FirstUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("RequestedByUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("SecondUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }

@@ -1,9 +1,10 @@
-using Chatly.WebApi.Features.FriendShips.Models;
+using Chatly.WebApi.Features.FriendRequests.Models;
+using Chatly.WebApi.Features.Outbox.Models;
 using Chatly.WebApi.Features.Users.Models;
 using Vogen;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 
 [EfCoreConverter<UserId>]
-[EfCoreConverter<FriendShipId>]
+[EfCoreConverter<FriendRequestId>]
 internal sealed partial class EfcVogenIdConverter;

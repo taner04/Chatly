@@ -1,0 +1,37 @@
+using Chatly.Contracts.Pagination;
+using Chatly.Contracts.Users.Results;
+using Chatly.WebApi.Common.Abstractions;
+using Chatly.WebApi.Common.Extensions;
+using Mediator;
+using Microsoft.AspNetCore.Mvc;
+
+namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
+
+public sealed class SearchUsersEndpoint : IEndpoint
+{
+    public void MapEndpoint(WebApplication app)
+    {
+        app.MapGet(
+                "/api/users/search",
+                async (
+                    [FromQuery] string searchName,
+                    [FromServices] IMediator mediator,
+                    CancellationToken cancellationToken,
+                    [FromQuery] int pageIndex = 1,
+                    [FromQuery] int pageSize = 20) =>
+                {
+                    var query = new SearchUsersQuery(
+                        searchName,
+                        pageIndex,
+                        pageSize);
+
+                    return Results.Ok(
+                        await mediator.Send(query, cancellationToken));
+                })
+            .WithName("SearchUsers")
+            .WithTags("User")
+            .RequireAuthorization()
+            .Produces<PaginationResult<UserSearchResponse>>()
+            .ProducesStandardErrors(StatusCodes.Status400BadRequest);
+    }
+}

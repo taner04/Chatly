@@ -1,4 +1,5 @@
 using Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
+using Chatly.WebApi.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.Users.Models;
 using Microsoft.EntityFrameworkCore;
 
@@ -7,7 +8,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence;
 public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
-
+    public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

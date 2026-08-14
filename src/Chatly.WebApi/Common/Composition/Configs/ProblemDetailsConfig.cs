@@ -18,8 +18,8 @@ public static class ProblemDetailsConfig
                 ValidationException validation => new ApiProblemDetails
                 {
                     Status = StatusCodes.Status400BadRequest,
-                    Title = "Validation failed.",
-                    ErrorCode = "validation.error",
+                    Title = "Validation failed",
+                    ErrorCode = "Validation.Failed",
                     Errors = validation.Errors
                         .GroupBy(e => e.PropertyName, StringComparer.OrdinalIgnoreCase)
                         .ToDictionary(
@@ -42,7 +42,7 @@ public static class ProblemDetailsConfig
                     Status = StatusCodes.Status401Unauthorized,
                     Title = "Unauthorized",
                     Detail = "You are not authorized to access this resource.",
-                    ErrorCode = "Unauthorized.Access"
+                    ErrorCode = "Authorization.Unauthorized"
                 },
 
                 _ => new ApiProblemDetails
@@ -50,14 +50,14 @@ public static class ProblemDetailsConfig
                     Status = StatusCodes.Status500InternalServerError,
                     Title = "Internal Server Error",
                     Detail = "An unexpected error has occurred.",
-                    ErrorCode = "Server.Error"
+                    ErrorCode = "Server.UnexpectedError"
                 }
             };
 
             httpContext.Response.StatusCode = problemDetails.Status ?? StatusCodes.Status500InternalServerError;
 
             problemDetails.Instance = httpContext.Request.Path;
-            problemDetails.Type = $"https://shoply.com/{GetRoutePattern(httpContext)}";
+            problemDetails.Type = $"https://chatly.com/{GetRoutePattern(httpContext)}";
 
             problemDetails.Extensions["method"] = httpContext.Request.Method;
             problemDetails.Extensions["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier;

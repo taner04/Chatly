@@ -34,6 +34,6 @@ public sealed class UpdateProfilePictureEndpoint : IEndpoint
             .Produces<CurrentUserResponse>()
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,
-                StatusCodes.Status409Conflict);
+                StatusCodes.Status404NotFound);
     }
 }

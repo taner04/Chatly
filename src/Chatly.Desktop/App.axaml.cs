@@ -2,8 +2,8 @@ using System;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
-using Chatly.Desktop.Common.Composition;
-using Chatly.Desktop.Features.Startup.Services;
+using Chatly.Desktop.DependencyInjection;
+using Chatly.Desktop.Services.Startup;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 

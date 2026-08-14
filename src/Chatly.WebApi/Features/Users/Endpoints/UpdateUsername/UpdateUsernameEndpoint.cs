@@ -26,6 +26,7 @@ public sealed class UpdateUsernameEndpoint : IEndpoint
             .Produces<CurrentUserResponse>()
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
                 StatusCodes.Status409Conflict);
     }
 }

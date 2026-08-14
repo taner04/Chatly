@@ -24,6 +24,7 @@
         <PackageReference Include="CommunityToolkit.Mvvm" />
         <PackageReference Include="Duende.IdentityModel.OidcClient" />
         <PackageReference Include="FluentIcons.Avalonia" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
         <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
         <PackageReference Include="System.Security.Cryptography.ProtectedData" />
@@ -43,6 +44,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Shared\Styles\ChatlyTheme.axaml" />
+        <AdditionalFiles Include="Styles\ChatlyTheme.axaml" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <Compile Update="Views\Overlays\OnboardingOverlay.axaml.cs">
+        <DependentUpon>OnboardingOverlay.axaml</DependentUpon>
+      </Compile>
+      <Compile Update="Views\Overlays\PopupOverlayHost.axaml.cs">
+        <DependentUpon>PopupOverlayHost.axaml</DependentUpon>
+      </Compile>
     </ItemGroup>
 </Project>

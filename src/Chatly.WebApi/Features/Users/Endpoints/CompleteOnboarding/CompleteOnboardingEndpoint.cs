@@ -36,6 +36,7 @@ public sealed class CompleteOnboardingEndpoint : IEndpoint
             .Produces<CurrentUserResponse>()
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
                 StatusCodes.Status409Conflict);
     }
 }

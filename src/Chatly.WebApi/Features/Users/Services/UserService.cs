@@ -42,17 +42,11 @@ public sealed class UserService(
 
     public CurrentUserResponse CreateResponse(User user)
     {
-        var profilePictureUrl = user.ProfilePictureKey is null
-            ? null
-            : blobService.CreateReadUrl(
-                user.ProfilePictureKey,
-                TimeSpan.FromMinutes(15)).ToString();
-
         return new CurrentUserResponse(
             user.Id.Value,
             user.Email,
             user.Username,
-            profilePictureUrl,
+            blobService.CreateReadUrl(user.ProfilePictureKey)?.ToString(),
             user.OnboardingCompleted);
     }
 }

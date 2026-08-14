@@ -28,8 +28,8 @@ public class GetCurrentUserProfilePictureQueryHandler(
             return new GetPictureResponse(null!);
         }
 
-        var url = blobService.CreateReadUrl(profilePictureKey, TimeSpan.FromMinutes(15));
+        var url = blobService.CreateReadUrl(profilePictureKey);
 
-        return new GetPictureResponse(url.ToString());
+        return new GetPictureResponse(url?.ToString());
     }
 }

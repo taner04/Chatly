@@ -1,0 +1,56 @@
+﻿<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:windows="using:Chatly.Desktop.Views.Windows"
+        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="Chatly.Desktop.Views.Windows.SplashScreenWindow"
+        WindowStartupLocation="CenterScreen"
+        x:DataType="windows:SplashScreenWindow"
+        WindowDecorations="None"
+        Background="{DynamicResource ChatlyWindowBrush}"
+        Title="SplashScreen">
+    <Border Background="{DynamicResource ChatlyWindowBrush}"
+            PointerPressed="SplashSurface_OnPointerPressed">
+        <StackPanel Spacing="14"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center">
+            <Border Width="56"
+                    Height="56"
+                    HorizontalAlignment="Center"
+                    Background="{DynamicResource ChatlyAccentBrush}"
+                    CornerRadius="14">
+                <TextBlock Text="C"
+                           HorizontalAlignment="Center"
+                           VerticalAlignment="Center"
+                           FontSize="28"
+                           FontWeight="SemiBold"
+                           Foreground="White" />
+            </Border>
+
+            <ProgressBar Width="160"
+                         Height="3"
+                         Margin="0,4,0,0"
+                         IsIndeterminate="True"
+                         Foreground="{DynamicResource ChatlyAccentBrush}" />
+
+            <TextBlock Text="{Binding ViewModel.StartupMessage}"
+                       HorizontalAlignment="Center"
+                       FontSize="13"
+                       Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+
+            <Button x:Name="CancelButton"
+                    Margin="0,4,0,0"
+                    Padding="14,6"
+                    HorizontalAlignment="Center"
+                    Background="Transparent"
+                    BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                    BorderThickness="1"
+                    Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                    CornerRadius="8"
+                    Command="{Binding ViewModel.CancelCommand}">
+                Cancel
+            </Button>
+        </StackPanel>
+    </Border>
+</Window>

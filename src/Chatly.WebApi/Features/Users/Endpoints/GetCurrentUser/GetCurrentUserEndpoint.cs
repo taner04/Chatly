@@ -18,6 +18,6 @@ public sealed class GetCurrentUserEndpoint : IEndpoint
             .WithTags("User")
             .RequireAuthorization()
             .Produces(StatusCodes.Status200OK)
-            .ProducesStandardErrors();
+            .ProducesStandardErrors(StatusCodes.Status404NotFound);
     }
 }

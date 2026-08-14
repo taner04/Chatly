@@ -3,6 +3,7 @@ using Chatly.WebApi.Common.Composition.Configs;
 using Chatly.WebApi.Common.Composition.Configs.OpenApi;
 using Chatly.WebApi.Common.Composition.Extensions;
 using Chatly.WebApi.Common.Composition.Extensions.ServiceCollection;
+using Chatly.WebApi.Features.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,6 +31,8 @@ _ = app.UseAuthentication();
 _ = app.UseAuthorization();
 
 _ = app.MapEndpoints();
+
+_ = app.MapHub<NotificationHub>("/hubs/notification");
 
 _ = await app.InitializeBlobStorage();
 

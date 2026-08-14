@@ -88,8 +88,18 @@ public sealed partial class AzureBlobService(
         }
     }
 
-    internal Uri CreateReadUrl(string blobName, TimeSpan lifetime)
+    internal Uri? CreateReadUrl(string? blobName)
     {
+        return CreateReadUrl(blobName, TimeSpan.FromMinutes(15));
+    }
+
+    internal Uri? CreateReadUrl(string? blobName, TimeSpan lifetime)
+    {
+        if (string.IsNullOrEmpty(blobName))
+        {
+            return null;
+        }
+
         var blobClient = _containerClient.GetBlobClient(blobName);
         return blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.Add(lifetime));
     }

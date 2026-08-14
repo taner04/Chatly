@@ -13,7 +13,7 @@ public sealed class GuardException : ChatlyException
     public static void Throw(string ownerName, string propertyName, string rule, string message)
     {
         throw new GuardException(
-            "Invalid argument",
+            $"Invalid {propertyName}",
             message,
             $"{ownerName}.{propertyName}.{rule}");
     }

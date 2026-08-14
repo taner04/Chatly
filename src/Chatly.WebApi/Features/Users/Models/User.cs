@@ -1,6 +1,7 @@
 using Chatly.WebApi.Common.Helper;
 using Chatly.WebApi.Common.Shared.Guards;
 using Chatly.WebApi.Common.Shared.Models;
+using System.ComponentModel.DataAnnotations.Schema;
 using Vogen;
 
 namespace Chatly.WebApi.Features.Users.Models;
@@ -36,4 +37,5 @@ public sealed class User : Entity<UserId>
     public string? Username { get; set; }
     public string? ProfilePictureKey { get; set; }
     public bool OnboardingCompleted { get; set; }
+
 }
