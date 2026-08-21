@@ -1,5 +1,4 @@
 using Chatly.WebApi.Features.FriendRequests.Models;
-using Chatly.WebApi.Features.Outbox.Models;
 using Chatly.WebApi.Features.Users.Models;
 using Vogen;
 

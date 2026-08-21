@@ -21,6 +21,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Refit;
 using System;
+using Chatly.Desktop.Services.Api.SignalR.NotificationEventStrategies;
 
 namespace Chatly.Desktop.DependencyInjection;
 
@@ -32,7 +33,8 @@ internal static class ServiceCollectionExtensions
         {
             services.AddSingleton(configuration);
             services.AddOption<Auth0Option>(configuration);
-
+            services.AddOption<WebApiClientOption>(configuration);
+            
             services.AddSingleton<MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
             services.AddSingleton<SplashScreenWindow>();
@@ -55,6 +57,8 @@ internal static class ServiceCollectionExtensions
 
             services.AddSingleton<NotificationHubDispatcher>();
             services.AddSingleton<NotificationHubHost>();
+            
+            services.AddNotificationStrategies<NotificationIncomingFriendRequestStrategy>();
 
             services.AddTransient<BearerDelegatingHandler>();
             services.AddRefitGeneratedClient<IUserEndpoint>()
@@ -82,6 +86,12 @@ internal static class ServiceCollectionExtensions
             return services;
         }
 
+        private IServiceCollection AddNotificationStrategies<T>() where T : class, INotificationStrategy
+        {
+            services.AddSingleton<INotificationStrategy, T>();
+            return services;
+        }
+        
         private void AddSecureTokenStore()
         {
             if (OperatingSystem.IsMacOS())

@@ -26,6 +26,8 @@ internal static class ApplicationServiceCollection
                 ];
             });
 
+            services.AddSingleton<NotificationPublisher>();
+            services.AddSignalR();
             services.AddValidatorsFromAssembly(typeof(Program).Assembly);
 
             return services;

@@ -1,6 +1,7 @@
 using Chatly.Contracts.FriendRequests.Results;
 using Chatly.WebApi.Common.Infrastructure;
 using Chatly.WebApi.Common.Infrastructure.Persistence;
+using Chatly.WebApi.Common.Shared.Exceptions;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.FriendRequests.Exception;
 using Chatly.WebApi.Features.FriendRequests.Models;
@@ -22,6 +23,15 @@ public sealed class SendFriendRequestCommandHandler(
         CancellationToken cancellationToken)
     {
         var userId = currentUser.GetCurrentUserId();
+
+        var receiverExists = await context.Users
+            .AnyAsync(user => user.Id == command.ReceiverId, cancellationToken);
+
+        if (!receiverExists)
+        {
+            throw new EntityNotFoundException<User>(command.ReceiverId.Value);
+        }
+
         var pair = UserPair.Create(userId, command.ReceiverId);
 
         var existingRequest = await context.FriendRequests.SingleOrDefaultAsync(

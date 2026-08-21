@@ -6,7 +6,7 @@ public sealed class FriendRequestResponse(
     Guid friendRequestId,
     Guid senderUserId,
     string senderUsername,
-    Uri? senderProfilePictureUrl) : NotificationMessage(NotificationType.FriendRequestReceived)
+    Uri? senderProfilePictureUrl) : NotificationMessage(NotificationType.IncomingFriendRequest)
 {
     public Guid FriendRequestId { get; } = friendRequestId;
     public Guid SenderUserId { get; } = senderUserId;

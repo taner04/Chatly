@@ -41,12 +41,11 @@ public sealed class ApplicationStartupService(
         splashScreen.Close();
 
         navigationService.NavigateTo(typeof(HomePage));
+        await notificationHubHost.StartHubAsync();
 
         if (sessionContext.CurrentUser?.OnboardingCompleted == false)
         {
             await popup.ShowAsync<OnboardingOverlayViewModel>("Complete your profile");
         }
-
-        await notificationHubHost.StartHubAsync();
     }
 }

@@ -31,6 +31,7 @@ public sealed class SendFriendRequestEndpoint : IEndpoint
             .Produces(StatusCodes.Status204NoContent)
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,
+                StatusCodes.Status404NotFound,
                 StatusCodes.Status409Conflict);
     }
 }

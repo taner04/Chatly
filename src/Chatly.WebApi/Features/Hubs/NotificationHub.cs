@@ -1,7 +1,9 @@
 using Chatly.Contracts.SignalR;
 using Chatly.WebApi.Common.Infrastructure;
+using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Chatly.WebApi.Features.Users.Models;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Chatly.WebApi.Features.Hubs;
@@ -13,11 +15,18 @@ public static class HubGroup
 }
 
 [Authorize]
-public sealed class NotificationHub(CurrentUserService currentUser) : Hub<INotificationClient>
+public sealed class NotificationHub(
+    CurrentUserService currentUser,
+    ChatlyDbContext context) : Hub<INotificationClient>
 {
     public override async Task OnConnectedAsync()
     {
-        var userId = currentUser.GetCurrentUserId();
+        var auth0Id = currentUser.GetAuth0Id();
+        var userId = await context.Users
+            .Where(user => user.Auth0Id == auth0Id)
+            .Select(user => user.Id)
+            .SingleAsync(Context.ConnectionAborted);
+
         await Groups.AddToGroupAsync(Context.ConnectionId, HubGroup.User(userId));
 
         await base.OnConnectedAsync();

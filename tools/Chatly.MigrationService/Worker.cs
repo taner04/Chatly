@@ -29,7 +29,7 @@ public class Worker(
 
             if (hostEnvironment.IsDevelopment())
             {
-                await RunSeedAsync(dbContext, stoppingToken);
+                //await RunSeedAsync(dbContext, stoppingToken);
             }
         }
         catch (Exception e)

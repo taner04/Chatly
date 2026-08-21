@@ -6,9 +6,6 @@ namespace Chatly.Desktop.Services.Api.SignalR;
 public interface INotificationStrategy
 {
     NotificationType Type { get; }
-}
-
-public interface INotificationStrategy<T> where T : NotificationMessage
-{
-    Task HandleNotification(T message);
+    
+    Task HandleNotificationAsync(NotificationMessage message);
 }
