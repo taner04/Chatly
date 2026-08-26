@@ -4,7 +4,7 @@ using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Mediator;
 using Microsoft.EntityFrameworkCore;
 
-namespace Chatly.WebApi.Features.Users.Endpoints.GetProfilePicture;
+namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
 public class GetCurrentUserProfilePictureQueryHandler(
     ChatlyDbContext context,

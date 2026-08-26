@@ -1,9 +1,7 @@
-﻿using Chatly.Contracts.SignalR;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
+using Chatly.Contracts.SignalR;
 using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Api.SignalR;
@@ -21,7 +19,7 @@ public sealed class NotificationHubDispatcher(
             logger.LogWarning("No strategy found for notification type: {NotificationType}", message.Type);
             return;
         }
-        
+
         await strategy.HandleNotificationAsync(message);
     }
 }

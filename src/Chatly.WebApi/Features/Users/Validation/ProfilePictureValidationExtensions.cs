@@ -1,7 +1,7 @@
 using System.Linq.Expressions;
 using FluentValidation;
 
-namespace Chatly.WebApi.Features.Users.Common;
+namespace Chatly.WebApi.Features.Users.Validation;
 
 internal static class ProfilePictureValidationExtensions
 {

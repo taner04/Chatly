@@ -1,7 +1,6 @@
 using Chatly.WebApi.Common.Helper;
 using Chatly.WebApi.Common.Shared.Guards;
 using Chatly.WebApi.Common.Shared.Models;
-using System.ComponentModel.DataAnnotations.Schema;
 using Vogen;
 
 namespace Chatly.WebApi.Features.Users.Models;
@@ -9,7 +8,10 @@ namespace Chatly.WebApi.Features.Users.Models;
 [ValueObject<Guid>]
 public readonly partial struct UserId
 {
-    private static Validation Validate(Guid value) => value.Validate<UserId>();
+    private static Vogen.Validation Validate(Guid value)
+    {
+        return value.Validate<UserId>();
+    }
 }
 
 public sealed class User : Entity<UserId>
@@ -37,5 +39,4 @@ public sealed class User : Entity<UserId>
     public string? Username { get; set; }
     public string? ProfilePictureKey { get; set; }
     public bool OnboardingCompleted { get; set; }
-
 }

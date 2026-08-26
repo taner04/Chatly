@@ -1,0 +1,86 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs"
+              x:Class="Chatly.Desktop.Views.Pages.ChatPage.Tabs.FriendsTabView"
+              x:DataType="vm:FriendsTabViewModel">
+    <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
+        <Grid ColumnDefinitions="*,Auto">
+            <TextBlock Text="{Binding Title}"
+                       FontSize="24"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource ChatlyTextBrush}" />
+            <Button Grid.Column="1" Classes="add-friend" Content="Add Friend" Command="{Binding AddFriendCommand}" />
+        </Grid>
+        <TextBox Grid.Row="1"
+                 Classes="friend-search"
+                 IsVisible="{Binding ShowSearch}"
+                 PlaceholderText="Search friend..." />
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding Friends}">
+            <ItemsControl.ItemTemplate>
+                <DataTemplate>
+                    <Border Classes="list-row"
+                             Margin="0,0,0,8"
+                             >
+                        <Grid ColumnDefinitions="44,*,Auto,Auto" ColumnSpacing="8">
+                            <Border Width="40"
+                                    Height="40"
+                                    Background="{DynamicResource ChatlyAccentBrush}"
+                                    CornerRadius="20">
+                                <ic:SymbolIcon Symbol="Person"
+                                               HorizontalAlignment="Center"
+                                               VerticalAlignment="Center"
+                                               FontSize="20" />
+                            </Border>
+                            <TextBlock Grid.Column="1"
+                                       Text="{Binding}"
+                                       VerticalAlignment="Center"
+                                       FontSize="15"
+                                       FontWeight="SemiBold"
+                                       Foreground="{DynamicResource ChatlyTextBrush}" />
+                            <Button Grid.Column="2" Classes="friend-action" ToolTip.Tip="Message">
+                                <ic:SymbolIcon Symbol="Chat" FontSize="18" />
+                            </Button>
+                            <Button Grid.Column="3" Classes="friend-action" ToolTip.Tip="More options">
+                                <Button.Flyout>
+                                    <MenuFlyout>
+                                        <MenuFlyout.FlyoutPresenterTheme>
+                                            <ControlTheme TargetType="MenuFlyoutPresenter"
+                                                          BasedOn="{StaticResource {x:Type MenuFlyoutPresenter}}">
+                                                <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+                                                <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+                                                <Setter Property="BorderThickness" Value="1" />
+                                                <Setter Property="CornerRadius" Value="8" />
+                                                <Setter Property="Padding" Value="4" />
+                                            </ControlTheme>
+                                        </MenuFlyout.FlyoutPresenterTheme>
+                                        <MenuItem Header="Remove Friend">
+                                            <MenuItem.Theme>
+                                                <ControlTheme TargetType="MenuItem"
+                                                              BasedOn="{StaticResource {x:Type MenuItem}}">
+                                                    <Setter Property="MinWidth" Value="188" />
+                                                    <Setter Property="Margin" Value="4,3" />
+                                                    <Setter Property="Padding" Value="12,8" />
+                                                    <Setter Property="Background" Value="Transparent" />
+                                                    <Setter Property="Foreground" Value="#FF7B72" />
+                                                    <Setter Property="FontSize" Value="13" />
+                                                    <Setter Property="CornerRadius" Value="4" />
+                                                    <Setter Property="Focusable" Value="False" />
+                                                    <Style Selector="^:pointerover">
+                                                        <Setter Property="Background" Value="#493739" />
+                                                        <Setter Property="Foreground" Value="#FFAAA4" />
+                                                    </Style>
+                                                </ControlTheme>
+                                            </MenuItem.Theme>
+                                        </MenuItem>
+                                    </MenuFlyout>
+                                </Button.Flyout>
+                                <ic:SymbolIcon Symbol="MoreHorizontal" FontSize="18" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                </DataTemplate>
+            </ItemsControl.ItemTemplate>
+        </ItemsControl>
+    </Grid>
+</UserControl>

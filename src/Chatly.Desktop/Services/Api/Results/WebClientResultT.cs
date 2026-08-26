@@ -17,9 +17,18 @@ public sealed class WebClientResult<T> : WebClientResult
     public T Value => field ??
                       throw new InvalidOperationException("Cannot access Value when the response is not successful.");
 
-    public static implicit operator WebClientResult<T>(T value) => new(value);
+    public static implicit operator WebClientResult<T>(T value)
+    {
+        return new WebClientResult<T>(value);
+    }
 
-    public static implicit operator WebClientResult<T>(WebClientError error) => new(error);
+    public static implicit operator WebClientResult<T>(WebClientError error)
+    {
+        return new WebClientResult<T>(error);
+    }
 
-    public static WebClientResult<T> Success(T value) => new(value);
+    public static WebClientResult<T> Success(T value)
+    {
+        return new WebClientResult<T>(value);
+    }
 }

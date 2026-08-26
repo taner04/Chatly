@@ -1,5 +1,5 @@
-using Chatly.Contracts.FriendRequests.Results;
 using System.Text.Json.Serialization;
+using Chatly.Contracts.FriendRequests.Results;
 
 namespace Chatly.Contracts.SignalR;
 

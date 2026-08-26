@@ -6,6 +6,8 @@
 
     <Application.Styles>
         <FluentTheme />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/ListItemStyles.axaml" />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/FriendsTabStyles.axaml" />
     </Application.Styles>
 
     <Application.Resources>

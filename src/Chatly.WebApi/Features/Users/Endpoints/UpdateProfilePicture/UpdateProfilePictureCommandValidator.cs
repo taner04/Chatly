@@ -1,4 +1,4 @@
-using Chatly.WebApi.Features.Users.Common;
+using Chatly.WebApi.Features.Users.Validation;
 using FluentValidation;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateProfilePicture;

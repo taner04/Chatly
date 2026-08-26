@@ -11,7 +11,10 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
     private HttpContext HttpContext => httpContextAccessor.HttpContext ??
                                        throw new InvalidOperationException("HTTP context is not available.");
 
-    public string GetAuth0Id() => GetClaimValue<string>(SubClaim);
+    public string GetAuth0Id()
+    {
+        return GetClaimValue<string>(SubClaim);
+    }
 
     public UserId GetCurrentUserId()
     {

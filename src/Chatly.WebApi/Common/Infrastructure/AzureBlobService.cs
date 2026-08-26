@@ -153,10 +153,14 @@ public sealed partial class AzureBlobService(
         bool Success,
         string? Error)
     {
-        internal static BlobUploadResult Succeeded(string blobName) =>
-            new(blobName, true, null);
+        internal static BlobUploadResult Succeeded(string blobName)
+        {
+            return new BlobUploadResult(blobName, true, null);
+        }
 
-        internal static BlobUploadResult Failed(string blobName, string error) =>
-            new(blobName, false, error);
+        internal static BlobUploadResult Failed(string blobName, string error)
+        {
+            return new BlobUploadResult(blobName, false, error);
+        }
     }
 }

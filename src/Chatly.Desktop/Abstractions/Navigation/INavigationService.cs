@@ -5,19 +5,16 @@ namespace Chatly.Desktop.Abstractions.Navigation;
 
 public interface INavigationService
 {
-    event EventHandler<NavigatedEventArgs>? Navigated;
-
-    Type? CurrentPage { get; }
+    Type? CurrentViewModelType { get; }
 
     bool CanGoBack { get; }
 
     bool CanGoForward { get; }
+    event EventHandler<NavigatedEventArgs>? Navigated;
 
     void SetNavigationView(INavigationView navigationView);
 
-    bool NavigateTo(Type pageType);
-
-    bool NavigateTo(Type pageType, object? parameter);
+    bool NavigateTo<T>() where T : INavigableViewModel;
 
     bool GoBack();
 

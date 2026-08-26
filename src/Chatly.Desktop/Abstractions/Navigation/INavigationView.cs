@@ -1,8 +1,6 @@
-using Avalonia.Controls;
-
 namespace Chatly.Desktop.Abstractions.Navigation;
 
 public interface INavigationView
 {
-    ContentControl GetPageHost();
+    void SetPage<T>(INavigableView<T> view) where T : INavigableViewModel;
 }

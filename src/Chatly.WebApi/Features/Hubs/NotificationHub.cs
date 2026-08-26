@@ -3,15 +3,17 @@ using Chatly.WebApi.Common.Infrastructure;
 using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Chatly.WebApi.Features.Users.Models;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.SignalR;
+using Microsoft.EntityFrameworkCore;
 
 namespace Chatly.WebApi.Features.Hubs;
 
-
 public static class HubGroup
 {
-    public static string User(UserId userId) => $"user:{userId.Value}";
+    public static string User(UserId userId)
+    {
+        return $"user:{userId.Value}";
+    }
 }
 
 [Authorize]

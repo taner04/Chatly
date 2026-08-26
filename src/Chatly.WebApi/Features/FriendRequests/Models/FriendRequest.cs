@@ -6,11 +6,13 @@ using Vogen;
 
 namespace Chatly.WebApi.Features.FriendRequests.Models;
 
-
 [ValueObject<Guid>]
 public readonly partial struct FriendRequestId
 {
-    private static Validation Validate(Guid value) => value.Validate<FriendRequestId>();
+    private static Validation Validate(Guid value)
+    {
+        return value.Validate<FriendRequestId>();
+    }
 }
 
 public sealed class FriendRequest : UserPairEntity<FriendRequestId>

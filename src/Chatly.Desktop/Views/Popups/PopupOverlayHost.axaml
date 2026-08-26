@@ -1,0 +1,33 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:popups="clr-namespace:Chatly.Desktop.ViewModels.Popups"
+             x:Class="Chatly.Desktop.Views.Popups.PopupOverlayHost"
+             x:DataType="popups:PopupOverlayHostViewModel"
+             IsVisible="{Binding IsOpen}">
+    <Grid Background="#99000000" PointerPressed="OnBackdropPointerPressed">
+        <Border Width="560"
+                MaxWidth="760"
+                MaxHeight="620"
+                Padding="24"
+                HorizontalAlignment="Center"
+                VerticalAlignment="Center"
+                Background="{DynamicResource ChatlyElevatedBrush}"
+                BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="12"
+                BoxShadow="0 12 32 0 #66000000">
+            <Grid RowDefinitions="Auto,*">
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
+                    <TextBlock Text="{Binding Title}"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ChatlyTextBrush}"
+                               VerticalAlignment="Center" />
+                </Grid>
+
+                <ContentControl Grid.Row="1"
+                                Content="{Binding Content}" />
+            </Grid>
+        </Border>
+    </Grid>
+</UserControl>

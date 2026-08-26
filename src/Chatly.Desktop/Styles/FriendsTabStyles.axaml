@@ -1,0 +1,40 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="Button.friend-action">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+    </Style>
+    <Style Selector="Button.friend-action:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+    </Style>
+    <Style Selector="Button.add-friend">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="6" />
+        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.add-friend:pointerover">
+        <Setter Property="Opacity" Value="0.88" />
+    </Style>
+    <Style Selector="TextBox.friend-search">
+        <Setter Property="Height" Value="42" />
+        <Setter Property="Padding" Value="12,0" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="6" />
+    </Style>
+    <Style Selector="TextBox.friend-search:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+</Styles>

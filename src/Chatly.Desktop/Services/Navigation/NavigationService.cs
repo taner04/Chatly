@@ -1,21 +1,21 @@
 using System;
 using System.Collections.Generic;
-using Avalonia.Controls;
 using Chatly.Desktop.Abstractions.Navigation;
 using Chatly.Desktop.Models;
+using Microsoft.Extensions.DependencyInjection;
+
 namespace Chatly.Desktop.Services.Navigation;
 
-public sealed class NavigationService(PageService pageService) : INavigationService
+public sealed class NavigationService(IServiceProvider serviceProvider) : INavigationService
 {
     private readonly Stack<NavigationEntry> _backStack = new();
     private readonly Stack<NavigationEntry> _forwardStack = new();
-    private ContentControl? _pageHost;
-    private INavigablePage? _currentPageInstance;
     private NavigationEntry? _currentEntry;
+    private INavigationView? _navigationView;
 
     public event EventHandler<NavigatedEventArgs>? Navigated;
 
-    public Type? CurrentPage => _currentEntry?.PageType;
+    public Type? CurrentViewModelType => _currentEntry?.ViewModelType;
 
     public bool CanGoBack => _backStack.Count > 0;
 
@@ -23,117 +23,65 @@ public sealed class NavigationService(PageService pageService) : INavigationServ
 
     public void SetNavigationView(INavigationView navigationView)
     {
-        ArgumentNullException.ThrowIfNull(navigationView);
-        _pageHost = navigationView.GetPageHost();
+        _navigationView = navigationView ?? throw new ArgumentNullException(nameof(navigationView));
     }
 
-    public bool NavigateTo(Type pageType) => NavigateTo(pageType, null);
-
-    public bool NavigateTo(Type pageType, object? parameter)
+    public bool NavigateTo<T>() where T : INavigableViewModel
     {
-        EnsureNavigationViewIsSet();
-        ArgumentNullException.ThrowIfNull(pageType);
-
-        var entry = new NavigationEntry(pageType, parameter);
-        if (_currentEntry == entry)
+        if (_currentEntry?.ViewModelType == typeof(T))
         {
             return false;
         }
 
-        var page = ResolvePage(entry);
+        var view = serviceProvider.GetRequiredService<INavigableView<T>>();
+        Navigate(new NavigationEntry<T>(view));
+        return true;
+    }
 
+    public bool GoBack() => NavigateHistory(_backStack, _forwardStack);
+
+    public bool GoForward() => NavigateHistory(_forwardStack, _backStack);
+
+    private bool NavigateHistory(
+        Stack<NavigationEntry> source,
+        Stack<NavigationEntry> destination)
+    {
+        if (source.Count == 0)
+        {
+            return false;
+        }
+
+        var target = source.Pop();
+
+        if (_currentEntry is not null)
+        {
+            destination.Push(_currentEntry);
+        }
+
+        Show(target);
+        return true;
+    }
+
+    private void Navigate(NavigationEntry target)
+    {
         if (_currentEntry is not null)
         {
             _backStack.Push(_currentEntry);
         }
 
         _forwardStack.Clear();
-        ShowPage(entry, page);
-        return true;
+        Show(target);
     }
 
-    public bool GoBack()
+    private void Show(NavigationEntry entry)
     {
-        EnsureNavigationViewIsSet();
-        if (_backStack.Count == 0)
-        {
-            return false;
-        }
-
-        var target = _backStack.Pop();
-        var page = ResolvePage(target);
-
-        if (_currentEntry is not null)
-        {
-            _forwardStack.Push(_currentEntry);
-        }
-
-        ShowPage(target, page);
-        return true;
-    }
-
-    public bool GoForward()
-    {
-        EnsureNavigationViewIsSet();
-        if (_forwardStack.Count == 0)
-        {
-            return false;
-        }
-
-        var target = _forwardStack.Pop();
-        var page = ResolvePage(target);
-
-        if (_currentEntry is not null)
-        {
-            _backStack.Push(_currentEntry);
-        }
-
-        ShowPage(target, page);
-        return true;
-    }
-
-    private INavigablePage ResolvePage(NavigationEntry entry)
-    {
-        var page = pageService.GetPage(entry.PageType);
-        if (entry.Parameter is not null && page is not INavigationParameterAware)
-        {
-            throw new InvalidOperationException($"{entry.PageType.FullName} must implement {nameof(INavigationParameterAware)} to receive a navigation parameter.");
-        }
-
-        return page;
-    }
-
-    private void ShowPage(NavigationEntry entry, INavigablePage page)
-    {
-        if (_currentPageInstance is INavigationAware currentAware)
-        {
-            currentAware.OnNavigatedFrom();
-        }
-
-        if (entry.Parameter is not null)
-        {
-            ((INavigationParameterAware)page).SetNavigationParameter(entry.Parameter);
-        }
-
-        _pageHost!.Content = page;
-        _currentPageInstance = page;
+        entry.ShowPage(GetNavigationView());
         _currentEntry = entry;
-
-        if (page is INavigationAware targetAware)
-        {
-            targetAware.OnNavigatedTo();
-        }
-
-        Navigated?.Invoke(this, new NavigatedEventArgs(entry.PageType, entry.Parameter));
+        Navigated?.Invoke(this, new NavigatedEventArgs(entry.ViewModelType));
     }
 
-    private void EnsureNavigationViewIsSet()
+    private INavigationView GetNavigationView()
     {
-        if (_pageHost is null)
-        {
-            throw new InvalidOperationException("A navigation view must be set before navigating.");
-        }
+        return _navigationView ?? throw new InvalidOperationException("A navigation view must be set before navigating.");
     }
-
-    private sealed record NavigationEntry(Type PageType, object? Parameter);
 }

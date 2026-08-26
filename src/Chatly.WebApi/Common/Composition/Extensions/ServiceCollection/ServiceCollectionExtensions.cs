@@ -14,9 +14,9 @@ public static class ServiceCollectionExtensions
             services.AddSingleton(provider =>
             {
                 var connectionString = builder.Configuration.GetConnectionString(
-                    AppHostConstants.BlobServiceConnectionName)
-                    ?? throw new InvalidOperationException(
-                        $"Connection string '{AppHostConstants.BlobServiceConnectionName}' is missing.");
+                                           AppHostConstants.BlobServiceConnectionName)
+                                       ?? throw new InvalidOperationException(
+                                           $"Connection string '{AppHostConstants.BlobServiceConnectionName}' is missing.");
 
                 return new BlobServiceClient(connectionString);
             });

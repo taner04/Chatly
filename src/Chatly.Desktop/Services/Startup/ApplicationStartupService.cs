@@ -1,13 +1,15 @@
+using System;
+using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
 using Chatly.Desktop.Abstractions.Navigation;
+using Chatly.Desktop.Abstractions.Popups;
 using Chatly.Desktop.Models;
 using Chatly.Desktop.Services.Api.SignalR;
 using Chatly.Desktop.Services.Authentication;
-using Chatly.Desktop.ViewModels.Overlays;
-using Chatly.Desktop.Views.Pages;
+using Chatly.Desktop.ViewModels.Pages;
+using Chatly.Desktop.ViewModels.Pages.ChatPage;
+using Chatly.Desktop.ViewModels.Popups;
 using Chatly.Desktop.Views.Windows;
-using System;
-using System.Threading.Tasks;
 
 namespace Chatly.Desktop.Services.Startup;
 
@@ -17,7 +19,7 @@ public sealed class ApplicationStartupService(
     SessionService sessionService,
     UserSessionContext sessionContext,
     INavigationService navigationService,
-    PopupOverlayHostViewModel popup,
+    IPopupService popupService,
     NotificationHubHost notificationHubHost)
 {
     public async Task RunAsync(IClassicDesktopStyleApplicationLifetime desktop)
@@ -40,12 +42,13 @@ public sealed class ApplicationStartupService(
         mainWindow.Show();
         splashScreen.Close();
 
-        navigationService.NavigateTo(typeof(HomePage));
         await notificationHubHost.StartHubAsync();
 
         if (sessionContext.CurrentUser?.OnboardingCompleted == false)
         {
-            await popup.ShowAsync<OnboardingOverlayViewModel>("Complete your profile");
+            await popupService.ShowAsync<OnboardingPopupViewModel>();
         }
+
+        navigationService.NavigateTo<ChatPageViewModel>();
     }
 }

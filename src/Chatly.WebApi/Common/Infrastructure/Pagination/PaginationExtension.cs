@@ -26,14 +26,14 @@ public static class PaginationExtensions
             totalCount / (double)paginationQuery.PageSize);
 
         var metadata = new PaginationMetadata(
-            PageIndex: paginationQuery.PageIndex,
-            PageSize: paginationQuery.PageSize,
-            TotalPages: totalPages,
-            TotalCount: totalCount,
-            PreviousPageIndex: paginationQuery.PageIndex > 1
+            paginationQuery.PageIndex,
+            paginationQuery.PageSize,
+            totalPages,
+            totalCount,
+            paginationQuery.PageIndex > 1
                 ? paginationQuery.PageIndex - 1
                 : null,
-            NextPageIndex: paginationQuery.PageIndex < totalPages
+            paginationQuery.PageIndex < totalPages
                 ? paginationQuery.PageIndex + 1
                 : null);
 

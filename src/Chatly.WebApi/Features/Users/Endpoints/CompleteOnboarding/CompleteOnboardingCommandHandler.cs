@@ -51,6 +51,7 @@ public sealed class CompleteOnboardingCommandHandler(
         {
             await profilePictureService.CompleteAsync(completedChange, cancellationToken);
         }
+
         return userService.CreateResponse(user);
     }
 }

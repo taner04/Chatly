@@ -49,7 +49,7 @@ internal static class HttpOrchestrator
         {
             using var response = await apiCall();
 
-            if (response.IsSuccessful && response.Content is not null)
+            if (response is { IsSuccessful: true, Content: not null })
             {
                 return response.Content;
             }

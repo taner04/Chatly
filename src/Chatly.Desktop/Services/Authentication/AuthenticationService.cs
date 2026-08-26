@@ -118,13 +118,17 @@ public sealed class AuthenticationService
             return;
         }
 
-        var message = string.IsNullOrWhiteSpace(result.ErrorDescription) ? result.Error : $"{result.Error}: {result.ErrorDescription}";
+        var message = string.IsNullOrWhiteSpace(result.ErrorDescription)
+            ? result.Error
+            : $"{result.Error}: {result.ErrorDescription}";
         throw new InvalidOperationException(
             $"Authentication failed: {message ?? "Unknown error"}");
     }
 
-    private static string RequireToken(string? token, string tokenType) =>
-        !string.IsNullOrWhiteSpace(token)
+    private static string RequireToken(string? token, string tokenType)
+    {
+        return !string.IsNullOrWhiteSpace(token)
             ? token
             : throw new InvalidOperationException($"Auth0 did not return a {tokenType} token.");
+    }
 }

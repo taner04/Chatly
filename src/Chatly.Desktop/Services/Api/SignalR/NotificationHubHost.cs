@@ -1,12 +1,11 @@
-﻿using Chatly.Contracts.SignalR;
+﻿using System;
+using System.Threading.Tasks;
+using Chatly.Contracts.SignalR;
 using Chatly.Desktop.Models;
 using Chatly.Desktop.Options;
-using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 
 namespace Chatly.Desktop.Services.Api.SignalR;
 
@@ -19,13 +18,16 @@ public sealed class NotificationHubHost(
     private readonly WebApiClientOption _webApiClientOption = options.Value;
     private HubConnection _hubConnection = null!;
 
+    public ValueTask DisposeAsync()
+    {
+        return ((IAsyncDisposable)_hubConnection).DisposeAsync();
+    }
+
     public async Task StartHubAsync()
     {
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(_webApiClientOption.HubAddress, options =>
-            {
-                options.AccessTokenProvider = () => Task.FromResult(sessionContext.AccessToken);
-            })
+            .WithUrl(_webApiClientOption.HubAddress,
+                options => { options.AccessTokenProvider = () => Task.FromResult(sessionContext.AccessToken); })
             .WithAutomaticReconnect()
             .Build();
         _hubConnection.On<NotificationMessage>("Receive", notificationHubDispatcher.DispatchAsync);
@@ -38,10 +40,5 @@ public sealed class NotificationHubHost(
         {
             logger.LogError(exception, "Failed to connect to the notification hub.");
         }
-    }
-
-    public ValueTask DisposeAsync()
-    {
-        return ((IAsyncDisposable)_hubConnection).DisposeAsync();
     }
 }

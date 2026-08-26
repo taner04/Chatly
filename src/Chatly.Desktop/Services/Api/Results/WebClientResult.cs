@@ -18,9 +18,18 @@ public class WebClientResult
                                    throw new InvalidOperationException(
                                        "Cannot access ProblemDetails when the response is successful.");
 
-    public static implicit operator WebClientResult(WebClientError error) => new(error);
+    public static implicit operator WebClientResult(WebClientError error)
+    {
+        return new WebClientResult(error);
+    }
 
-    public static WebClientResult Success() => new(null);
+    public static WebClientResult Success()
+    {
+        return new WebClientResult(null);
+    }
 
-    public static WebClientResult Failure(WebClientError error) => new(error);
+    public static WebClientResult Failure(WebClientError error)
+    {
+        return new WebClientResult(error);
+    }
 }

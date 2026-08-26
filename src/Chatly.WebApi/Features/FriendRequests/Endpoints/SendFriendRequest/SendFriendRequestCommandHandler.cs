@@ -14,7 +14,7 @@ namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 public sealed class SendFriendRequestCommandHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
-    AzureBlobService blobService, 
+    AzureBlobService blobService,
     NotificationPublisher notificationPublisher)
     : ICommandHandler<SendFriendRequestCommand>
 {
@@ -70,7 +70,8 @@ public sealed class SendFriendRequestCommandHandler(
                     break;
 
                 default:
-                    throw new NotImplementedException($"Friend request status '{existingRequest.Status}' is not handled.");
+                    throw new NotImplementedException(
+                        $"Friend request status '{existingRequest.Status}' is not handled.");
             }
         }
 
@@ -87,9 +88,9 @@ public sealed class SendFriendRequestCommandHandler(
         await context.SaveChangesAsync(cancellationToken);
 
         await notificationPublisher.PublishAsync(command.ReceiverId, new FriendRequestResponse(friendRequest.Id.Value,
-                                                                                               userId.Value,
-                                                                                               sender.Username!,
-                                                                                               blobService.CreateReadUrl(sender.ProfilePictureKey)));
+            userId.Value,
+            sender.Username!,
+            blobService.CreateReadUrl(sender.ProfilePictureKey)));
 
         return Unit.Value;
     }

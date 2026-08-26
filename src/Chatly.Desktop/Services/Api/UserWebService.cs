@@ -24,10 +24,12 @@ public sealed class UserWebService(IUserEndpoint userEndpoint)
     }
 
     public Task<WebClientResult<CurrentUserResponse>> GetCurrentUserAsync(
-        CancellationToken cancellationToken = default) =>
-        HttpOrchestrator.ExecuteAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return HttpOrchestrator.ExecuteAsync(
             () => userEndpoint.GetCurrentUserAsync(cancellationToken),
             cancellationToken);
+    }
 
     public Task<WebClientResult<CurrentUserResponse>> UpdateUsernameAsync(
         UpdateUsernameRequest request,
@@ -58,24 +60,26 @@ public sealed class UserWebService(IUserEndpoint userEndpoint)
     }
 
     public Task<WebClientResult<GetPictureResponse>> GetCurrentUserProfilePictureAsync(
-        CancellationToken cancellationToken = default) =>
-        HttpOrchestrator.ExecuteAsync(
+        CancellationToken cancellationToken = default)
+    {
+        return HttpOrchestrator.ExecuteAsync(
             () => userEndpoint.GetCurrentUserProfilePictureAsync(cancellationToken),
             cancellationToken);
+    }
 
     public async Task<WebClientResult<CurrentUserResponse>> CompleteOnboardingAsync(
         CompleteOnboardingRequest request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
-        StreamPart? file = request.Content is null
+        var file = request.Content is null
             ? null
             : new StreamPart(
                 request.Content,
                 request.FileName
-                    ?? throw new ArgumentException(
-                        "A file name is required when profile-picture content is provided.",
-                        nameof(request)),
+                ?? throw new ArgumentException(
+                    "A file name is required when profile-picture content is provided.",
+                    nameof(request)),
                 request.ContentType);
 
         return await HttpOrchestrator.ExecuteAsync(

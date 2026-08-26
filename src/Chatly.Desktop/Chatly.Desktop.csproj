@@ -5,35 +5,36 @@
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**" />
+        <AvaloniaResource Include="Assets\**"/>
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncImageLoader.Avalonia" />
-        <PackageReference Include="Avalonia" />
-        <PackageReference Include="Avalonia.Desktop" />
-        <PackageReference Include="Avalonia.Themes.Fluent" />
-        <PackageReference Include="Avalonia.Fonts.Inter" />
+        <PackageReference Include="AsyncImageLoader.Avalonia"/>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Fonts.Inter"/>
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="CommunityToolkit.Mvvm" />
-        <PackageReference Include="Duende.IdentityModel.OidcClient" />
-        <PackageReference Include="FluentIcons.Avalonia" />
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
-        <PackageReference Include="System.Security.Cryptography.ProtectedData" />
-        <PackageReference Include="Refit" />
-        <PackageReference Include="Refit.HttpClientFactory" />
+        <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="Duende.IdentityModel.OidcClient"/>
+        <PackageReference Include="FluentIcons.Avalonia"/>
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client"/>
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="System.Security.Cryptography.ProtectedData"/>
+        <PackageReference Include="Refit"/>
+        <PackageReference Include="Refit.HttpClientFactory"/>
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj" />
+        <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -44,15 +45,36 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Styles\ChatlyTheme.axaml" />
+        <AdditionalFiles Include="Styles\ChatlyTheme.axaml"/>
     </ItemGroup>
 
     <ItemGroup>
-      <Compile Update="Views\Overlays\OnboardingOverlay.axaml.cs">
-        <DependentUpon>OnboardingOverlay.axaml</DependentUpon>
-      </Compile>
-      <Compile Update="Views\Overlays\PopupOverlayHost.axaml.cs">
-        <DependentUpon>PopupOverlayHost.axaml</DependentUpon>
-      </Compile>
+        <Compile Update="App.axaml.cs">
+            <DependentUpon>App.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Popups\PopupOverlayHost.axaml.cs">
+            <DependentUpon>PopupOverlayHost.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Popups\OnboardingPopup.axaml.cs">
+            <DependentUpon>OnboardingPopup.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Windows\MainWindow.axaml.cs">
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Windows\SplashScreenWindow.axaml.cs">
+            <DependentUpon>SplashScreenWindow.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Pages\UserInfoView.axaml.cs">
+            <DependentUpon>UserInfoView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Pages\ChatPage\ChatPage.axaml.cs">
+            <DependentUpon>ChatPage.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Pages\ChatPage\Tabs\FriendsTabView.axaml.cs">
+            <DependentUpon>FriendsTabView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Pages\ChatPage\Tabs\AllFriendTabPage.axaml.cs">
+            <DependentUpon>AllFriendTabPage.axaml</DependentUpon>
+        </Compile>
     </ItemGroup>
 </Project>

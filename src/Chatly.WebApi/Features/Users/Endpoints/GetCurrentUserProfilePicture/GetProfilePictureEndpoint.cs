@@ -4,7 +4,7 @@ using Chatly.WebApi.Common.Extensions;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 
-namespace Chatly.WebApi.Features.Users.Endpoints.GetProfilePicture;
+namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
 public sealed class GetProfilePictureEndpoint : IEndpoint
 {
