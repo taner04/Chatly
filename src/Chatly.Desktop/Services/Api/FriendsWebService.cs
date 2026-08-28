@@ -7,7 +7,7 @@ using Chatly.Desktop.Services.Api.Results;
 
 namespace Chatly.Desktop.Services.Api;
 
-public sealed class FriendRequestWebService(IFriendRequestEndpoint friendRequestEndpoint)
+public sealed class FriendsWebService(IFriendRequestEndpoint friendRequestEndpoint)
 {
     public Task<WebClientResult> SendFriendRequestAsync(
         SendFriendRequestRequest request,

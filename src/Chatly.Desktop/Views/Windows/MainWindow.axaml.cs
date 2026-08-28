@@ -4,8 +4,10 @@ using Avalonia.Input;
 using Avalonia.Interactivity;
 using Chatly.Desktop.Abstractions.Navigation;
 using Chatly.Desktop.Abstractions.Popups;
+using Chatly.Desktop.Abstractions.Toasts;
 using Chatly.Desktop.ViewModels.Windows;
 using PopupOverlayHost = Chatly.Desktop.Views.Popups.PopupOverlayHost;
+using ToastHostOverlay = Chatly.Desktop.Views.Toasts.ToastHostOverlay;
 
 namespace Chatly.Desktop.Views.Windows;
 
@@ -22,15 +24,21 @@ public partial class MainWindow : Window, INavigationView
     public MainWindow(
         INavigationService navigationService,
         IPopupService popupService,
+        IToastService toastService,
+        PopupOverlayHost popupHost,
+        ToastHostOverlay toastHost,
         MainWindowViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = ViewModel;
+        DataContext = this;
         _navigationService = navigationService;
         InitializeComponent();
-        
+         
         _navigationService.SetNavigationView(this);
-        popupService.SetPopupHost(this.FindControl<PopupOverlayHost>("PopupHost") ?? throw new InvalidOperationException("Popup host not found."));
+        PopupHostContainer.Content = popupHost;
+        ToastHostContainer.Content = toastHost;
+        popupService.SetPopupHost(popupHost);
+        toastService.SetToastHost(toastHost);
 
         _sidebar = this.FindControl<Border>("Sidebar") ?? throw new InvalidOperationException("Sidebar not found.");
         _sidebarToggleIcon = this.FindControl<TextBlock>("SidebarToggleIcon") ?? throw new InvalidOperationException("SidebarToggleIcon not found.");

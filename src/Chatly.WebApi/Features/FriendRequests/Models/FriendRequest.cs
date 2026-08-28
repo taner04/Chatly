@@ -32,6 +32,7 @@ public sealed class FriendRequest : UserPairEntity<FriendRequestId>
     }
 
     public UserId RequestedByUserId { get; set; }
-
     public FriendRequestStatus Status { get; set; }
+
+    public User User { get; init; } = null!;
 }

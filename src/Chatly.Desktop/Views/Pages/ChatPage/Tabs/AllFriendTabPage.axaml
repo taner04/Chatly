@@ -1,8 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs"
-             x:Class="Chatly.Desktop.Views.Pages.ChatPage.Tabs.AllFriendTabPage"
-             x:DataType="vm:AllFriendTabPageViewModel">
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs"
+              xmlns:local="using:Chatly.Desktop.Views.Pages.ChatPage.Tabs"
+              x:Class="Chatly.Desktop.Views.Pages.ChatPage.Tabs.AllFriendTabPage"
+              x:DataType="local:AllFriendTabPage">
     <Border MaxWidth="480"
             Padding="20"
             HorizontalAlignment="Left"
@@ -15,7 +16,7 @@
                        FontSize="24"
                        FontWeight="SemiBold"
                        Foreground="{DynamicResource ChatlyTextBrush}" />
-            <TextBlock Text="{Binding HelperText}"
+            <TextBlock Text="{Binding ViewModel.HelperText}"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}" />
             <TextBox PlaceholderText="Username"
                      Background="{DynamicResource ChatlyContentBrush}"

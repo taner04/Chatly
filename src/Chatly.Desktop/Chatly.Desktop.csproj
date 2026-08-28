@@ -9,32 +9,32 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <AvaloniaResource Include="Assets\**"/>
+        <AvaloniaResource Include="Assets\**" />
     </ItemGroup>
 
     <ItemGroup>
-        <PackageReference Include="AsyncImageLoader.Avalonia"/>
-        <PackageReference Include="Avalonia"/>
-        <PackageReference Include="Avalonia.Desktop"/>
-        <PackageReference Include="Avalonia.Themes.Fluent"/>
-        <PackageReference Include="Avalonia.Fonts.Inter"/>
+        <PackageReference Include="AsyncImageLoader.Avalonia" />
+        <PackageReference Include="Avalonia" />
+        <PackageReference Include="Avalonia.Desktop" />
+        <PackageReference Include="Avalonia.Themes.Fluent" />
+        <PackageReference Include="Avalonia.Fonts.Inter" />
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
-        <PackageReference Include="CommunityToolkit.Mvvm"/>
-        <PackageReference Include="Duende.IdentityModel.OidcClient"/>
-        <PackageReference Include="FluentIcons.Avalonia"/>
-        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client"/>
-        <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
-        <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
-        <PackageReference Include="System.Security.Cryptography.ProtectedData"/>
-        <PackageReference Include="Refit"/>
-        <PackageReference Include="Refit.HttpClientFactory"/>
+        <PackageReference Include="CommunityToolkit.Mvvm" />
+        <PackageReference Include="Duende.IdentityModel.OidcClient" />
+        <PackageReference Include="FluentIcons.Avalonia" />
+        <PackageReference Include="Microsoft.AspNetCore.SignalR.Client" />
+        <PackageReference Include="Microsoft.Extensions.Configuration.Json" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" />
+        <PackageReference Include="System.Security.Cryptography.ProtectedData" />
+        <PackageReference Include="Refit" />
+        <PackageReference Include="Refit.HttpClientFactory" />
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj"/>
+        <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -45,7 +45,7 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Styles\ChatlyTheme.axaml"/>
+        <AdditionalFiles Include="Styles\ChatlyTheme.axaml" />
     </ItemGroup>
 
     <ItemGroup>
@@ -57,6 +57,9 @@
         </Compile>
         <Compile Update="Views\Popups\OnboardingPopup.axaml.cs">
             <DependentUpon>OnboardingPopup.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Toasts\ToastHostOverlay.axaml.cs">
+          <DependentUpon>ToastHostOverlay.axaml</DependentUpon>
         </Compile>
         <Compile Update="Views\Windows\MainWindow.axaml.cs">
             <DependentUpon>MainWindow.axaml</DependentUpon>

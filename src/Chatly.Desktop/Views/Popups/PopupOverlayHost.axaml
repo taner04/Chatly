@@ -1,12 +1,15 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:popups="clr-namespace:Chatly.Desktop.ViewModels.Popups"
-             x:Class="Chatly.Desktop.Views.Popups.PopupOverlayHost"
-             x:DataType="popups:PopupOverlayHostViewModel"
-             IsVisible="{Binding IsOpen}">
-    <Grid Background="#99000000" PointerPressed="OnBackdropPointerPressed">
-        <Border Width="560"
-                MaxWidth="760"
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:popups="clr-namespace:Chatly.Desktop.ViewModels.Popups"
+              xmlns:local="using:Chatly.Desktop.Views.Popups"
+              x:Class="Chatly.Desktop.Views.Popups.PopupOverlayHost"
+              x:DataType="local:PopupOverlayHost"
+              IsVisible="{Binding ViewModel.IsOpen}">
+    <Grid Background="{DynamicResource ChatlyOverlayBrush}" PointerPressed="OnBackdropPointerPressed">
+        <Border Width="540"
+                MinWidth="440"
+                MaxWidth="720"
+                MinHeight="300"
                 MaxHeight="620"
                 Padding="24"
                 HorizontalAlignment="Center"
@@ -14,19 +17,19 @@
                 Background="{DynamicResource ChatlyElevatedBrush}"
                 BorderBrush="{DynamicResource ChatlyBorderBrush}"
                 BorderThickness="1"
-                CornerRadius="12"
-                BoxShadow="0 12 32 0 #66000000">
+                CornerRadius="18"
+                BoxShadow="0 20 48 0 #99000000">
             <Grid RowDefinitions="Auto,*">
-                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,20">
-                    <TextBlock Text="{Binding Title}"
-                               FontSize="20"
+                <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,18">
+                    <TextBlock Text="{Binding ViewModel.Title}"
+                               FontSize="19"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource ChatlyTextBrush}"
                                VerticalAlignment="Center" />
                 </Grid>
 
                 <ContentControl Grid.Row="1"
-                                Content="{Binding Content}" />
+                                 Content="{Binding ViewModel.Content}" />
             </Grid>
         </Border>
     </Grid>

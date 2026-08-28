@@ -65,7 +65,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         column: x => x.RequestedByUserId,
                         principalTable: "Users",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_FriendRequests_Users_SecondUserId",
                         column: x => x.SecondUserId,

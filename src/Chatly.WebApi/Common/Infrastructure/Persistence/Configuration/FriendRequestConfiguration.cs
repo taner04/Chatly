@@ -74,5 +74,10 @@ internal sealed class FriendRequestConfiguration
                 "CK_FriendRequests_ValidStatus",
                 "\"Status\" IN ('Pending', 'Accepted', 'Rejected')");
         });
+
+        builder.HasOne(request => request.User)
+            .WithMany()
+            .HasForeignKey(request => request.RequestedByUserId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

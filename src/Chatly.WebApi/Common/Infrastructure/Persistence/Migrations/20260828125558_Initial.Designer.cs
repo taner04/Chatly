@@ -12,7 +12,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ChatlyDbContext))]
-    [Migration("20260814090849_Initial")]
+    [Migration("20260828125558_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -142,10 +142,10 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
-                        .WithMany()
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "User")
+                        .WithMany("FriendRequests")
                         .HasForeignKey("RequestedByUserId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
@@ -153,6 +153,13 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .HasForeignKey("SecondUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
+                {
+                    b.Navigation("FriendRequests");
                 });
 #pragma warning restore 612, 618
         }

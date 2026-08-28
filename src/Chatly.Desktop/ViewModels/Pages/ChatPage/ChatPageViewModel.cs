@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using Chatly.Desktop.Abstractions.Popups;
+using Chatly.Desktop.Abstractions.Toasts;
 using Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs;
+using Chatly.Desktop.ViewModels.Toasts;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 

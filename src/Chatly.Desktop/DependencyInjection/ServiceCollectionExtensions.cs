@@ -3,6 +3,7 @@ using Chatly.Contracts.Extensions;
 using Chatly.Desktop.Abstractions.Authentication;
 using Chatly.Desktop.Abstractions.Navigation;
 using Chatly.Desktop.Abstractions.Popups;
+using Chatly.Desktop.Abstractions.Toasts;
 using Chatly.Desktop.Models;
 using Chatly.Desktop.Options;
 using Chatly.Desktop.Services.Api;
@@ -16,8 +17,11 @@ using Chatly.Desktop.Services.Authentication.Storage.MacOs;
 using Chatly.Desktop.Services.Navigation;
 using Chatly.Desktop.Services.Popups;
 using Chatly.Desktop.Services.Startup;
+using Chatly.Desktop.Services.Toasts;
 using Chatly.Desktop.ViewModels.Pages;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
+using Chatly.Desktop.ViewModels.Popups;
+using Chatly.Desktop.ViewModels.Toasts;
 using Chatly.Desktop.ViewModels.Windows;
 using Chatly.Desktop.Views.Pages;
 using Chatly.Desktop.Views.Pages.ChatPage;
@@ -31,6 +35,8 @@ using AddFriendPopupOverlay = Chatly.Desktop.Views.Pages.ChatPage.Popups.AddFrie
 using AddFriendPopupOverlayViewModel = Chatly.Desktop.ViewModels.Pages.ChatPage.Popups.AddFriendPopupOverlayViewModel;
 using AllFriendTabPage = Chatly.Desktop.Views.Pages.ChatPage.Tabs.AllFriendTabPage;
 using AllFriendTabPageViewModel = Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs.AllFriendTabPageViewModel;
+using PopupOverlayHost = Chatly.Desktop.Views.Popups.PopupOverlayHost;
+using ToastHostOverlay = Chatly.Desktop.Views.Toasts.ToastHostOverlay;
 
 namespace Chatly.Desktop.DependencyInjection;
 
@@ -46,6 +52,10 @@ internal static class ServiceCollectionExtensions
 
             services.AddSingleton<MainWindow>();
             services.AddSingleton<MainWindowViewModel>();
+            services.AddSingleton<PopupOverlayHostViewModel>();
+            services.AddSingleton<PopupOverlayHost>();
+            services.AddSingleton<ToastHostOverlayViewModel>();
+            services.AddSingleton<ToastHostOverlay>();
 
             services.AddSingleton<SplashScreenWindow>();
             services.AddSingleton<SplashScreenViewModel>();
@@ -65,6 +75,7 @@ internal static class ServiceCollectionExtensions
 
             services.AddSingleton<INavigationService, NavigationService>();
             services.AddSingleton<IPopupService, PopupService>();
+            services.AddSingleton<IToastService, ToastService>();
             
             services.AddSingleton<AuthenticationService>();
             services.AddSingleton<SessionService>();
@@ -96,7 +107,7 @@ internal static class ServiceCollectionExtensions
                 .AddHttpMessageHandler<BearerDelegatingHandler>();
 
             services.AddTransient<UserWebService>();
-            services.AddTransient<FriendRequestWebService>();
+            services.AddTransient<FriendsWebService>();
             services.AddSecureTokenStore();
 
             return services;

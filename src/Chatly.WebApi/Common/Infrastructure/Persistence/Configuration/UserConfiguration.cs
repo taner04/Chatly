@@ -36,5 +36,10 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
         builder.HasIndex(user => user.Username)
             .IsUnique()
             .HasFilter("\"Username\" IS NOT NULL");
+
+        builder.HasMany(user => user.FriendRequests)
+            .WithOne(friendRequest => friendRequest.User)
+            .HasForeignKey(friendRequest => friendRequest.RequestedByUserId)
+            .OnDelete(DeleteBehavior.Cascade);
     }
 }

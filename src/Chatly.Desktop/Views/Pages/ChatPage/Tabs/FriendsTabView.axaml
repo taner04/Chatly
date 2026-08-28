@@ -1,37 +1,34 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:ic="using:FluentIcons.Avalonia"
-             xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs"
-              x:Class="Chatly.Desktop.Views.Pages.ChatPage.Tabs.FriendsTabView"
-              x:DataType="vm:FriendsTabViewModel">
+              xmlns:ic="using:FluentIcons.Avalonia"
+               xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs"
+               xmlns:local="using:Chatly.Desktop.Views.Pages.ChatPage.Tabs"
+               xmlns:controls="using:Chatly.Desktop.Views.Controls"
+               x:Class="Chatly.Desktop.Views.Pages.ChatPage.Tabs.FriendsTabView"
+               x:DataType="local:FriendsTabView">
     <Grid RowDefinitions="Auto,Auto,*" RowSpacing="16">
         <Grid ColumnDefinitions="*,Auto">
-            <TextBlock Text="{Binding Title}"
+            <TextBlock Text="{Binding ViewModel.Title}"
                        FontSize="24"
                        FontWeight="SemiBold"
                        Foreground="{DynamicResource ChatlyTextBrush}" />
-            <Button Grid.Column="1" Classes="add-friend" Content="Add Friend" Command="{Binding AddFriendCommand}" />
+            <Button Grid.Column="1" Classes="add-friend" Content="Add Friend" Command="{Binding ViewModel.AddFriendCommand}" />
         </Grid>
         <TextBox Grid.Row="1"
                  Classes="friend-search"
-                 IsVisible="{Binding ShowSearch}"
+                  IsVisible="{Binding ViewModel.ShowSearch}"
                  PlaceholderText="Search friend..." />
-        <ItemsControl Grid.Row="2" ItemsSource="{Binding Friends}">
+        <ItemsControl Grid.Row="2" ItemsSource="{Binding ViewModel.Friends}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border Classes="list-row"
                              Margin="0,0,0,8"
                              >
                         <Grid ColumnDefinitions="44,*,Auto,Auto" ColumnSpacing="8">
-                            <Border Width="40"
-                                    Height="40"
-                                    Background="{DynamicResource ChatlyAccentBrush}"
-                                    CornerRadius="20">
-                                <ic:SymbolIcon Symbol="Person"
-                                               HorizontalAlignment="Center"
-                                               VerticalAlignment="Center"
-                                               FontSize="20" />
-                            </Border>
+                            <controls:UserAvatar Width="40"
+                                                 Height="40"
+                                                 DisplayName="{Binding}"
+                                                 IsOnline="True" />
                             <TextBlock Grid.Column="1"
                                        Text="{Binding}"
                                        VerticalAlignment="Center"

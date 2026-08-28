@@ -2,7 +2,149 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             xmlns:local="using:Chatly.Desktop.Views.Pages.ChatPage.Popups"
+              xmlns:users="using:Chatly.Contracts.Users.Results"
+              xmlns:converters="using:Chatly.Desktop.Converters"
+              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:Class="Chatly.Desktop.Views.Pages.ChatPage.Popups.AddFriendPopupOverlay">
-    Welcome to Avalonia!
+             x:Class="Chatly.Desktop.Views.Pages.ChatPage.Popups.AddFriendPopupOverlay"
+             x:DataType="local:AddFriendPopupOverlay"
+             x:Name="Root"
+             MinWidth="440"
+             MaxWidth="720"
+             MinHeight="300"
+             MaxHeight="560">
+    <UserControl.Resources>
+        <converters:EmptyCollectionToVisibilityConverter x:Key="EmptyCollectionToVisibilityConverter" />
+    </UserControl.Resources>
+    <UserControl.Styles>
+        <Style Selector="TextBox.add-friend-search">
+            <Setter Property="Height" Value="46" />
+            <Setter Property="Padding" Value="14,0,48,0" />
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+        <Style Selector="TextBox.add-friend-search:focus-within">
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+        </Style>
+        <Style Selector="Button.search-button">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="8" />
+        </Style>
+        <Style Selector="Button.search-button:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="Button.add-request-button">
+            <Setter Property="Width" Value="32" />
+            <Setter Property="Height" Value="32" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+            <Setter Property="Foreground" Value="White" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="CornerRadius" Value="10" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+        <Style Selector="Button.add-request-button:pointerover">
+            <Setter Property="Opacity" Value="0.88" />
+        </Style>
+    </UserControl.Styles>
+
+    <StackPanel Spacing="20">
+        <StackPanel Spacing="5">
+            <TextBlock Text="Find someone to chat with"
+                       FontSize="15"
+                       FontWeight="SemiBold"
+                       Foreground="{DynamicResource ChatlyTextBrush}" />
+            <TextBlock Text="Search by their username to send a friend request."
+                       FontSize="13"
+                       Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+        </StackPanel>
+
+        <Grid>
+            <TextBox Classes="add-friend-search"
+                     Text="{Binding ViewModel.UserName, Mode=TwoWay}"
+                     PlaceholderText="Search by username" />
+            <Button Classes="search-button"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Margin="0,0,7,0"
+                    ToolTip.Tip="Search"
+					Command="{Binding ViewModel.SearchForUsersCommand}">
+                <ic:SymbolIcon Symbol="Search" FontSize="17" />
+            </Button>
+        </Grid>
+
+        <Border Height="1"
+                Background="{DynamicResource ChatlyBorderBrush}" />
+
+        <ScrollViewer MaxHeight="300"
+                      VerticalScrollBarVisibility="Auto"
+                      HorizontalScrollBarVisibility="Disabled">
+            <ItemsControl ItemsSource="{Binding ViewModel.SearchedUsers}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate x:DataType="users:UserSearchResponse">
+                        <Border Classes="list-row" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="44,*,Auto" ColumnSpacing="8">
+                                <controls:UserAvatar Width="40"
+                                                     Height="40"
+                                                     ProfilePictureUrl="{Binding ProfilePictureUrl}"
+                                                     DisplayName="{Binding Username}" />
+                                <StackPanel Grid.Column="1"
+                                            VerticalAlignment="Center"
+                                            Spacing="2">
+                                    <TextBlock Text="{Binding Username}"
+                                               FontSize="15"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    <TextBlock Text="Chatly user"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+                                </StackPanel>
+                                <Button Grid.Column="2"
+                                         Classes="add-request-button"
+                                         VerticalAlignment="Center"
+                                         Command="{Binding ViewModel.SendFriendRequestCommand, RelativeSource={RelativeSource AncestorType=local:AddFriendPopupOverlay}}"
+                                         CommandParameter="{Binding}"
+                                         ToolTip.Tip="Add friend">
+                                    <Grid Width="12" Height="12">
+                                        <Border Width="12"
+                                                Height="2"
+                                                CornerRadius="1"
+                                                Background="White"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center" />
+                                        <Border Width="2"
+                                                Height="12"
+                                                CornerRadius="1"
+                                                Background="White"
+                                                HorizontalAlignment="Center"
+                                                VerticalAlignment="Center" />
+                                    </Grid>
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </ScrollViewer>
+        <TextBlock Text="No friends found"
+                   IsVisible="{Binding ViewModel.SearchedUsers, Converter={StaticResource EmptyCollectionToVisibilityConverter}}"
+                   FontSize="13"
+                   Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                   HorizontalAlignment="Center"
+                   Margin="0,8,0,4" />
+    </StackPanel>
 </UserControl>

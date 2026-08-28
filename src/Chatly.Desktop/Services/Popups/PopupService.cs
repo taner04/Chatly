@@ -18,8 +18,12 @@ public sealed class PopupService(IServiceProvider serviceProvider) : IPopupServi
     public async Task ShowAsync<TViewModel>() where TViewModel : IPopupViewModel
     {
         ThrowIfPopupIsOpen();
+
         var popupHost = GetPopupHost();
         var popupOverlay = serviceProvider.GetRequiredService<IPopupOverlay<TViewModel>>();
+
+        popupHost.PopupEvent += popupOverlay.HandlePopupEvent;
+
         _isOpen = true;
 
         try
@@ -37,6 +41,8 @@ public sealed class PopupService(IServiceProvider serviceProvider) : IPopupServi
             {
                 _isOpen = false;
             }
+
+            popupHost.PopupEvent -= popupOverlay.HandlePopupEvent;
         }
     }
 

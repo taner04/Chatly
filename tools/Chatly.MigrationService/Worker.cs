@@ -1,3 +1,4 @@
+using System.Collections.Frozen;
 using System.Diagnostics;
 using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Chatly.WebApi.Features.Users.Models;
@@ -29,7 +30,7 @@ public class Worker(
 
             if (hostEnvironment.IsDevelopment())
             {
-                //await RunSeedAsync(dbContext, stoppingToken);
+                await RunSeedAsync(dbContext, stoppingToken);
             }
         }
         catch (Exception e)
@@ -71,9 +72,11 @@ public class Worker(
                 .Select(user => new User(user.Email, user.Auth0Id)
                 {
                     Username = user.Username,
-                    OnboardingCompleted = true
+                    OnboardingCompleted = true,
                 })
-                .ToArray();
+                .ToList();
+
+            usersToAdd.ForEach(u => u.SetCreated("Seed"));
 
             dbContext.Users.AddRange(usersToAdd);
             await dbContext.SaveChangesAsync(cancellationToken);

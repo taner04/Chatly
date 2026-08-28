@@ -11,7 +11,9 @@ public interface IUserEndpoint
 {
     [Get("/api/users/search")]
     Task<ApiResponse<PaginationResult<UserSearchResponse>>> SearchUsersAsync(
-        [Query] SearchUsersRequest request,
+        [AliasAs("searchName")] string searchName,
+        [AliasAs("pageIndex")] int pageIndex,
+        [AliasAs("pageSize")] int pageSize,
         CancellationToken cancellationToken);
 
     [Get("/api/users/me")]

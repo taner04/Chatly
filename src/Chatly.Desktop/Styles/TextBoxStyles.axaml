@@ -1,0 +1,16 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="TextBox.friend-search">
+        <Setter Property="Height" Value="44" />
+        <Setter Property="Padding" Value="14,0" />
+        <Setter Property="FontSize" Value="14" />
+        <Setter Property="VerticalContentAlignment" Value="Center" />
+        <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+    </Style>
+    <Style Selector="TextBox.friend-search:focus-within">
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+</Styles>

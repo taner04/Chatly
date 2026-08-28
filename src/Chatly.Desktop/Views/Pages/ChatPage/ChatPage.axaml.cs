@@ -9,7 +9,7 @@ public partial class ChatPage : UserControl, INavigableView<ChatPageViewModel>
     public ChatPage(ChatPageViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = ViewModel;
+        DataContext = this;
 
         InitializeComponent();
     }

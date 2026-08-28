@@ -1,0 +1,52 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="Button.friend-action">
+        <Setter Property="Width" Value="36" />
+        <Setter Property="Height" Value="36" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+    </Style>
+    <Style Selector="Button.friend-action:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+    </Style>
+    <Style Selector="Button.add-friend">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="16,9" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.add-friend:pointerover">
+        <Setter Property="Opacity" Value="0.88" />
+    </Style>
+    <Style Selector="Button.toast-action">
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="10,0" />
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="White" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.toast-action:pointerover">
+        <Setter Property="Opacity" Value="0.88" />
+    </Style>
+    <Style Selector="Button.toast-dismiss">
+        <Setter Property="Width" Value="28" />
+        <Setter Property="Height" Value="28" />
+        <Setter Property="Padding" Value="0" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+        <Setter Property="BorderThickness" Value="0" />
+        <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.toast-dismiss:pointerover">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+    </Style>
+</Styles>

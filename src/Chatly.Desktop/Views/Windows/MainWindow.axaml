@@ -2,12 +2,14 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:vm="using:Chatly.Desktop.ViewModels.Windows"
-        xmlns:ic="using:FluentIcons.Avalonia"
-        xmlns:popups="clr-namespace:Chatly.Desktop.Views.Popups"
+         xmlns:vm="using:Chatly.Desktop.ViewModels.Windows"
+         xmlns:windows="using:Chatly.Desktop.Views.Windows"
+         xmlns:ic="using:FluentIcons.Avalonia"
+         xmlns:popups="clr-namespace:Chatly.Desktop.Views.Popups"
+         xmlns:toasts="clr-namespace:Chatly.Desktop.Views.Toasts"
         x:Class="Chatly.Desktop.Views.Windows.MainWindow"
         x:Name="RootWindow"
-        x:DataType="vm:MainWindowViewModel"
+         x:DataType="windows:MainWindow"
         mc:Ignorable="d"
         d:DesignWidth="1100"
         d:DesignHeight="700"
@@ -15,8 +17,8 @@
         Title="Chatly"
         Width="1100"
         Height="700"
-        MinWidth="760"
-        MinHeight="480">
+        MinWidth="1100"
+        MinHeight="700">
 
     <Window.Resources>
         <DataTemplate x:Key="NavigationItemTemplate" x:DataType="vm:NavigationItemViewModel">
@@ -60,7 +62,7 @@
         <Style Selector="Button.nav-item">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Height" Value="40" />
             <Setter Property="Margin" Value="0,1" />
             <Setter Property="Padding" Value="0" />
@@ -74,7 +76,7 @@
         <Style Selector="Button.sidebar-toggle">
             <Setter Property="Background" Value="Transparent" />
             <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="CornerRadius" Value="10" />
             <Setter Property="Height" Value="32" />
             <Setter Property="Width" Value="32" />
             <Setter Property="Margin" Value="8" />
@@ -117,7 +119,7 @@
                                   Margin="0,4"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding NavigationItems}"
+                        <ItemsControl ItemsSource="{Binding ViewModel.NavigationItems}"
                                       ItemTemplate="{StaticResource NavigationItemTemplate}">
                             <ItemsControl.Styles>
                                 <Style Selector="ContentPresenter">
@@ -135,7 +137,7 @@
                     <!-- Fixed footer navigation -->
                     <ItemsControl Grid.Row="4"
                                   Margin="0,4,0,8"
-                                  ItemsSource="{Binding FooterNavigationItems}"
+                                  ItemsSource="{Binding ViewModel.FooterNavigationItems}"
                                   ItemTemplate="{StaticResource NavigationItemTemplate}">
                         <ItemsControl.Styles>
                             <Style Selector="ContentPresenter">
@@ -146,12 +148,13 @@
                 </Grid>
             </Border>
 
-            <Border Background="{DynamicResource ChatlyContentBrush}" Margin="20,28,28,28" CornerRadius="16">
-                <ContentControl x:Name="PageHost" Margin="28" />
+            <Border Background="{DynamicResource ChatlyContentBrush}" Margin="18,22,22,22" CornerRadius="18">
+                <ContentControl x:Name="PageHost" Margin="24" />
             </Border>
         </DockPanel>
 
-        <popups:PopupOverlayHost x:Name="PopupHost" />
+        <ContentControl x:Name="PopupHostContainer" />
+        <ContentControl x:Name="ToastHostContainer" />
     </Grid>
 
 </Window>

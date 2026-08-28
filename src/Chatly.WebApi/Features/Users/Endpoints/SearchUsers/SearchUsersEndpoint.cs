@@ -15,10 +15,10 @@ public sealed class SearchUsersEndpoint : IEndpoint
                 "/api/users/search",
                 async (
                     [FromQuery] string searchName,
+                    [FromQuery] int pageIndex,
+                    [FromQuery] int pageSize,
                     [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken,
-                    [FromQuery] int pageIndex = 1,
-                    [FromQuery] int pageSize = 20) =>
+                    CancellationToken cancellationToken) =>
                 {
                     var query = new SearchUsersQuery(
                         searchName,

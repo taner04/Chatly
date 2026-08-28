@@ -19,7 +19,11 @@ public sealed class UserWebService(IUserEndpoint userEndpoint)
         ArgumentNullException.ThrowIfNull(request);
 
         return HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.SearchUsersAsync(request, cancellationToken),
+            () => userEndpoint.SearchUsersAsync(
+                request.SearchName,
+                request.PageIndex,
+                request.PageSize,
+                cancellationToken),
             cancellationToken);
     }
 

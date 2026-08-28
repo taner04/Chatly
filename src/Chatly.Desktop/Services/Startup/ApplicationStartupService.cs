@@ -1,15 +1,16 @@
-using System;
-using System.Threading.Tasks;
 using Avalonia.Controls.ApplicationLifetimes;
 using Chatly.Desktop.Abstractions.Navigation;
 using Chatly.Desktop.Abstractions.Popups;
+using Chatly.Desktop.Abstractions.Toasts;
+using Chatly.Desktop.Extentions;
 using Chatly.Desktop.Models;
 using Chatly.Desktop.Services.Api.SignalR;
 using Chatly.Desktop.Services.Authentication;
-using Chatly.Desktop.ViewModels.Pages;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using Chatly.Desktop.ViewModels.Popups;
 using Chatly.Desktop.Views.Windows;
+using System;
+using System.Threading.Tasks;
 
 namespace Chatly.Desktop.Services.Startup;
 
@@ -20,6 +21,7 @@ public sealed class ApplicationStartupService(
     UserSessionContext sessionContext,
     INavigationService navigationService,
     IPopupService popupService,
+    IToastService toastService,
     NotificationHubHost notificationHubHost)
 {
     public async Task RunAsync(IClassicDesktopStyleApplicationLifetime desktop)
@@ -50,5 +52,7 @@ public sealed class ApplicationStartupService(
         }
 
         navigationService.NavigateTo<ChatPageViewModel>();
+
+        toastService.AddNotificiation("You have successfully logged in.");
     }
 }

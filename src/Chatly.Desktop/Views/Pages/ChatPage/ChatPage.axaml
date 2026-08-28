@@ -1,9 +1,11 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
-             xmlns:tabs="using:Chatly.Desktop.Views.Pages.ChatPage.Tabs"
-             x:Class="Chatly.Desktop.Views.Pages.ChatPage.ChatPage"
-             x:DataType="vm:ChatPageViewModel">
+              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:vm="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
+              xmlns:tabs="using:Chatly.Desktop.Views.Pages.ChatPage.Tabs"
+              xmlns:local="using:Chatly.Desktop.Views.Pages.ChatPage"
+              xmlns:controls="using:Chatly.Desktop.Views.Controls"
+              x:Class="Chatly.Desktop.Views.Pages.ChatPage.ChatPage"
+              x:DataType="local:ChatPage">
 
     <Grid ColumnDefinitions="256,*">
         <Border Padding="16"
@@ -22,41 +24,26 @@
                          Background="{DynamicResource ChatlyElevatedBrush}"
                          BorderBrush="{DynamicResource ChatlyBorderBrush}" />
 
-                <ItemsControl Grid.Row="2" ItemsSource="{Binding Chats}">
+                <ItemsControl Grid.Row="2" ItemsSource="{Binding ViewModel.Chats}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="vm:ChatPreviewViewModel">
-                            <Border Classes="list-row"
-                                    Margin="0,0,0,8"
+                            <Border Classes="chat-row"
+                                    Margin="0,0,0,6"
                                     >
-                                <Grid ColumnDefinitions="48,*,Auto" RowDefinitions="Auto,Auto" RowSpacing="2">
-                                    <Border Width="40"
-                                            Height="40"
-                                            Background="{DynamicResource ChatlyAccentBrush}"
-                                            CornerRadius="20">
-                                        <TextBlock Text="{Binding Initials}"
-                                                   HorizontalAlignment="Center"
-                                                   VerticalAlignment="Center"
-                                                   FontSize="13"
-                                                   FontWeight="SemiBold" />
-                                    </Border>
-                                    <TextBlock Grid.Column="1"
-                                               Text="{Binding Name}"
-                                               VerticalAlignment="Center"
-                                               FontSize="15"
-                                               FontWeight="SemiBold"
-                                               Foreground="{DynamicResource ChatlyTextBrush}" />
-                                    <TextBlock Grid.Column="2"
-                                               Text="{Binding Time}"
-                                               VerticalAlignment="Center"
-                                               FontSize="11"
-                                               Foreground="{DynamicResource ChatlyMutedTextBrush}" />
-                                    <TextBlock Grid.Row="1"
-                                               Grid.Column="1"
-                                               Grid.ColumnSpan="2"
-                                               Text="{Binding Preview}"
-                                               FontSize="12"
-                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
-                                               TextTrimming="CharacterEllipsis" />
+                                <Grid ColumnDefinitions="40,*">
+                                    <controls:UserAvatar Width="32"
+                                                         Height="32"
+                                                         DisplayName="{Binding Name}"
+                                                         IsOnline="True" />
+                                    <StackPanel Grid.Column="1"
+                                                VerticalAlignment="Center"
+                                                Spacing="2">
+                                        <TextBlock Text="{Binding Name}"
+                                                   FontSize="14"
+                                                   FontWeight="SemiBold"
+                                                   TextTrimming="CharacterEllipsis"
+                                                   Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    </StackPanel>
                                 </Grid>
                             </Border>
                         </DataTemplate>
@@ -67,10 +54,10 @@
 
         <TabControl Grid.Column="1" Padding="20">
             <TabItem Header="Online Friends">
-                <tabs:FriendsTabView DataContext="{Binding OnlineFriends}" />
+                <tabs:FriendsTabView ViewModel="{Binding ViewModel.OnlineFriends, RelativeSource={RelativeSource AncestorType=local:ChatPage}}" />
             </TabItem>
             <TabItem Header="All Friends">
-                <tabs:FriendsTabView DataContext="{Binding AllFriends}" />
+                <tabs:FriendsTabView ViewModel="{Binding ViewModel.AllFriends, RelativeSource={RelativeSource AncestorType=local:ChatPage}}" />
             </TabItem>
         </TabControl>
     </Grid>

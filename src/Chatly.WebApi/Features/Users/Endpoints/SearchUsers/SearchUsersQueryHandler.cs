@@ -25,7 +25,8 @@ public sealed class SearchUsersQueryHandler(
             .Where(user =>
                 user.Id != currentUserId &&
                 user.Username != null &&
-                user.Username.StartsWith(query.SearchName))
+                EF.Functions.ILike(user.Username, $"%{query.SearchName}%") &&
+                !user.FriendRequests.Any(r => r.RequestedByUserId == currentUserId))
             .OrderBy(user => user.Username)
             .ThenBy(user => user.Id)
             .Select(user => new

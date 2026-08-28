@@ -1,0 +1,115 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+              xmlns:local="using:Chatly.Desktop.Views.Toasts"
+              xmlns:toastViews="using:Chatly.Desktop.Views.Toasts"
+             xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
+             xmlns:toasts="using:Chatly.Desktop.Services.Toasts"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+              x:Class="Chatly.Desktop.Views.Toasts.ToastHostOverlay"
+              x:DataType="local:ToastHostOverlay">
+    <UserControl.Styles>
+        <Style Selector="Border.toast-card">
+            <Style.Animations>
+                <Animation Duration="0:0:0.18" FillMode="Forward">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.toast-icon">
+            <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        </Style>
+        <Style Selector="Border.toast-icon.success">
+            <Setter Property="Background" Value="#23A559" />
+        </Style>
+        <Style Selector="Border.toast-icon.error">
+            <Setter Property="Background" Value="#FF453A" />
+        </Style>
+    </UserControl.Styles>
+
+    <ItemsControl ItemsSource="{Binding ViewModel.Toasts}"
+                  HorizontalAlignment="Right"
+                  VerticalAlignment="Top"
+                  Margin="0,20,20,0">
+        <ItemsControl.ItemsPanel>
+            <ItemsPanelTemplate>
+                <toastViews:AnimatedToastPanel />
+            </ItemsPanelTemplate>
+        </ItemsControl.ItemsPanel>
+        <ItemsControl.ItemTemplate>
+            <DataTemplate x:DataType="vm:ToastNotificationViewModel">
+                <Border Classes="toast-card"
+                        Width="320"
+                        Margin="0,0,0,8"
+                        Padding="12"
+                        Background="{DynamicResource ChatlyElevatedBrush}"
+                        BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="14"
+                        BoxShadow="0 12 28 0 #80000000">
+                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="9" RowSpacing="3">
+                        <Border Grid.RowSpan="2"
+                                Classes="toast-icon"
+                                Classes.success="{Binding IsSuccess}"
+                                Classes.error="{Binding IsError}"
+                                Width="26"
+                                Height="26"
+                                CornerRadius="7">
+                            <ic:SymbolIcon Symbol="{Binding Icon}"
+                                           FontSize="15"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                        </Border>
+                        <TextBlock Grid.Column="1"
+                                   Text="{Binding Title}"
+                                   FontSize="13"
+                                   FontWeight="SemiBold"
+                                   Foreground="{DynamicResource ChatlyTextBrush}" />
+                        <Button Grid.Column="2"
+                                Classes="toast-dismiss"
+                                Command="{Binding DismissCommand}"
+                                ToolTip.Tip="Dismiss">
+                            <ic:SymbolIcon Symbol="Dismiss"
+                                           FontSize="16"
+                                           HorizontalAlignment="Center"
+                                           VerticalAlignment="Center" />
+                        </Button>
+                        <TextBlock Grid.Row="1"
+                                   Grid.Column="1"
+                                   Grid.ColumnSpan="2"
+                                   Text="{Binding Message}"
+                                   FontSize="11"
+                                   TextWrapping="Wrap"
+                                   Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+                        <ItemsControl Grid.Row="2"
+                                      Grid.Column="1"
+                                      Grid.ColumnSpan="2"
+                                      Margin="0,5,0,0"
+                                      HorizontalAlignment="Right"
+                                      ItemsSource="{Binding Buttons}">
+                            <ItemsControl.ItemsPanel>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal" Spacing="6" />
+                                </ItemsPanelTemplate>
+                            </ItemsControl.ItemsPanel>
+                            <ItemsControl.ItemTemplate>
+                                <DataTemplate x:DataType="toasts:ToastButton">
+                                    <Button Classes="toast-action"
+                                            Content="{Binding Text}"
+                                            Command="{Binding ClickCommand}" />
+                                </DataTemplate>
+                            </ItemsControl.ItemTemplate>
+                        </ItemsControl>
+                    </Grid>
+                </Border>
+            </DataTemplate>
+        </ItemsControl.ItemTemplate>
+    </ItemsControl>
+</UserControl>

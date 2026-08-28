@@ -1,13 +1,14 @@
 <Application xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              x:Class="Chatly.Desktop.App"
-             RequestedThemeVariant="Default">
+              RequestedThemeVariant="Dark">
     <!-- "Default" ThemeVariant follows system theme variant. "Dark" or "Light" are other available options. -->
 
     <Application.Styles>
         <FluentTheme />
-        <StyleInclude Source="avares://Chatly.Desktop/Styles/ListItemStyles.axaml" />
-        <StyleInclude Source="avares://Chatly.Desktop/Styles/FriendsTabStyles.axaml" />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/ButtonStyles.axaml" />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/TextBoxStyles.axaml" />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/BorderStyles.axaml" />
     </Application.Styles>
 
     <Application.Resources>
