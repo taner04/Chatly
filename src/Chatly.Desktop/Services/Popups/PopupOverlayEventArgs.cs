@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chatly.Desktop.Services.Popups;
+﻿namespace Chatly.Desktop.Services.Popups;
 
 public sealed class PopupOverlayEventArgs(PopupOverlayHostEventType type, object data = null!) : EventArgs
 {

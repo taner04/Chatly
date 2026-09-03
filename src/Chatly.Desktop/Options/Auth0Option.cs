@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Chatly.Shared.Attributes;
 
 namespace Chatly.Desktop.Options;
 
+[Option]
 public sealed class Auth0Option
 {
     [Required(ErrorMessage = "Auth0 domain is required.")]
@@ -22,4 +24,6 @@ public sealed class Auth0Option
 
     [Required(ErrorMessage = "Auth0 redirect URI is required.")]
     public string RedirectUri { get; init; } = null!;
+
+    public string? Prompt { get; init; }
 }

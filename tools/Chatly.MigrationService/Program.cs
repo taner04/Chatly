@@ -6,9 +6,9 @@ var builder = Host.CreateApplicationBuilder(args);
 
 builder.AddServiceDefaults();
 
-builder.Services.AddHostedService<Worker>();
+builder.Services.AddHostedService<DatabaseMigrationWorker>();
 
-builder.Services.AddOpenTelemetry().WithTracing(t => { t.AddSource(Worker.ActivitySourceName); });
+builder.Services.AddOpenTelemetry().WithTracing(t => { t.AddSource(DatabaseMigrationWorker.ActivitySourceName); });
 
 builder.AddNpgsqlDbContext<ChatlyDbContext>(AppHostConstants.DatabaseConnectionName);
 

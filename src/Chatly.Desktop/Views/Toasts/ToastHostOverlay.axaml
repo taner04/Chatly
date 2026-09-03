@@ -2,14 +2,14 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-              xmlns:local="using:Chatly.Desktop.Views.Toasts"
-              xmlns:toastViews="using:Chatly.Desktop.Views.Toasts"
+             xmlns:local="using:Chatly.Desktop.Views.Toasts"
+             xmlns:toastViews="using:Chatly.Desktop.Views.Toasts"
              xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
              xmlns:toasts="using:Chatly.Desktop.Services.Toasts"
              xmlns:ic="using:FluentIcons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-              x:Class="Chatly.Desktop.Views.Toasts.ToastHostOverlay"
-              x:DataType="local:ToastHostOverlay">
+             x:Class="Chatly.Desktop.Views.Toasts.ToastHostOverlay"
+             x:DataType="local:ToastHostOverlay">
     <UserControl.Styles>
         <Style Selector="Border.toast-card">
             <Style.Animations>
@@ -46,7 +46,7 @@
         <ItemsControl.ItemTemplate>
             <DataTemplate x:DataType="vm:ToastNotificationViewModel">
                 <Border Classes="toast-card"
-                        Width="320"
+                        Width="400"
                         Margin="0,0,0,8"
                         Padding="12"
                         Background="{DynamicResource ChatlyElevatedBrush}"
@@ -54,7 +54,8 @@
                         BorderThickness="1"
                         CornerRadius="14"
                         BoxShadow="0 12 28 0 #80000000">
-                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="9" RowSpacing="3">
+                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="9"
+                          RowSpacing="3">
                         <Border Grid.RowSpan="2"
                                 Classes="toast-icon"
                                 Classes.success="{Binding IsSuccess}"
@@ -73,7 +74,7 @@
                                    FontWeight="SemiBold"
                                    Foreground="{DynamicResource ChatlyTextBrush}" />
                         <Button Grid.Column="2"
-                                Classes="toast-dismiss"
+                                Classes="icon-button toast-dismiss"
                                 Command="{Binding DismissCommand}"
                                 ToolTip.Tip="Dismiss">
                             <ic:SymbolIcon Symbol="Dismiss"
@@ -101,7 +102,7 @@
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
                                 <DataTemplate x:DataType="toasts:ToastButton">
-                                    <Button Classes="toast-action"
+                                    <Button Classes="accent-button opacity-hover toast-action"
                                             Content="{Binding Text}"
                                             Command="{Binding ClickCommand}" />
                                 </DataTemplate>

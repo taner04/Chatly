@@ -1,13 +1,8 @@
-using Chatly.Contracts.Users.Results;
-using Chatly.WebApi.Common.Infrastructure;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
-using Chatly.WebApi.Common.Shared.Exceptions;
 using Chatly.WebApi.Features.Users.Exceptions;
-using Chatly.WebApi.Features.Users.Models;
-using Microsoft.EntityFrameworkCore;
 
 namespace Chatly.WebApi.Features.Users.Services;
 
+[ScopedService]
 public sealed class UserService(
     ChatlyDbContext context,
     CurrentUserService currentUser,

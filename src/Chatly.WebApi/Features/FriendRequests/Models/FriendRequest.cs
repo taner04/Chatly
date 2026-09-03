@@ -1,7 +1,5 @@
-﻿using Chatly.WebApi.Common.Helper;
-using Chatly.WebApi.Common.Shared.Models;
+﻿using Chatly.WebApi.Common.Shared.Models;
 using Chatly.WebApi.Features.FriendRequests.Enums;
-using Chatly.WebApi.Features.Users.Models;
 using Vogen;
 
 namespace Chatly.WebApi.Features.FriendRequests.Models;
@@ -22,17 +20,20 @@ public sealed class FriendRequest : UserPairEntity<FriendRequestId>
     }
 
     public FriendRequest(UserId senderId, UserId receiverId)
-        : base(
-            FriendRequestId.From(Guid.CreateVersion7()),
-            senderId,
-            receiverId)
+        : base(FriendRequestId.From(Guid.CreateVersion7()), senderId, receiverId)
     {
-        RequestedByUserId = senderId;
+        SenderUserId = senderId;
+        ReceiverUserId = receiverId;
         Status = FriendRequestStatus.Pending;
     }
 
-    public UserId RequestedByUserId { get; set; }
+    public UserId SenderUserId { get; set; }
+
+    public UserId ReceiverUserId { get; set; }
+
     public FriendRequestStatus Status { get; set; }
 
-    public User User { get; init; } = null!;
+    public User SenderUser { get; init; } = null!;
+
+    public User ReceiverUser { get; init; } = null!;
 }

@@ -1,6 +1,4 @@
-﻿using System;
-
-namespace Chatly.Desktop.Services.Api.Results;
+﻿namespace Chatly.Desktop.Services.Api.Results;
 
 public class WebClientResult
 {

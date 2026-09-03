@@ -1,9 +1,9 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
+﻿using Avalonia.Input;
 using Chatly.Desktop.ViewModels.Windows;
 
 namespace Chatly.Desktop.Views.Windows;
 
+[SingletonService]
 public partial class SplashScreenWindow : Window
 {
     public SplashScreenWindow(SplashScreenViewModel viewModel)

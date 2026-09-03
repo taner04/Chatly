@@ -1,7 +1,4 @@
-﻿using Chatly.Contracts.Users.Results;
-using Mediator;
-
-namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
+﻿namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
 public sealed record CompleteOnboardingCommand(
     string NewUsername,

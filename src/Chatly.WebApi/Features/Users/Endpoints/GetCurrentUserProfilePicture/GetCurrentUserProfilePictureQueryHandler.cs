@@ -1,17 +1,12 @@
-﻿using Chatly.Contracts.Users.Results;
-using Chatly.WebApi.Common.Infrastructure;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
-using Mediator;
-using Microsoft.EntityFrameworkCore;
-
-namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
+﻿namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
 public class GetCurrentUserProfilePictureQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
-    AzureBlobService blobService) : IQueryHandler<GetCurrentUserProfilePictureQuery, GetPictureResponse>
+    AzureBlobService blobService)
+    : IQueryHandler<GetCurrentUserProfilePictureQuery, GetCurrentUserProfilePictureResponse>
 {
-    public async ValueTask<GetPictureResponse> Handle(
+    public async ValueTask<GetCurrentUserProfilePictureResponse> Handle(
         GetCurrentUserProfilePictureQuery query,
         CancellationToken cancellationToken)
     {
@@ -25,11 +20,11 @@ public class GetCurrentUserProfilePictureQueryHandler(
 
         if (string.IsNullOrWhiteSpace(profilePictureKey))
         {
-            return new GetPictureResponse(null!);
+            return new GetCurrentUserProfilePictureResponse(null!);
         }
 
         var url = blobService.CreateReadUrl(profilePictureKey);
 
-        return new GetPictureResponse(url?.ToString());
+        return new GetCurrentUserProfilePictureResponse(url?.ToString());
     }
 }

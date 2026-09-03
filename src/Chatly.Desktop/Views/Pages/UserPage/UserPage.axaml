@@ -1,0 +1,56 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:controls="using:Chatly.Desktop.Views.Controls"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="local:UserPage"
+             x:Class="Chatly.Desktop.Views.Pages.UserPage.UserPage">
+    <UserControl.Styles>
+        <Style Selector="Button.current-user-profile">
+            <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Padding" Value="10" />
+        </Style>
+        <Style Selector="Button.current-user-profile:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="Auto,*" RowSpacing="20">
+        <Grid ColumnDefinitions="*,Auto">
+            <Button Classes="current-user-profile"
+                    HorizontalAlignment="Left"
+                    Command="{Binding ViewModel.OpenCurrentUserProfileCommand}">
+                <StackPanel Orientation="Horizontal" Spacing="12">
+                    <controls:UserAvatar Width="56"
+                                         Height="56"
+                                         ProfilePictureUrl="{Binding ViewModel.UserContext.CurrentUser.ProfilePictureUrl}"
+                                         DisplayName="{Binding ViewModel.UserContext.CurrentUser.Username}" />
+                    <TextBlock Text="{Binding ViewModel.UserContext.CurrentUser.Username}"
+                               VerticalAlignment="Center"
+                               FontSize="20"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                </StackPanel>
+            </Button>
+            <Button Grid.Column="1"
+                    Classes="accent-button opacity-hover add-friend"
+                    Content="Add Friend"
+                    Command="{Binding ViewModel.AddFriendCommand}" />
+        </Grid>
+
+        <Grid Grid.Row="1" RowDefinitions="Auto,*">
+            <TabStrip x:Name="TabNavigation">
+                <TabItem Header="Online Friends" />
+                <TabItem Header="All Friends" />
+                <TabItem Header="Pending Requests" />
+            </TabStrip>
+            <ContentControl x:Name="TabPageHost" Grid.Row="1" Margin="0,16,0,0" />
+        </Grid>
+    </Grid>
+
+</UserControl>

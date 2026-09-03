@@ -1,43 +1,27 @@
-﻿using Chatly.Desktop.Abstractions.Toasts;
-using System;
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
-using Avalonia.Threading;
+﻿using Chatly.Desktop.Abstraction.Toasts;
+using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.Services.Toasts;
 
+[SingletonService(typeof(IToastService))]
 internal sealed class ToastService : IToastService
 {
-    private const int MAX_TOAST_DURATION_MS = 5000;
-    private const int MAX_TOASTS = 5;
-    private IToastHost? _toastHost;
+    private const int MaxToastDurationMs = 5000;
+    private const int MaxToasts = 5;
+    private readonly LinkedList<Guid> _toastOrder = [];
 
     private readonly Dictionary<Guid, ActiveToast> _toasts = [];
-    private readonly LinkedList<Guid> _toastOrder = [];
+    private IToastHost? _toastHost;
 
     public void AddToast(IToastViewModel toastViewModel)
     {
         ArgumentNullException.ThrowIfNull(toastViewModel);
-
-        if (Dispatcher.UIThread.CheckAccess())
-        {
-            AddToastCore(toastViewModel);
-            return;
-        }
-
-        Dispatcher.UIThread.Post(() => AddToastCore(toastViewModel));
+        UiThreadDispatcher.SafeInvoke(() => AddToastCore(toastViewModel));
     }
 
     public void RemoveToast(Guid id)
     {
-        if (Dispatcher.UIThread.CheckAccess())
-        {
-            RemoveToastCore(id);
-            return;
-        }
-
-        Dispatcher.UIThread.Post(() => RemoveToastCore(id));
+        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id));
     }
 
     public void SetToastHost(IToastHost toastHost)
@@ -48,7 +32,9 @@ internal sealed class ToastService : IToastService
 
     private IToastHost GetToastHost()
     {
-        return _toastHost ?? throw new InvalidOperationException("Toast host is not set. Please set the toast host before adding or removing toasts.");
+        return _toastHost ??
+               throw new InvalidOperationException(
+                   "Toast host is not set. Please set the toast host before adding or removing toasts.");
     }
 
     private void AddToastCore(IToastViewModel toastViewModel)
@@ -58,7 +44,7 @@ internal sealed class ToastService : IToastService
             RemoveToastCore(toastViewModel.Id);
         }
 
-        if (_toastOrder.Count >= MAX_TOASTS && _toastOrder.Last is { } oldestToast)
+        if (_toastOrder.Count >= MaxToasts && _toastOrder.Last is { } oldestToast)
         {
             RemoveToastCore(oldestToast.Value);
         }
@@ -75,14 +61,14 @@ internal sealed class ToastService : IToastService
     {
         try
         {
-            await Task.Delay(MAX_TOAST_DURATION_MS, cancellationTokenSource.Token);
+            await Task.Delay(MaxToastDurationMs, cancellationTokenSource.Token);
         }
         catch (OperationCanceledException)
         {
             return;
         }
 
-        Dispatcher.UIThread.Post(() => RemoveToastCore(id, cancellationTokenSource));
+        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id, cancellationTokenSource));
     }
 
     private void OnToastButtonClicked(object? sender, ToastButtonClickedEventArgs e)
@@ -96,8 +82,8 @@ internal sealed class ToastService : IToastService
     private void RemoveToastCore(Guid id, CancellationTokenSource? expectedCancellationTokenSource = null)
     {
         if (!_toasts.TryGetValue(id, out var toast) ||
-            expectedCancellationTokenSource is not null &&
-            !ReferenceEquals(toast.CancellationTokenSource, expectedCancellationTokenSource))
+            (expectedCancellationTokenSource is not null &&
+             !ReferenceEquals(toast.CancellationTokenSource, expectedCancellationTokenSource)))
         {
             return;
         }

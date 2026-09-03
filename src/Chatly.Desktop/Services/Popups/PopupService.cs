@@ -1,15 +1,13 @@
-using System;
-using System.Threading.Tasks;
-using Chatly.Desktop.Abstractions.Popups;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Chatly.Desktop.Services.Popups;
 
+[SingletonService(typeof(IPopupService))]
 public sealed class PopupService(IServiceProvider serviceProvider) : IPopupService
 {
-    private IPopupHost? _popupHost;
     private bool _isOpen;
-    
+    private IPopupHost? _popupHost;
+
     public void SetPopupHost(IPopupHost popupHost)
     {
         _popupHost = popupHost ?? throw new ArgumentNullException(nameof(popupHost));

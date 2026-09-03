@@ -1,7 +1,4 @@
 using Chatly.ServiceDefaults;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
-using Chatly.WebApi.Common.Infrastructure.Persistence.Interceptors;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Chatly.WebApi.Common.Composition.Extensions.ServiceCollection.Modules;
@@ -15,7 +12,6 @@ internal static class DbContextServiceCollection
             var connectionString = builder.Configuration.GetConnectionString(AppHostConstants.DatabaseConnectionName);
             ArgumentNullException.ThrowIfNull(connectionString);
 
-            services.AddScoped<ISaveChangesInterceptor, AuditableInterceptor>();
             services.AddDbContext<ChatlyDbContext>((serviceProvider, options) =>
             {
                 options.AddInterceptors(serviceProvider.GetServices<ISaveChangesInterceptor>());

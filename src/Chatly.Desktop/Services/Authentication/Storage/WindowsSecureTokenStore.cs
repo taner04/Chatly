@@ -1,22 +1,28 @@
-﻿using System;
-using System.IO;
+﻿using System.IO;
 using System.Security.Cryptography;
 using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using Chatly.Desktop.Abstractions.Authentication;
+using Chatly.Desktop.Abstraction.Authentication;
+using Chatly.Desktop.Options;
+using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Authentication.Storage;
 
 internal sealed class WindowsSecureTokenStore : ISecureTokenStore
 {
-    private static readonly string DirectoryPath = Path.Combine(
-        Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
-        "Chatly");
+    private readonly string _directoryPath;
+    private readonly string _tokenPath;
 
-    private static readonly string TokenPath = Path.Combine(
-        DirectoryPath,
-        "refresh-token.dat");
+    public WindowsSecureTokenStore(IOptions<DesktopProfileOption> profileOptions)
+    {
+        var profileName = profileOptions.Value.Name;
+        var baseDirectory = Path.Combine(
+            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData),
+            "Chatly");
+        _directoryPath = profileName == DesktopProfileOption.DefaultName
+            ? baseDirectory
+            : Path.Combine(baseDirectory, profileName);
+        _tokenPath = Path.Combine(_directoryPath, "refresh-token.dat");
+    }
 
     public async Task SaveRefreshTokenAsync(
         string refreshToken,
@@ -25,7 +31,7 @@ internal sealed class WindowsSecureTokenStore : ISecureTokenStore
         ArgumentException.ThrowIfNullOrWhiteSpace(refreshToken);
         cancellationToken.ThrowIfCancellationRequested();
 
-        Directory.CreateDirectory(DirectoryPath);
+        Directory.CreateDirectory(_directoryPath);
 
         var plaintext = Encoding.UTF8.GetBytes(refreshToken);
 
@@ -39,7 +45,7 @@ internal sealed class WindowsSecureTokenStore : ISecureTokenStore
 #pragma warning restore CA1416
 
             await File.WriteAllBytesAsync(
-                TokenPath,
+                _tokenPath,
                 encrypted,
                 cancellationToken);
         }
@@ -54,9 +60,9 @@ internal sealed class WindowsSecureTokenStore : ISecureTokenStore
     {
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (File.Exists(TokenPath))
+        if (File.Exists(_tokenPath))
         {
-            File.Delete(TokenPath);
+            File.Delete(_tokenPath);
         }
 
         return Task.CompletedTask;
@@ -65,7 +71,7 @@ internal sealed class WindowsSecureTokenStore : ISecureTokenStore
     public async Task<string?> TryReadRefreshTokenAsync(
         CancellationToken cancellationToken)
     {
-        if (!File.Exists(TokenPath))
+        if (!File.Exists(_tokenPath))
         {
             return null;
         }
@@ -73,7 +79,7 @@ internal sealed class WindowsSecureTokenStore : ISecureTokenStore
         try
         {
             var encrypted = await File.ReadAllBytesAsync(
-                TokenPath,
+                _tokenPath,
                 cancellationToken);
 
             cancellationToken.ThrowIfCancellationRequested();

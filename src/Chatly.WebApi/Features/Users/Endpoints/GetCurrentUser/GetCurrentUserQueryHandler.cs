@@ -1,6 +1,4 @@
-﻿using Chatly.Contracts.Users.Results;
-using Chatly.WebApi.Features.Users.Services;
-using Mediator;
+﻿using Chatly.WebApi.Features.Users.Services;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
 

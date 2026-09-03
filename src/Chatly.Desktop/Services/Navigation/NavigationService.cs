@@ -1,25 +1,18 @@
-using System;
-using System.Collections.Generic;
-using Chatly.Desktop.Abstractions.Navigation;
-using Chatly.Desktop.Models;
-using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Navigation;
 
-public sealed class NavigationService(IServiceProvider serviceProvider) : INavigationService
+[SingletonService(typeof(INavigationService))]
+public sealed partial class NavigationService(
+    IServiceProvider serviceProvider,
+    ILogger<NavigationService> logger) : INavigationService
 {
-    private readonly Stack<NavigationEntry> _backStack = new();
-    private readonly Stack<NavigationEntry> _forwardStack = new();
-    private NavigationEntry? _currentEntry;
+    private readonly Stack<NavigationState> _backStack = new();
+    private readonly Stack<NavigationState> _forwardStack = new();
+    private NavigationState? _currentState;
     private INavigationView? _navigationView;
 
     public event EventHandler<NavigatedEventArgs>? Navigated;
-
-    public Type? CurrentViewModelType => _currentEntry?.ViewModelType;
-
-    public bool CanGoBack => _backStack.Count > 0;
-
-    public bool CanGoForward => _forwardStack.Count > 0;
 
     public void SetNavigationView(INavigationView navigationView)
     {
@@ -28,60 +21,93 @@ public sealed class NavigationService(IServiceProvider serviceProvider) : INavig
 
     public bool NavigateTo<T>() where T : INavigableViewModel
     {
-        if (_currentEntry?.ViewModelType == typeof(T))
+        ValidateViewModelType(typeof(T));
+
+        if (_currentState?.ViewModelType == typeof(T))
         {
             return false;
         }
 
-        var view = serviceProvider.GetRequiredService<INavigableView<T>>();
-        Navigate(new NavigationEntry<T>(view));
+        NavigateToNewState(typeof(T), null);
         return true;
     }
 
-    public bool GoBack() => NavigateHistory(_backStack, _forwardStack);
-
-    public bool GoForward() => NavigateHistory(_forwardStack, _backStack);
-
-    private bool NavigateHistory(
-        Stack<NavigationEntry> source,
-        Stack<NavigationEntry> destination)
+    public bool NavigateTo<T>(object parameter) where T : INavigableViewModel
     {
-        if (source.Count == 0)
+        ValidateViewModelType(typeof(T));
+        ArgumentNullException.ThrowIfNull(parameter);
+
+        if (_currentState is { } current && current.ViewModelType == typeof(T))
         {
-            return false;
+            _ = NotifyNavigatedToAsync(current.ViewModel, parameter);
+            return true;
         }
 
-        var target = source.Pop();
-
-        if (_currentEntry is not null)
-        {
-            destination.Push(_currentEntry);
-        }
-
-        Show(target);
+        NavigateToNewState(typeof(T), parameter);
         return true;
     }
 
-    private void Navigate(NavigationEntry target)
+    public bool GoBack()
     {
-        if (_currentEntry is not null)
+        return NavigateHistory(_backStack, _forwardStack);
+    }
+
+    public bool GoForward()
+    {
+        return NavigateHistory(_forwardStack, _backStack);
+    }
+
+    private void NavigateToNewState(Type viewModelType, object? parameter)
+    {
+        if (_currentState is not null)
         {
-            _backStack.Push(_currentEntry);
+            _backStack.Push(_currentState);
         }
 
         _forwardStack.Clear();
+        Show(NavigationState.Create(serviceProvider, viewModelType, parameter));
+    }
+
+    private bool NavigateHistory(Stack<NavigationState> source, Stack<NavigationState> destination)
+    {
+        if (!source.TryPop(out var target))
+        {
+            return false;
+        }
+
+        if (_currentState is not null)
+        {
+            destination.Push(_currentState);
+        }
+
         Show(target);
+        return true;
     }
 
-    private void Show(NavigationEntry entry)
+    private void Show(NavigationState state)
     {
-        entry.ShowPage(GetNavigationView());
-        _currentEntry = entry;
-        Navigated?.Invoke(this, new NavigatedEventArgs(entry.ViewModelType));
+        var navigationView = _navigationView
+                             ?? throw new InvalidOperationException("A navigation view must be set before navigating.");
+
+        _ = NotifyNavigatedFromAsync(_currentState?.ViewModel);
+
+        state.ShowPage(navigationView);
+        Navigated?.Invoke(this, new NavigatedEventArgs(state.ViewModelType));
+
+        _currentState = state;
+
+        _ = NotifyNavigatedToAsync(state.ViewModel, state.Parameter);
     }
 
-    private INavigationView GetNavigationView()
+    private static void ValidateViewModelType(Type viewModelType)
     {
-        return _navigationView ?? throw new InvalidOperationException("A navigation view must be set before navigating.");
+        ArgumentNullException.ThrowIfNull(viewModelType);
+
+        if (!typeof(INavigableViewModel).IsAssignableFrom(viewModelType))
+        {
+            throw new ArgumentException(
+                $"Type '{viewModelType}' must implement {nameof(INavigableViewModel)}.",
+                nameof(viewModelType));
+        }
     }
 }

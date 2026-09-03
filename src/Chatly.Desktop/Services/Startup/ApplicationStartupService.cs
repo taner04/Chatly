@@ -1,19 +1,13 @@
 using Avalonia.Controls.ApplicationLifetimes;
-using Chatly.Desktop.Abstractions.Navigation;
-using Chatly.Desktop.Abstractions.Popups;
-using Chatly.Desktop.Abstractions.Toasts;
-using Chatly.Desktop.Extentions;
-using Chatly.Desktop.Models;
 using Chatly.Desktop.Services.Api.SignalR;
 using Chatly.Desktop.Services.Authentication;
-using Chatly.Desktop.ViewModels.Pages.ChatPage;
+using Chatly.Desktop.ViewModels.Pages.UserPage;
 using Chatly.Desktop.ViewModels.Popups;
 using Chatly.Desktop.Views.Windows;
-using System;
-using System.Threading.Tasks;
 
 namespace Chatly.Desktop.Services.Startup;
 
+[SingletonService]
 public sealed class ApplicationStartupService(
     SplashScreenWindow splashScreen,
     MainWindow mainWindow,
@@ -21,8 +15,8 @@ public sealed class ApplicationStartupService(
     UserSessionContext sessionContext,
     INavigationService navigationService,
     IPopupService popupService,
-    IToastService toastService,
-    NotificationHubHost notificationHubHost)
+    NotificationHubConnection notificationHubConnection,
+    ClientNotificationDispatcher clientNotificationDispatcher)
 {
     public async Task RunAsync(IClassicDesktopStyleApplicationLifetime desktop)
     {
@@ -44,15 +38,13 @@ public sealed class ApplicationStartupService(
         mainWindow.Show();
         splashScreen.Close();
 
-        await notificationHubHost.StartHubAsync();
+        await notificationHubConnection.StartHubAsync(clientNotificationDispatcher.DispatchAsync);
 
         if (sessionContext.CurrentUser?.OnboardingCompleted == false)
         {
             await popupService.ShowAsync<OnboardingPopupViewModel>();
         }
 
-        navigationService.NavigateTo<ChatPageViewModel>();
-
-        toastService.AddNotificiation("You have successfully logged in.");
+        navigationService.NavigateTo<UserPageViewModel>();
     }
 }

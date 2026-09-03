@@ -1,5 +1,4 @@
 ﻿using Chatly.ServiceDefaults;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Design;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence;

@@ -1,13 +1,7 @@
-using Chatly.Contracts.FriendRequests.Results;
-using Chatly.WebApi.Common.Infrastructure;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
-using Chatly.WebApi.Common.Shared.Exceptions;
+using Chatly.Contracts.Endpoints.FriendRequests.Results;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.FriendRequests.Exception;
 using Chatly.WebApi.Features.FriendRequests.Models;
-using Chatly.WebApi.Features.Users.Models;
-using Mediator;
-using Microsoft.EntityFrameworkCore;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 
@@ -32,12 +26,12 @@ public sealed class SendFriendRequestCommandHandler(
             throw new EntityNotFoundException<User>(command.ReceiverId.Value);
         }
 
-        var pair = UserPair.Create(userId, command.ReceiverId);
+        var userPair = UserPair.Create(userId, command.ReceiverId);
 
         var existingRequest = await context.FriendRequests.SingleOrDefaultAsync(
             request =>
-                request.FirstUserId == pair.FirstUserId &&
-                request.SecondUserId == pair.SecondUserId,
+                request.FirstUserId == userPair.FirstUserId &&
+                request.SecondUserId == userPair.SecondUserId,
             cancellationToken);
 
         FriendRequest friendRequest;
@@ -52,7 +46,7 @@ public sealed class SendFriendRequestCommandHandler(
             switch (existingRequest.Status)
             {
                 case FriendRequestStatus.Pending
-                    when existingRequest.RequestedByUserId == userId:
+                    when existingRequest.SenderUserId == userId:
                     throw new FriendRequestAlreadySentException(command.ReceiverId);
 
                 case FriendRequestStatus.Pending:
@@ -64,7 +58,8 @@ public sealed class SendFriendRequestCommandHandler(
                         command.ReceiverId);
 
                 case FriendRequestStatus.Rejected:
-                    existingRequest.RequestedByUserId = userId;
+                    existingRequest.SenderUserId = userId;
+                    existingRequest.ReceiverUserId = command.ReceiverId;
                     existingRequest.Status = FriendRequestStatus.Pending;
                     friendRequest = existingRequest;
                     break;
@@ -87,7 +82,8 @@ public sealed class SendFriendRequestCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
 
-        await notificationPublisher.PublishAsync(command.ReceiverId, new FriendRequestResponse(friendRequest.Id.Value,
+        await notificationPublisher.PublishAsync(command.ReceiverId, new IncomingFriendRequestMessage(
+            friendRequest.Id.Value,
             userId.Value,
             sender.Username!,
             blobService.CreateReadUrl(sender.ProfilePictureKey)));

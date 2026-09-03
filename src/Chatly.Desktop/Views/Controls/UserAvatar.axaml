@@ -18,16 +18,18 @@
                 ClipToBounds="True"
                 Background="{DynamicResource ChatlyAccentBrush}">
             <Grid>
-                <Image asyncImageLoader:ImageLoader.Source="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource ImageUrlConverter}}"
-                       IsVisible="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource StringHasValueConverter}}"
-                       Stretch="UniformToFill" />
-                <TextBlock Text="{Binding DisplayName, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource FirstCharacterConverter}}"
-                           IsVisible="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource StringHasValueConverter}, ConverterParameter=Invert}"
-                           FontSize="15"
-                           FontWeight="SemiBold"
-                           Foreground="White"
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center" />
+                <Image
+                    asyncImageLoader:ImageLoader.Source="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource ImageUrlConverter}}"
+                    IsVisible="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource StringHasValueConverter}}"
+                    Stretch="UniformToFill" />
+                <TextBlock
+                    Text="{Binding DisplayName, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource FirstCharacterConverter}}"
+                    IsVisible="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource StringHasValueConverter}, ConverterParameter=Invert}"
+                    FontSize="15"
+                    FontWeight="SemiBold"
+                    Foreground="White"
+                    HorizontalAlignment="Center"
+                    VerticalAlignment="Center" />
             </Grid>
         </Border>
         <Border Width="10"

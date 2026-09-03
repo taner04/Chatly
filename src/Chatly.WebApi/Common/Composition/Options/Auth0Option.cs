@@ -1,7 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Chatly.Shared.Attributes;
 
 namespace Chatly.WebApi.Common.Composition.Options;
 
+[Option]
 public sealed class Auth0Option
 {
     [Required(ErrorMessage = "Auth0 domain is required.")]

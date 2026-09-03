@@ -1,9 +1,8 @@
-using System.Threading;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Chatly.Desktop.ViewModels.Windows;
 
+[SingletonService]
 public sealed partial class SplashScreenViewModel : ViewModelBase
 {
     private readonly CancellationTokenSource _cts = new();

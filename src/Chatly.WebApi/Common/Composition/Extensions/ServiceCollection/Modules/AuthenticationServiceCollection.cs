@@ -1,6 +1,5 @@
-using Chatly.Contracts.Extensions;
+using Chatly.Shared.Extensions;
 using Chatly.WebApi.Common.Composition.Options;
-using Chatly.WebApi.Common.Infrastructure;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 

@@ -1,5 +1,4 @@
 ﻿using FluentValidation;
-using Mediator;
 
 namespace Chatly.WebApi.Common.Behaviours;
 

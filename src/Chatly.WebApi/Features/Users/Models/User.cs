@@ -1,4 +1,3 @@
-using Chatly.WebApi.Common.Helper;
 using Chatly.WebApi.Common.Shared.Guards;
 using Chatly.WebApi.Common.Shared.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
@@ -41,5 +40,7 @@ public sealed class User : Entity<UserId>
     public string? ProfilePictureKey { get; set; }
     public bool OnboardingCompleted { get; set; }
 
-    public ICollection<FriendRequest> FriendRequests { get; set; } = [];
+    public ICollection<FriendRequest> SentFriendRequests { get; set; } = [];
+
+    public ICollection<FriendRequest> ReceivedFriendRequests { get; set; } = [];
 }

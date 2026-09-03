@@ -1,7 +1,7 @@
 using Azure.Storage.Blobs;
+using Chatly.Generated;
 using Chatly.ServiceDefaults;
 using Chatly.WebApi.Common.Composition.Extensions.ServiceCollection.Modules;
-using Chatly.WebApi.Common.Infrastructure;
 
 namespace Chatly.WebApi.Common.Composition.Extensions.ServiceCollection;
 
@@ -11,7 +11,7 @@ public static class ServiceCollectionExtensions
     {
         public IServiceCollection RegisterChatlyServices(WebApplicationBuilder builder)
         {
-            services.AddSingleton(provider =>
+            services.AddSingleton(_ =>
             {
                 var connectionString = builder.Configuration.GetConnectionString(
                                            AppHostConstants.BlobServiceConnectionName)
@@ -20,10 +20,9 @@ public static class ServiceCollectionExtensions
 
                 return new BlobServiceClient(connectionString);
             });
-            services.AddSingleton<AzureBlobService>();
-
             services
-                .AddChatlyConfiguration(builder.Configuration)
+                .AddGeneratedOptions(builder.Configuration)
+                .AddGeneratedServices()
                 .AddChatlyAuthentication(builder.Configuration)
                 .AddChatlyDbContext(builder)
                 .AddChatlyApplicationServices();

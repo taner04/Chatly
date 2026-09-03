@@ -1,7 +1,6 @@
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace Chatly.Desktop.ViewModels.Popups;
 
+[SingletonService]
 public sealed partial class PopupOverlayHostViewModel : ViewModelBase
 {
     [ObservableProperty] public partial bool IsOpen { get; set; }

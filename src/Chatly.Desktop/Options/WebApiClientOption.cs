@@ -1,8 +1,9 @@
-using System;
 using System.ComponentModel.DataAnnotations;
+using Chatly.Shared.Attributes;
 
 namespace Chatly.Desktop.Options;
 
+[Option]
 public sealed class WebApiClientOption
 {
     [Required(ErrorMessage = "BaseAddress is required.")]

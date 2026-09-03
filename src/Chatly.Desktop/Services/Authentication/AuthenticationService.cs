@@ -1,7 +1,4 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Chatly.Desktop.Abstractions.Authentication;
+using Chatly.Desktop.Abstraction.Authentication;
 using Chatly.Desktop.Options;
 using Duende.IdentityModel.Client;
 using Duende.IdentityModel.OidcClient;
@@ -9,6 +6,7 @@ using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Authentication;
 
+[SingletonService]
 public sealed class AuthenticationService
 {
     private readonly OidcClient _client;
@@ -36,16 +34,18 @@ public sealed class AuthenticationService
         var refreshToken =
             await _secureTokenStore.TryReadRefreshTokenAsync(cancellationToken);
 
-        if (!string.IsNullOrWhiteSpace(refreshToken))
+        if (string.IsNullOrWhiteSpace(refreshToken))
         {
-            var accessToken = await TryRefreshAsync(refreshToken, cancellationToken);
-            if (accessToken is not null)
-            {
-                return accessToken;
-            }
-
-            await _secureTokenStore.DeleteRefreshTokenAsync(cancellationToken);
+            return await LoginAsync(cancellationToken);
         }
+
+        var accessToken = await TryRefreshAsync(refreshToken, cancellationToken);
+        if (accessToken is not null)
+        {
+            return accessToken;
+        }
+
+        await _secureTokenStore.DeleteRefreshTokenAsync(cancellationToken);
 
         return await LoginAsync(cancellationToken);
     }
@@ -64,14 +64,21 @@ public sealed class AuthenticationService
 
     private async Task<string> LoginAsync(CancellationToken cancellationToken)
     {
+        var parameters = new Parameters
+        {
+            { "connection", _options.ConnectionName },
+            { "audience", _options.Audience }
+        };
+
+        if (!string.IsNullOrWhiteSpace(_options.Prompt))
+        {
+            parameters.Add("prompt", _options.Prompt);
+        }
+
         var result = await _client.LoginAsync(
             new LoginRequest
             {
-                FrontChannelExtraParameters = new Parameters
-                {
-                    { "connection", _options.ConnectionName },
-                    { "audience", _options.Audience }
-                }
+                FrontChannelExtraParameters = parameters
             },
             cancellationToken);
 

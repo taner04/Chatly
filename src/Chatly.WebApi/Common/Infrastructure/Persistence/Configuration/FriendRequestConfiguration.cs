@@ -1,7 +1,5 @@
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.FriendRequests.Models;
-using Chatly.WebApi.Features.Users.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
@@ -19,26 +17,24 @@ internal sealed class FriendRequestConfiguration
         builder.Property(request => request.SecondUserId)
             .IsRequired();
 
-        builder.Property(request => request.RequestedByUserId)
+        builder.Property(request => request.SenderUserId)
+            .IsRequired();
+
+        builder.Property(request => request.ReceiverUserId)
             .IsRequired();
 
         builder.Property(request => request.Status)
             .HasConversion<EnumToStringConverter<FriendRequestStatus>>()
             .IsRequired();
 
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(request => request.FirstUserId)
+        builder.HasOne(request => request.SenderUser)
+            .WithMany(user => user.SentFriendRequests)
+            .HasForeignKey(request => request.SenderUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(request => request.SecondUserId)
-            .OnDelete(DeleteBehavior.Restrict);
-
-        builder.HasOne<User>()
-            .WithMany()
-            .HasForeignKey(request => request.RequestedByUserId)
+        builder.HasOne(request => request.ReceiverUser)
+            .WithMany(user => user.ReceivedFriendRequests)
+            .HasForeignKey(request => request.ReceiverUserId)
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(request => new
@@ -50,13 +46,13 @@ internal sealed class FriendRequestConfiguration
 
         builder.HasIndex(request => new
         {
-            request.RequestedByUserId,
+            request.SenderUserId,
             request.Status
         });
 
         builder.HasIndex(request => new
         {
-            request.SecondUserId,
+            request.ReceiverUserId,
             request.Status
         });
 
@@ -67,17 +63,8 @@ internal sealed class FriendRequestConfiguration
                 "\"FirstUserId\" <> \"SecondUserId\"");
 
             table.HasCheckConstraint(
-                "CK_FriendRequests_RequesterIsParticipant",
-                "\"RequestedByUserId\" = \"FirstUserId\" OR \"RequestedByUserId\" = \"SecondUserId\"");
-
-            table.HasCheckConstraint(
                 "CK_FriendRequests_ValidStatus",
                 "\"Status\" IN ('Pending', 'Accepted', 'Rejected')");
         });
-
-        builder.HasOne(request => request.User)
-            .WithMany()
-            .HasForeignKey(request => request.RequestedByUserId)
-            .OnDelete(DeleteBehavior.Restrict);
     }
 }

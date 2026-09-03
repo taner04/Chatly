@@ -1,5 +1,3 @@
-using Microsoft.AspNetCore.Mvc;
-
 namespace Chatly.WebApi.Common;
 
 /// <summary>

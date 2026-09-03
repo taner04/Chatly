@@ -1,10 +1,4 @@
-﻿using Chatly.WebApi.Common.Infrastructure;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
-using Chatly.WebApi.Features.Users.Models;
-using Mediator;
-using Microsoft.EntityFrameworkCore;
-
-namespace Chatly.WebApi.Common.Behaviours;
+﻿namespace Chatly.WebApi.Common.Behaviours;
 
 public sealed partial class UserProvisioningBehaviour<TMessage, TResponse>(
     ILogger<UserProvisioningBehaviour<TMessage, TResponse>> logger,

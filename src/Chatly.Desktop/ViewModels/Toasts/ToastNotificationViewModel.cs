@@ -1,10 +1,7 @@
-﻿using Chatly.Desktop.Abstractions.Toasts;
+﻿using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Services.Toasts;
-using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using FluentIcons.Common;
-using System;
-using System.Collections.Generic;
 
 namespace Chatly.Desktop.ViewModels.Toasts;
 
@@ -31,14 +28,15 @@ public sealed partial class ToastNotificationViewModel : ViewModelBase, IToastVi
         }
     }
 
+    public ToastType Type { get; }
+    public bool IsSuccess => Type == ToastType.Success;
+    public bool IsError => Type == ToastType.Error;
+
     public Guid Id { get; init; }
 
     public string Title { get; set; }
     public string Message { get; set; }
     public Symbol Icon { get; set; }
-    public ToastType Type { get; }
-    public bool IsSuccess => Type == ToastType.Success;
-    public bool IsError => Type == ToastType.Error;
     public IReadOnlyCollection<ToastButton> Buttons { get; set; }
 
     public event EventHandler<ToastButtonClickedEventArgs>? ButtonClicked;
@@ -46,7 +44,7 @@ public sealed partial class ToastNotificationViewModel : ViewModelBase, IToastVi
     [RelayCommand]
     private void Dismiss()
     {
-        ButtonClicked?.Invoke(this, new ToastButtonClickedEventArgs(null, isDismissed: true));
+        ButtonClicked?.Invoke(this, new ToastButtonClickedEventArgs(null, true));
     }
 
     private void OnButtonClicked(object? sender, EventArgs e)

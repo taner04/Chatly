@@ -2,10 +2,10 @@ using Azure.Storage.Blobs;
 using Azure.Storage.Blobs.Models;
 using Azure.Storage.Sas;
 using Chatly.ServiceDefaults;
-using Chatly.WebApi.Features.Users.Models;
 
 namespace Chatly.WebApi.Common.Infrastructure;
 
+[SingletonService]
 public sealed partial class AzureBlobService(
     ILogger<AzureBlobService> logger,
     BlobServiceClient blobServiceClient)
@@ -19,11 +19,11 @@ public sealed partial class AzureBlobService(
             _containerClient = blobServiceClient.GetBlobContainerClient(
                 AppHostConstants.ProfilePicturesContainerName);
             await _containerClient.CreateIfNotExistsAsync();
-            logger.LogInformation("Azure Blob Storage initialized successfully.");
+            LogInitializationSucceeded();
         }
         catch (Exception exception)
         {
-            logger.LogError(exception, "Failed to initialize Azure Blob Storage.");
+            LogInitializationFailed(exception);
             throw;
         }
     }
@@ -117,36 +117,6 @@ public sealed partial class AzureBlobService(
 
         return $"users/{userId}/profile/{Guid.CreateVersion7():N}{extension}";
     }
-
-    [LoggerMessage(
-        EventId = 0,
-        Level = LogLevel.Information,
-        Message = "Successfully uploaded blob {blobName}.")]
-    private partial void LogUploadSucceeded(string blobName);
-
-    [LoggerMessage(
-        EventId = 1,
-        Level = LogLevel.Error,
-        Message = "Failed to upload blob {blobName}.")]
-    private partial void LogUploadFailed(string blobName, Exception exception);
-
-    [LoggerMessage(
-        EventId = 2,
-        Level = LogLevel.Information,
-        Message = "Successfully deleted blob {blobName}.")]
-    private partial void LogDeleteSucceeded(string blobName);
-
-    [LoggerMessage(
-        EventId = 3,
-        Level = LogLevel.Warning,
-        Message = "Blob {blobName} was not found during deletion.")]
-    private partial void LogDeleteNotFound(string blobName);
-
-    [LoggerMessage(
-        EventId = 4,
-        Level = LogLevel.Error,
-        Message = "Failed to delete blob {blobName}.")]
-    private partial void LogDeleteFailed(string blobName, Exception exception);
 
     internal readonly record struct BlobUploadResult(
         string BlobName,

@@ -23,6 +23,45 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("FirstUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SecondUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SecondUserId");
+
+                    b.HasIndex("FirstUserId", "SecondUserId")
+                        .IsUnique();
+
+                    b.ToTable("Chats", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Chats_DistinctUsers", "\"FirstUserId\" <> \"SecondUserId\"");
+                        });
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -39,10 +78,13 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("FirstUserId")
                         .HasColumnType("uuid");
 
-                    b.Property<Guid>("RequestedByUserId")
+                    b.Property<Guid>("ReceiverUserId")
                         .HasColumnType("uuid");
 
                     b.Property<Guid>("SecondUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SenderUserId")
                         .HasColumnType("uuid");
 
                     b.Property<string>("Status")
@@ -61,18 +103,98 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.HasIndex("FirstUserId", "SecondUserId")
                         .IsUnique();
 
-                    b.HasIndex("RequestedByUserId", "Status");
+                    b.HasIndex("ReceiverUserId", "Status");
 
-                    b.HasIndex("SecondUserId", "Status");
+                    b.HasIndex("SenderUserId", "Status");
 
                     b.ToTable("FriendRequests", null, t =>
                         {
                             t.HasCheckConstraint("CK_FriendRequests_DistinctUsers", "\"FirstUserId\" <> \"SecondUserId\"");
 
-                            t.HasCheckConstraint("CK_FriendRequests_RequesterIsParticipant", "\"RequestedByUserId\" = \"FirstUserId\" OR \"RequestedByUserId\" = \"SecondUserId\"");
-
                             t.HasCheckConstraint("CK_FriendRequests_ValidStatus", "\"Status\" IN ('Pending', 'Accepted', 'Rejected')");
                         });
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Friendships.Models.Friendship", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("FirstUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("SecondUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SecondUserId");
+
+                    b.HasIndex("FirstUserId", "SecondUserId")
+                        .IsUnique();
+
+                    b.ToTable("Friendships", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Friendships_DistinctUsers", "\"FirstUserId\" <> \"SecondUserId\"");
+                        });
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Content")
+                        .IsRequired()
+                        .HasMaxLength(4000)
+                        .HasColumnType("character varying(4000)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("SenderUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("SentAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SenderUserId");
+
+                    b.HasIndex("ChatId", "SentAt", "Id");
+
+                    b.ToTable("Messages", (string)null);
                 });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
@@ -131,7 +253,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.ToTable("Users", (string)null);
                 });
 
-            modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
+            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
                 {
                     b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
                         .WithMany()
@@ -139,10 +261,38 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
-                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "User")
-                        .WithMany("FriendRequests")
-                        .HasForeignKey("RequestedByUserId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("SecondUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "ReceiverUser")
+                        .WithMany("ReceivedFriendRequests")
+                        .HasForeignKey("ReceiverUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "SenderUser")
+                        .WithMany("SentFriendRequests")
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("ReceiverUser");
+
+                    b.Navigation("SenderUser");
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Friendships.Models.Friendship", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("FirstUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
@@ -150,13 +300,37 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .HasForeignKey("SecondUserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
+                });
 
-                    b.Navigation("User");
+            modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", "Chat")
+                        .WithMany("Messages")
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "SenderUser")
+                        .WithMany()
+                        .HasForeignKey("SenderUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Chat");
+
+                    b.Navigation("SenderUser");
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
+                {
+                    b.Navigation("Messages");
                 });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
                 {
-                    b.Navigation("FriendRequests");
+                    b.Navigation("ReceivedFriendRequests");
+
+                    b.Navigation("SentFriendRequests");
                 });
 #pragma warning restore 612, 618
         }

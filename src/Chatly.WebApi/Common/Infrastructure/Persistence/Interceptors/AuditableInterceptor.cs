@@ -1,10 +1,12 @@
 ﻿using Chatly.WebApi.Common.Shared.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Interceptors;
 
-public sealed class AuditableInterceptor(CurrentUserService currentUserService, ILogger<AuditableInterceptor> logger)
+[ScopedService(typeof(ISaveChangesInterceptor))]
+public sealed partial class AuditableInterceptor(
+    CurrentUserService currentUserService,
+    ILogger<AuditableInterceptor> logger)
     : SaveChangesInterceptor
 {
     public override async ValueTask<InterceptionResult<int>> SavingChangesAsync(
@@ -34,9 +36,7 @@ public sealed class AuditableInterceptor(CurrentUserService currentUserService, 
         }
         catch (UnauthorizedAccessException)
         {
-            // If the user is not authenticated, we can choose to set a default value or skip setting the properties.
-            // Here, we set it to "system" to indicate that the change was made by an unauthenticated user or a system process.
-            logger.LogWarning("Unable to retrieve user ID for auditing. Setting 'CreatedBy'/'UpdatedBy' to 'system'.");
+            LogUnauthenticatedAudit();
         }
 
         foreach (var entry in auditableEntries)
@@ -61,4 +61,9 @@ public sealed class AuditableInterceptor(CurrentUserService currentUserService, 
             }
         }
     }
+
+    [LoggerMessage(
+        LogLevel.Warning,
+        "Unable to retrieve user ID for auditing. Setting 'CreatedBy'/'UpdatedBy' to 'system'.")]
+    private partial void LogUnauthenticatedAudit();
 }

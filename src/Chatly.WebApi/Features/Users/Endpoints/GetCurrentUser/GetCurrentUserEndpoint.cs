@@ -1,9 +1,4 @@
-﻿using Chatly.WebApi.Common.Abstractions;
-using Chatly.WebApi.Common.Extensions;
-using Mediator;
-using Microsoft.AspNetCore.Mvc;
-
-namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
+﻿namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
 
 public sealed class GetCurrentUserEndpoint : IEndpoint
 {

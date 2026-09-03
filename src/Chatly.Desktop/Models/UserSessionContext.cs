@@ -1,11 +1,9 @@
-﻿using Chatly.Contracts.Users.Results;
-using CommunityToolkit.Mvvm.ComponentModel;
-
 namespace Chatly.Desktop.Models;
 
+[SingletonService]
 public sealed partial class UserSessionContext : ObservableObject
 {
-    [ObservableProperty] public partial CurrentUserResponse? CurrentUser { get; private set; }
+    [ObservableProperty] public partial User? CurrentUser { get; private set; }
 
     [ObservableProperty] public partial bool IsAuthenticated { get; private set; }
 
@@ -16,7 +14,7 @@ public sealed partial class UserSessionContext : ObservableObject
         AccessToken = accessToken;
     }
 
-    internal void SetAuthenticated(CurrentUserResponse user)
+    internal void SetAuthenticated(User user)
     {
         CurrentUser = user;
         IsAuthenticated = true;
@@ -26,6 +24,10 @@ public sealed partial class UserSessionContext : ObservableObject
     {
         AccessToken = null;
         CurrentUser = null;
+        Friends.Clear();
+        OnlineFriends.Clear();
+        DirectChats.Clear();
+        FriendRequests.Clear();
         IsAuthenticated = false;
     }
 }

@@ -1,7 +1,5 @@
-using Chatly.Contracts.Extensions;
-using Chatly.WebApi.Common.Abstractions;
+using Chatly.Shared.Extensions;
 using Chatly.WebApi.Common.Composition.Options;
-using Chatly.WebApi.Common.Infrastructure;
 using Scalar.AspNetCore;
 
 namespace Chatly.WebApi.Common.Composition.Extensions;

@@ -6,5 +6,10 @@ namespace Chatly.Contracts.SignalR;
 public enum NotificationType
 {
     Unknown,
-    IncomingFriendRequest
+    IncomingFriendRequest,
+    FriendRequestAccepted,
+    IncomingMessage,
+    TypingStatusChanged,
+    OnlineStatusChanged,
+    FriendshipRemoved
 }

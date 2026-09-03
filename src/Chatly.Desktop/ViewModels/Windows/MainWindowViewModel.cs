@@ -1,36 +1,32 @@
-using System;
-using System.Collections.Generic;
-using Chatly.Desktop.Abstractions.Navigation;
-using Chatly.Desktop.Models;
+using System.Collections.ObjectModel;
 using Chatly.Desktop.ViewModels.Pages;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
-using CommunityToolkit.Mvvm.ComponentModel;
+using Chatly.Desktop.ViewModels.Pages.UserPage;
 using FluentIcons.Common;
 
 namespace Chatly.Desktop.ViewModels.Windows;
 
+[SingletonService]
 public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly INavigationService _navigationService;
 
     public MainWindowViewModel(
         INavigationService navigationService,
-        UserSessionContext userContext)
+        UserSessionContext userContext,
+        ChatSidebarViewModel chatSidebar)
     {
         _navigationService = navigationService;
         UserContext = userContext;
-        var chats = NavigationItemViewModel.Create<ChatPageViewModel>(
-            "Chats",
-            Symbol.Chat,
-            navigationService);
-        chats.IsSelected = true;
-        NavigationItems =
+        TopNavigationItems =
         [
-            chats
+            NavigationItemViewModel.Create<UserPageViewModel>("User", Symbol.People, navigationService),
+            NavigationItemViewModel.Create<ChatPageViewModel>("Chats", Symbol.Chat, navigationService)
         ];
+        Chats = chatSidebar.UnreadChats;
         FooterNavigationItems =
         [
-            NavigationItemViewModel.Create<UserInfoPageViewModel>("User", Symbol.People, navigationService)
+            NavigationItemViewModel.Create<SettingsPageViewModel>("Settings", Symbol.Settings, navigationService)
         ];
 
         navigationService.Navigated += NavigationService_OnNavigated;
@@ -38,7 +34,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     public UserSessionContext UserContext { get; }
 
-    public List<NavigationItemViewModel> NavigationItems { get; }
+    public List<NavigationItemViewModel> TopNavigationItems { get; }
+
+    [ObservableProperty] public partial ObservableCollection<ChatPreviewViewModel> Chats { get; set; }
 
     public List<NavigationItemViewModel> FooterNavigationItems { get; }
 
@@ -53,7 +51,7 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
     {
         var currentViewModelType = e.ViewModelType;
 
-        foreach (var item in NavigationItems)
+        foreach (var item in TopNavigationItems)
         {
             item.IsSelected = item.ViewModelType == currentViewModelType;
         }

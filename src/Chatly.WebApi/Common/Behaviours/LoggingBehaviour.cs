@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Mediator;
 
 namespace Chatly.WebApi.Common.Behaviours;
 

@@ -1,8 +1,5 @@
-﻿using Chatly.Desktop.Abstractions.Navigation;
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿namespace Chatly.Desktop.ViewModels;
 
-namespace Chatly.Desktop.ViewModels;
-
-public abstract class ViewModelBase : ObservableObject, INavigableViewModel
+public abstract class ViewModelBase : ObservableObject
 {
 }

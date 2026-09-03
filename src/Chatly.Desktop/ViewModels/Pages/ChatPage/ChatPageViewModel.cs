@@ -1,53 +1,165 @@
-using System.Collections.Generic;
-using Chatly.Desktop.Abstractions.Popups;
-using Chatly.Desktop.Abstractions.Toasts;
-using Chatly.Desktop.ViewModels.Pages.ChatPage.Tabs;
-using Chatly.Desktop.ViewModels.Toasts;
+using System.Collections.ObjectModel;
+using System.Linq;
+using Chatly.Contracts.Endpoints.Messages.Requests;
+using Chatly.Contracts.Endpoints.Messages.Results;
+using Chatly.Desktop.Abstraction.Toasts;
+using Chatly.Desktop.Extensions;
+using Chatly.Desktop.Services.Api;
+using CommunityToolkit.Mvvm.Input;
+using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
-public sealed class ChatPageViewModel : ViewModelBase
+[SingletonService]
+public sealed partial class ChatPageViewModel(
+    ChatSidebarViewModel chatSidebar,
+    MessageWebService messageWebService,
+    UserSessionContext userSessionContext,
+    IToastService toastService,
+    INotificationHubServer notificationHubServer,
+    ILogger<ChatPageViewModel> logger)
+    : PageViewModelBase, INavigationParameterAware
 {
-    public ChatPageViewModel(IPopupService popupService)
+    private const int MessagePageSize = 50;
+    private int _conversationVersion;
+    private Guid? _nextBeforeMessageId;
+    private DateTimeOffset? _nextBeforeSentAt;
+
+    public ObservableCollection<ChatPreviewViewModel> Chats => chatSidebar.Chats;
+
+    public ObservableCollection<ChatMessageViewModel> Messages { get; } = [];
+
+    [ObservableProperty] public partial ChatPreviewViewModel? CurrentChat { get; private set; }
+
+    [ObservableProperty]
+    [NotifyCanExecuteChangedFor(nameof(SendMessageCommand))]
+    public partial string DraftMessage { get; set; } = string.Empty;
+
+    [ObservableProperty] public partial bool IsLoadingMessages { get; private set; }
+
+    [ObservableProperty] public partial bool HasOlderMessages { get; private set; }
+
+    [ObservableProperty] public partial bool IsOtherUserTyping { get; private set; }
+
+    public bool HasCurrentChat => CurrentChat is not null;
+
+    public bool HasMessages => Messages.Count > 0;
+
+    public bool IsEmptyChat => HasCurrentChat && !IsLoadingMessages && !HasMessages;
+
+    public async Task OnNavigatedToAsync(object parameter)
     {
-        OnlineFriends = new FriendsTabViewModel(popupService)
+        await StopOutgoingTypingAsync();
+        ClearOtherUserTyping();
+
+        var chatPreviewViewModel = parameter switch
         {
-            Title = "Online Friends",
-            Friends = ["Alex Lee", "Maya Singh"]
+            ChatPreviewViewModel chat => chat,
+            Guid selectedChatId => Chats.FirstOrDefault(chat => chat.DirectChatId == selectedChatId)
+                                   ?? throw new ArgumentException(
+                                       $"No chat found with ID {selectedChatId}.",
+                                       nameof(parameter)),
+            _ => throw new ArgumentException(
+                $"Expected a {nameof(ChatPreviewViewModel)} or chat ID navigation parameter.",
+                nameof(parameter))
         };
-        AllFriends = new FriendsTabViewModel(popupService)
+
+        CurrentChat?.IsSelected = false;
+        CurrentChat = chatPreviewViewModel;
+        CurrentChat.IsSelected = true;
+        CurrentChat.UnreadMessageCount = 0;
+        UpdateOutgoingTypingStatus();
+
+        Messages.Clear();
+        _nextBeforeSentAt = null;
+        _nextBeforeMessageId = null;
+        HasOlderMessages = false;
+        NotifyMessagesChanged();
+
+        var version = ++_conversationVersion;
+        if (CurrentChat.DirectChatId is { } chatId)
         {
-            Title = "All Friends",
-            Friends = ["Alex Lee", "Maya Singh", "Jordan Brooks"],
-            ShowSearch = true
-        };
+            await LoadMessagesAsync(chatId, version, CancellationToken.None);
+        }
     }
 
-    public List<ChatPreviewViewModel> Chats { get; } =
-    [
-        new("AL", "Alex Lee", "See you in the channel.", "10:42"),
-        new("MS", "Maya Singh", "Sent an attachment", "09:18"),
-        new("JB", "Jordan Brooks", "Lets catch up soon.", "Yesterday")
-    ];
+    public async Task OnNavigatedFromAsync()
+    {
+        await ClearCurrentChatAsync();
+    }
 
-    public FriendsTabViewModel OnlineFriends { get; }
+    partial void OnCurrentChatChanged(ChatPreviewViewModel? value)
+    {
+        OnPropertyChanged(nameof(HasCurrentChat));
+        OnPropertyChanged(nameof(IsEmptyChat));
+        SendMessageCommand.NotifyCanExecuteChanged();
+    }
 
-    public FriendsTabViewModel AllFriends { get; }
+    partial void OnIsLoadingMessagesChanged(bool value)
+    {
+        OnPropertyChanged(nameof(IsEmptyChat));
+    }
 
-    public AllFriendTabPageViewModel AllFriendTabPage { get; } = new();
-}
+    partial void OnDraftMessageChanged(string value)
+    {
+        UpdateOutgoingTypingStatus();
+    }
 
-public sealed class ChatPreviewViewModel(
-    string initials,
-    string name,
-    string preview,
-    string time) : ViewModelBase
-{
-    public string Initials { get; } = initials;
+    private bool CanSendMessage()
+    {
+        return CurrentChat?.DirectChatId is not null && !string.IsNullOrWhiteSpace(DraftMessage);
+    }
 
-    public string Name { get; } = name;
+    [RelayCommand(CanExecute = nameof(CanSendMessage))]
+    private async Task SendMessageAsync()
+    {
+        var chatId = CurrentChat?.DirectChatId;
+        if (chatId is null)
+        {
+            return;
+        }
 
-    public string Preview { get; } = preview;
+        var content = DraftMessage.Trim();
+        var result = await messageWebService.SendMessageAsync(
+            new SendMessageRequest(chatId.Value, content));
 
-    public string Time { get; } = time;
+        if (result.IsFailure)
+        {
+            toastService.ShowError(result.Error);
+            return;
+        }
+
+        if (CurrentChat?.DirectChatId == result.Value.ChatId)
+        {
+            AddMessage(new GetMessagesItem(
+                result.Value.MessageId,
+                result.Value.ChatId,
+                result.Value.SenderUserId,
+                result.Value.Content,
+                result.Value.SentAt));
+        }
+
+        await StopOutgoingTypingAsync();
+        DraftMessage = string.Empty;
+    }
+
+    public async Task CloseChatAsync(Guid chatId)
+    {
+        if (CurrentChat?.DirectChatId == chatId)
+        {
+            await ClearCurrentChatAsync();
+        }
+    }
+
+    private async Task ClearCurrentChatAsync()
+    {
+        await StopOutgoingTypingAsync();
+        ClearOtherUserTyping();
+        CurrentChat?.IsSelected = false;
+        CurrentChat = null;
+        Messages.Clear();
+        HasOlderMessages = false;
+        _conversationVersion++;
+        NotifyMessagesChanged();
+    }
 }

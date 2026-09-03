@@ -1,5 +1,4 @@
 using System.Net;
-using Chatly.WebApi.Common.Shared.Exceptions;
 using Chatly.WebApi.Features.FriendRequests.Models;
 
 namespace Chatly.WebApi.Features.FriendRequests.Exception;

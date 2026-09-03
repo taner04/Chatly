@@ -1,25 +1,23 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
+using Chatly.Contracts.Endpoints.Users.Requests;
+using Chatly.Contracts.Endpoints.Users.Results;
 using Chatly.Contracts.Pagination;
-using Chatly.Contracts.Users.Requests;
-using Chatly.Contracts.Users.Results;
-using Chatly.Desktop.Services.Api.Refit;
+using Chatly.Desktop.Services.Api.Refit.Abstraction;
 using Chatly.Desktop.Services.Api.Results;
 using Refit;
 
 namespace Chatly.Desktop.Services.Api;
 
-public sealed class UserWebService(IUserEndpoint userEndpoint)
+[TransientService]
+public sealed class UserWebService(IChatlyApi chatlyApi)
 {
-    public Task<WebClientResult<PaginationResult<UserSearchResponse>>> SearchUsersAsync(
+    public async Task<WebClientResult<PaginationResult<UserSearchResponse>>> SearchUsersAsync(
         SearchUsersRequest request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.SearchUsersAsync(
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.SearchUsersAsync(
                 request.SearchName,
                 request.PageIndex,
                 request.PageSize,
@@ -27,22 +25,22 @@ public sealed class UserWebService(IUserEndpoint userEndpoint)
             cancellationToken);
     }
 
-    public Task<WebClientResult<CurrentUserResponse>> GetCurrentUserAsync(
+    public async Task<WebClientResult<CurrentUserResponse>> GetCurrentUserAsync(
         CancellationToken cancellationToken = default)
     {
-        return HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.GetCurrentUserAsync(cancellationToken),
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.GetCurrentUserAsync(cancellationToken),
             cancellationToken);
     }
 
-    public Task<WebClientResult<CurrentUserResponse>> UpdateUsernameAsync(
+    public async Task<WebClientResult<CurrentUserResponse>> UpdateUsernameAsync(
         UpdateUsernameRequest request,
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
 
-        return HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.UpdateUsernameAsync(request, cancellationToken),
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.UpdateUsernameAsync(request, cancellationToken),
             cancellationToken);
     }
 
@@ -58,16 +56,16 @@ public sealed class UserWebService(IUserEndpoint userEndpoint)
             request.FileName,
             request.ContentType);
 
-        return await HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.UpdateProfilePictureAsync(file, cancellationToken),
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.UpdateProfilePictureAsync(file, cancellationToken),
             cancellationToken);
     }
 
-    public Task<WebClientResult<GetPictureResponse>> GetCurrentUserProfilePictureAsync(
+    public async Task<WebClientResult<GetCurrentUserProfilePictureResponse>> GetCurrentUserProfilePictureAsync(
         CancellationToken cancellationToken = default)
     {
-        return HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.GetCurrentUserProfilePictureAsync(cancellationToken),
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.GetCurrentUserProfilePictureAsync(cancellationToken),
             cancellationToken);
     }
 
@@ -86,8 +84,8 @@ public sealed class UserWebService(IUserEndpoint userEndpoint)
                     nameof(request)),
                 request.ContentType);
 
-        return await HttpOrchestrator.ExecuteAsync(
-            () => userEndpoint.CompleteOnboardingAsync(
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.CompleteOnboardingAsync(
                 request.NewUsername,
                 file,
                 cancellationToken),

@@ -1,17 +1,17 @@
-using Avalonia.Controls;
-using Chatly.Desktop.Abstractions.Toasts;
-using System;
 using System.Linq;
+using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.ViewModels.Toasts;
 
 namespace Chatly.Desktop.Views.Toasts;
 
+[SingletonService]
 public partial class ToastHostOverlay : UserControl, IToastHost
 {
     public ToastHostOverlay(ToastHostOverlayViewModel viewModel)
     {
         ViewModel = viewModel;
         DataContext = this;
+
         InitializeComponent();
     }
 

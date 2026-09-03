@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using Chatly.WebApi.Common.Shared.Exceptions;
 using FluentValidation;
 
 namespace Chatly.WebApi.Common.Composition.Configs;

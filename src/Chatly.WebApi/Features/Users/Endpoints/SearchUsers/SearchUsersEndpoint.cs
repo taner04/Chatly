@@ -1,9 +1,4 @@
 using Chatly.Contracts.Pagination;
-using Chatly.Contracts.Users.Results;
-using Chatly.WebApi.Common.Abstractions;
-using Chatly.WebApi.Common.Extensions;
-using Mediator;
-using Microsoft.AspNetCore.Mvc;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 

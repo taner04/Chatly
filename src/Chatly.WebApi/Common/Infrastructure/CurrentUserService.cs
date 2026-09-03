@@ -1,7 +1,6 @@
-﻿using Chatly.WebApi.Features.Users.Models;
+﻿namespace Chatly.WebApi.Common.Infrastructure;
 
-namespace Chatly.WebApi.Common.Infrastructure;
-
+[ScopedService]
 public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
 {
     public const string SubClaim = "sub";

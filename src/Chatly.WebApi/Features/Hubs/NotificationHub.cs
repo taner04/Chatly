@@ -1,14 +1,9 @@
-using Chatly.Contracts.SignalR;
-using Chatly.WebApi.Common.Infrastructure;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
-using Chatly.WebApi.Features.Users.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
-using Microsoft.EntityFrameworkCore;
 
 namespace Chatly.WebApi.Features.Hubs;
 
-public static class HubGroup
+public static class NotificationHubGroups
 {
     public static string User(UserId userId)
     {
@@ -17,20 +12,48 @@ public static class HubGroup
 }
 
 [Authorize]
-public sealed class NotificationHub(
+public sealed partial class NotificationHub(
     CurrentUserService currentUser,
-    ChatlyDbContext context) : Hub<INotificationClient>
+    ChatlyDbContext context,
+    OnlinePresenceTracker presenceTracker) : Hub<INotificationHubClient>, INotificationHubServer
 {
-    public override async Task OnConnectedAsync()
+    private const string UserIdContextKey = "Chatly.UserId";
+
+    private async Task<UserId> ValidateUserIdAsync(Guid userId)
     {
+        var authenticatedUserId = await GetCurrentUserIdAsync(Context.ConnectionAborted);
+        if (authenticatedUserId.Value != userId)
+        {
+            throw new HubException("The user ID does not match the authenticated user.");
+        }
+
+        return authenticatedUserId;
+    }
+
+    private async Task<UserId> GetCurrentUserIdAsync(CancellationToken cancellationToken)
+    {
+        if (Context.Items.TryGetValue(UserIdContextKey, out var value) && value is UserId userId)
+        {
+            return userId;
+        }
+
         var auth0Id = currentUser.GetAuth0Id();
-        var userId = await context.Users
+        userId = await context.Users
             .Where(user => user.Auth0Id == auth0Id)
             .Select(user => user.Id)
-            .SingleAsync(Context.ConnectionAborted);
+            .SingleAsync(cancellationToken);
+        Context.Items[UserIdContextKey] = userId;
+        return userId;
+    }
 
-        await Groups.AddToGroupAsync(Context.ConnectionId, HubGroup.User(userId));
-
-        await base.OnConnectedAsync();
+    private Task<List<UserId>> GetFriendUserIdsAsync(UserId userId, CancellationToken cancellationToken)
+    {
+        return context.Friendships
+            .AsNoTracking()
+            .Where(friendship => friendship.FirstUserId == userId || friendship.SecondUserId == userId)
+            .Select(friendship => friendship.FirstUserId == userId
+                ? friendship.SecondUserId
+                : friendship.FirstUserId)
+            .ToListAsync(cancellationToken);
     }
 }

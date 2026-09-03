@@ -1,5 +1,4 @@
 ﻿using Chatly.WebApi.Common.Shared.Models;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;

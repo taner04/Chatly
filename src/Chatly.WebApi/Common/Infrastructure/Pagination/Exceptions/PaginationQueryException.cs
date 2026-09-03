@@ -1,6 +1,5 @@
 using System.Net;
 using Chatly.Contracts.Pagination;
-using Chatly.WebApi.Common.Shared.Exceptions;
 
 namespace Chatly.WebApi.Common.Infrastructure.Pagination.Exceptions;
 

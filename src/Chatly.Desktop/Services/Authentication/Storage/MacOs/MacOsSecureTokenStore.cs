@@ -1,46 +1,34 @@
-﻿using System;
-using System.Threading;
-using System.Threading.Tasks;
-using Chatly.Desktop.Abstractions.Authentication;
+﻿using Chatly.Desktop.Abstraction.Authentication;
+using Chatly.Desktop.Options;
+using Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop;
+using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Authentication.Storage.MacOs;
 
-internal sealed class MacOsSecureTokenStore : ISecureTokenStore
+internal sealed partial class MacOsSecureTokenStore : ISecureTokenStore
 {
     private const string Service = "com.chatly.desktop";
-    private const string Account = "refresh-token";
+    private readonly string _account;
 
-    public Task SaveRefreshTokenAsync(
-        string refreshToken,
-        CancellationToken cancellationToken)
+    public MacOsSecureTokenStore(IOptions<DesktopProfileOption> profileOptions)
     {
-        ArgumentException.ThrowIfNullOrWhiteSpace(refreshToken);
-        cancellationToken.ThrowIfCancellationRequested();
-
-
-        return Task.CompletedTask;
+        var profileName = profileOptions.Value.Name;
+        _account = profileName == DesktopProfileOption.DefaultName
+            ? "refresh-token"
+            : $"refresh-token-{profileName}";
     }
 
-    public Task<string?> TryReadRefreshTokenAsync(
-        CancellationToken cancellationToken)
+    private static CfDictionary CreateIdentityQuery(nint service, nint account)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        // SecItemCopyMatching(...)
-        // errSecItemNotFound => null
-        // errSecSuccess => decode returned data as UTF-8
-
-        return Task.FromResult<string?>(null);
+        var query = new CfDictionary();
+        query.Set(SecurityConstants.SecClass, SecurityConstants.SecClassGenericPassword);
+        query.Set(SecurityConstants.SecAttrService, service);
+        query.Set(SecurityConstants.SecAttrAccount, account);
+        return query;
     }
 
-    public Task DeleteRefreshTokenAsync(
-        CancellationToken cancellationToken)
+    private static InvalidOperationException CreateKeychainException(string message, int status)
     {
-        cancellationToken.ThrowIfCancellationRequested();
-
-        // SecItemDelete(...)
-        // Treat errSecItemNotFound as success
-
-        return Task.CompletedTask;
+        return new InvalidOperationException($"{message}. OSStatus: {status}.");
     }
 }

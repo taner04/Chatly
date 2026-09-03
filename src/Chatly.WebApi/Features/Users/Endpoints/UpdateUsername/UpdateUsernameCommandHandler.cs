@@ -1,7 +1,4 @@
-using Chatly.Contracts.Users.Results;
-using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Chatly.WebApi.Features.Users.Services;
-using Mediator;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 

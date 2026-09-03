@@ -1,9 +1,6 @@
-using System;
-using System.Collections.Generic;
 using System.Linq;
 using Avalonia;
 using Avalonia.Animation;
-using Avalonia.Controls;
 using Avalonia.Media;
 using Avalonia.Threading;
 
@@ -40,6 +37,7 @@ public sealed class AnimatedToastPanel : Panel
         foreach (var child in Children)
         {
             var bounds = new Rect(0, y, finalSize.Width, child.DesiredSize.Height);
+            //TODO: Fix possible loss of precision when comparing double values
             if (_previousBounds.TryGetValue(child, out var previousBounds) && previousBounds.Y != bounds.Y)
             {
                 AnimateToNewPosition(child, previousBounds.Y - bounds.Y);
@@ -57,14 +55,16 @@ public sealed class AnimatedToastPanel : Panel
     {
         if (child.RenderTransform is not TranslateTransform transform)
         {
-            transform = new TranslateTransform();
-            transform.Transitions = new Transitions
+            transform = new TranslateTransform
             {
-                new DoubleTransition
-                {
-                    Property = TranslateTransform.YProperty,
-                    Duration = TimeSpan.FromMilliseconds(180)
-                }
+                Transitions =
+                [
+                    new DoubleTransition
+                    {
+                        Property = TranslateTransform.YProperty,
+                        Duration = TimeSpan.FromMilliseconds(180)
+                    }
+                ]
             };
             child.RenderTransform = transform;
         }

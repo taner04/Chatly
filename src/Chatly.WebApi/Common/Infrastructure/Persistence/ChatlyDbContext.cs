@@ -1,7 +1,8 @@
 using Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
+using Chatly.WebApi.Features.Chats.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
-using Chatly.WebApi.Features.Users.Models;
-using Microsoft.EntityFrameworkCore;
+using Chatly.WebApi.Features.Friendships.Models;
+using Chatly.WebApi.Features.Messages.Models;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence;
 
@@ -9,6 +10,9 @@ public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) :
 {
     public DbSet<User> Users => Set<User>();
     public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
+    public DbSet<Friendship> Friendships => Set<Friendship>();
+    public DbSet<Chat> Chats => Set<Chat>();
+    public DbSet<Message> Messages => Set<Message>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -17,6 +21,6 @@ public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) :
 
     protected override void ConfigureConventions(ModelConfigurationBuilder configurationBuilder)
     {
-        configurationBuilder.RegisterAllInEfcVogenIdConverter();
+        configurationBuilder.RegisterAllInEfCoreVogenIdConverter();
     }
 }

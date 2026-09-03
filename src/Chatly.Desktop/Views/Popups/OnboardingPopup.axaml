@@ -15,16 +15,7 @@
             <Setter Property="Height" Value="42" />
             <Setter Property="Padding" Value="12,0" />
             <Setter Property="FontSize" Value="14" />
-            <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
             <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
-            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
-            <Setter Property="BorderThickness" Value="1" />
-            <Setter Property="CornerRadius" Value="10" />
-        </Style>
-
-        <Style Selector="TextBox.profile-input:focus-within">
-            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
         </Style>
 
         <Style Selector="Button.avatar-button">
@@ -48,11 +39,8 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
             <Setter Property="Foreground" Value="White" />
-            <Setter Property="BorderThickness" Value="0" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="FontWeight" Value="SemiBold" />
         </Style>
     </UserControl.Styles>
 
@@ -170,13 +158,13 @@
             <TextBlock Text="Username"
                        FontSize="13"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}" />
-            <TextBox Classes="profile-input"
+            <TextBox Classes="chatly-input profile-input"
                      Text="{Binding ViewModel.Username, Mode=TwoWay}"
                      PlaceholderText="Username"
                      MaxLength="30" />
         </StackPanel>
 
-        <Button Classes="continue-button"
+        <Button Classes="accent-button continue-button"
                 Content="Continue"
                 Command="{Binding ViewModel.CompleteOnboardingCommand}" />
     </StackPanel>

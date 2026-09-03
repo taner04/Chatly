@@ -1,9 +1,4 @@
-using Chatly.Contracts.FriendRequests.Requests;
-using Chatly.WebApi.Common.Abstractions;
-using Chatly.WebApi.Common.Extensions;
-using Chatly.WebApi.Features.Users.Models;
-using Mediator;
-using Microsoft.AspNetCore.Mvc;
+using Chatly.Contracts.Endpoints.FriendRequests.Requests;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 

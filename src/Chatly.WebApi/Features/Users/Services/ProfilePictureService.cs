@@ -1,8 +1,6 @@
-using Chatly.WebApi.Common.Infrastructure;
-using Chatly.WebApi.Features.Users.Models;
-
 namespace Chatly.WebApi.Features.Users.Services;
 
+[ScopedService]
 public sealed class ProfilePictureService(AzureBlobService blobService)
 {
     public async Task<ProfilePictureChange> PrepareReplacementAsync(

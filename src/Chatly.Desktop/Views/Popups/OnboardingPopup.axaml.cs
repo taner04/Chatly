@@ -1,10 +1,8 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
-using Chatly.Desktop.Abstractions.Popups;
-using OnboardingPopupViewModel = Chatly.Desktop.ViewModels.Popups.OnboardingPopupViewModel;
+﻿using OnboardingPopupViewModel = Chatly.Desktop.ViewModels.Popups.OnboardingPopupViewModel;
 
 namespace Chatly.Desktop.Views.Popups;
 
+[TransientService(typeof(IPopupOverlay<OnboardingPopupViewModel>))]
 public partial class OnboardingPopup : UserControl, IPopupOverlay<OnboardingPopupViewModel>
 {
     public OnboardingPopup(OnboardingPopupViewModel viewModel)

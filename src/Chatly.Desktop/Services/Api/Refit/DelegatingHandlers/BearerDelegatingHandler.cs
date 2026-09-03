@@ -1,11 +1,9 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
-using System.Threading;
-using System.Threading.Tasks;
-using Chatly.Desktop.Models;
 
 namespace Chatly.Desktop.Services.Api.Refit.DelegatingHandlers;
 
+[TransientService]
 internal sealed class BearerDelegatingHandler(UserSessionContext context) : DelegatingHandler
 {
     protected override Task<HttpResponseMessage> SendAsync(
