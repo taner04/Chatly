@@ -5,13 +5,8 @@
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Tabs.FriendsTabView"
              x:DataType="local:FriendsTabView">
-    <Grid RowDefinitions="Auto,*" RowSpacing="16">
-        <TextBox Grid.Row="0"
-                 Classes="chatly-input friend-search"
-                 IsVisible="{Binding ViewModel.ShowSearch, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}"
-                 PlaceholderText="Search friend..." />
-        <ItemsControl Grid.Row="1"
-                      ItemsSource="{Binding ViewModel.Friends, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}">
+    <Grid>
+        <ItemsControl ItemsSource="{Binding ViewModel.Friends, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border Classes="list-row"

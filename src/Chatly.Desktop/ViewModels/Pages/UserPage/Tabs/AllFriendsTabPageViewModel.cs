@@ -6,7 +6,6 @@ public sealed class AllFriendsTabPageViewModel(
     UserSessionContext userSessionContext)
     : FriendsTabViewModel(
         actions,
-        userSessionContext.Friends,
-        true)
+        userSessionContext.Friends)
 {
 }

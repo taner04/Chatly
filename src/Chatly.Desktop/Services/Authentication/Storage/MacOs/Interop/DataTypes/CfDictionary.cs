@@ -1,6 +1,6 @@
-namespace Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop;
+namespace Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop.DataTypes;
 
-internal sealed class CfDictionary : IDisposable
+internal sealed class CfDictionary : Cf
 {
     public CfDictionary()
     {
@@ -10,22 +10,6 @@ internal sealed class CfDictionary : IDisposable
                 0,
                 0,
                 0);
-
-        if (Handle == 0)
-        {
-            throw new InvalidOperationException(
-                "Failed to create CFDictionary.");
-        }
-    }
-
-    public nint Handle { get; }
-
-    public void Dispose()
-    {
-        if (Handle != 0)
-        {
-            CoreFoundationNative.CFRelease(Handle);
-        }
     }
 
     public void Set(

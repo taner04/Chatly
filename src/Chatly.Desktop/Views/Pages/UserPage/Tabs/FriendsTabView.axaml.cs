@@ -12,8 +12,6 @@ public partial class FriendsTabView : UserControl
             control => control.ViewModel,
             (control, value) => control.ViewModel = value);
 
-    private FriendsTabViewModel? _viewModel;
-
     public FriendsTabView()
     {
         InitializeComponent();
@@ -21,8 +19,8 @@ public partial class FriendsTabView : UserControl
 
     public FriendsTabViewModel? ViewModel
     {
-        get => _viewModel;
-        set => SetAndRaise(ViewModelProperty, ref _viewModel, value);
+        get;
+        set => SetAndRaise(ViewModelProperty, ref field, value);
     }
 
     private void RemoveFriend_OnClick(object? sender, RoutedEventArgs e)

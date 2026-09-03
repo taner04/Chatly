@@ -1,6 +1,6 @@
-namespace Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop;
+namespace Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop.DataTypes;
 
-internal sealed unsafe class CfData : IDisposable
+internal sealed unsafe class CfData : Cf
 {
     public CfData(ReadOnlySpan<byte> data)
     {
@@ -11,22 +11,6 @@ internal sealed unsafe class CfData : IDisposable
                 ptr,
                 data.Length);
         }
-
-        if (Handle == 0)
-        {
-            throw new InvalidOperationException(
-                "Failed to create CFData.");
-        }
-    }
-
-    public nint Handle { get; }
-
-    public void Dispose()
-    {
-        if (Handle != 0)
-        {
-            CoreFoundationNative.CFRelease(Handle);
-        }
     }
 
     public static byte[] ToArray(nint handle)
@@ -36,16 +20,14 @@ internal sealed unsafe class CfData : IDisposable
             return [];
         }
 
-        var length =
-            CoreFoundationNative.CFDataGetLength(handle);
+        var length = CoreFoundationNative.CFDataGetLength(handle);
 
         if (length <= 0)
         {
             return [];
         }
 
-        var source =
-            CoreFoundationNative.CFDataGetBytePtr(handle);
+        var source = CoreFoundationNative.CFDataGetBytePtr(handle);
 
         if (source == 0)
         {
