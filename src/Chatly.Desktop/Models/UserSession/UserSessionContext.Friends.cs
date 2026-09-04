@@ -64,6 +64,25 @@ public sealed partial class UserSessionContext
         }
     }
 
+    public void UpdateUserProfile(Guid userId, string? username, string? profilePictureUrl)
+    {
+        UpdateProfile(CurrentUser);
+        UpdateProfile(Friends.FirstOrDefault(friend => friend.User.Id == userId)?.User);
+        UpdateProfile(DirectChats.FirstOrDefault(chat => chat.User.Id == userId)?.User);
+        return;
+
+        void UpdateProfile(User? user)
+        {
+            if (user?.Id != userId)
+            {
+                return;
+            }
+
+            user.Username = username;
+            user.ProfilePictureUrl = profilePictureUrl;
+        }
+    }
+
     public bool RemoveFriend(Guid userId)
     {
         var friend = Friends.FirstOrDefault(existing => existing.User.Id == userId);
