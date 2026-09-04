@@ -2,14 +2,11 @@ namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
 public sealed class ChatMessageViewModel(
     Guid messageId,
-    Guid senderUserId,
     string content,
     DateTimeOffset sentAt,
     bool isOwnMessage)
 {
     public Guid MessageId { get; } = messageId;
-
-    public Guid SenderUserId { get; } = senderUserId;
 
     public string Content { get; } = content;
 

@@ -49,23 +49,19 @@ public sealed class UserWebService(IChatlyApi chatlyApi)
         CancellationToken cancellationToken = default)
     {
         ArgumentNullException.ThrowIfNull(request);
-        ArgumentNullException.ThrowIfNull(request.Content);
 
-        var file = new StreamPart(
-            request.Content,
-            request.FileName,
-            request.ContentType);
+        var file = request.Content is null
+            ? null
+            : new StreamPart(
+                request.Content,
+                request.FileName
+                ?? throw new ArgumentException(
+                    "A file name is required when profile-picture content is provided.",
+                    nameof(request)),
+                request.ContentType);
 
         return await ApiRequestExecutor.ExecuteAsync(
             () => chatlyApi.UpdateProfilePictureAsync(file, cancellationToken),
-            cancellationToken);
-    }
-
-    public async Task<WebClientResult<GetCurrentUserProfilePictureResponse>> GetCurrentUserProfilePictureAsync(
-        CancellationToken cancellationToken = default)
-    {
-        return await ApiRequestExecutor.ExecuteAsync(
-            () => chatlyApi.GetCurrentUserProfilePictureAsync(cancellationToken),
             cancellationToken);
     }
 

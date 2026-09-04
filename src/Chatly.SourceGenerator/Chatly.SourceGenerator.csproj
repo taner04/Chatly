@@ -13,4 +13,13 @@
         <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" PrivateAssets="all"/>
     </ItemGroup>
 
+    <ItemGroup>
+        <EmbeddedResource Include="Generators/Options/Options.cs.template"
+                          LogicalName="Chatly.SourceGenerator.Templates.Options.cs.template"
+                          WithCulture="false"/>
+        <EmbeddedResource Include="Generators/Services/Services.cs.template"
+                          LogicalName="Chatly.SourceGenerator.Templates.Services.cs.template"
+                          WithCulture="false"/>
+    </ItemGroup>
+
 </Project>

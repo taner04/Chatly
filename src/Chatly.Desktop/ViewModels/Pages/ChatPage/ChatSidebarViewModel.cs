@@ -56,7 +56,7 @@ public sealed class ChatSidebarViewModel : ViewModelBase
 
     private ChatPreviewViewModel CreateChatPreview(DirectChat chat)
     {
-        return new ChatPreviewViewModel(chat, _navigationService);
+        return new ChatPreviewViewModel(chat, _navigationService, chat.UnreadMessageCount);
     }
 
     private void SubscribeToChats()

@@ -24,9 +24,4 @@ public sealed class WebClientResult<T> : WebClientResult
     {
         return new WebClientResult<T>(error);
     }
-
-    public static WebClientResult<T> Success(T value)
-    {
-        return new WebClientResult<T>(value);
-    }
 }

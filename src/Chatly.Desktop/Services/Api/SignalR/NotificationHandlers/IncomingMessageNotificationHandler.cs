@@ -17,14 +17,15 @@ public sealed class IncomingMessageNotificationHandler(
 
     protected override Task HandleNotificationAsync(IncomingChatMessage message)
     {
-        UiThreadDispatcher.SafeInvoke(() =>
+        return UiThreadDispatcher.SafeInvokeAsync(async () =>
         {
-            if (!chatPage.ReceiveIncomingMessage(message))
+            if (chatPage.ReceiveIncomingMessage(message))
             {
-                chatSidebar.ReceiveIncomingMessage(message.ChatId);
+                await chatPage.MarkChatReadAsync(message.ChatId);
+                return;
             }
-        });
 
-        return Task.CompletedTask;
+            chatSidebar.ReceiveIncomingMessage(message.ChatId);
+        });
     }
 }

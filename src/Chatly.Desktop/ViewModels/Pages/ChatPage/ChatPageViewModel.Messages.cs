@@ -103,7 +103,6 @@ public sealed partial class ChatPageViewModel
     {
         return new ChatMessageViewModel(
             message.MessageId,
-            message.SenderUserId,
             message.Content,
             message.SentAt,
             message.SenderUserId == userSessionContext.CurrentUser?.Id);

@@ -26,6 +26,13 @@ public sealed class ProfilePictureService(AzureBlobService blobService)
         return new ProfilePictureChange(upload.BlobName, previousBlobName);
     }
 
+    public ProfilePictureChange PrepareRemoval(User user)
+    {
+        var previousBlobName = user.ProfilePictureKey;
+        user.ProfilePictureKey = null;
+        return new ProfilePictureChange(null, previousBlobName);
+    }
+
     public async Task CompleteAsync(
         ProfilePictureChange change,
         CancellationToken cancellationToken)
@@ -38,10 +45,13 @@ public sealed class ProfilePictureService(AzureBlobService blobService)
 
     public async Task RollbackAsync(ProfilePictureChange change)
     {
-        await blobService.DeleteAsync(change.NewBlobName, CancellationToken.None);
+        if (change.NewBlobName is not null)
+        {
+            await blobService.DeleteAsync(change.NewBlobName, CancellationToken.None);
+        }
     }
 
     public readonly record struct ProfilePictureChange(
-        string NewBlobName,
+        string? NewBlobName,
         string? PreviousBlobName);
 }

@@ -31,7 +31,7 @@ internal static class ServiceCollectionExtensions
 
             services.AddSecureTokenStore();
 
-            services.AddGeneratedOptions(configuration);
+            services.AddGeneratedOptions();
             services.AddGeneratedServices();
 
             return services;

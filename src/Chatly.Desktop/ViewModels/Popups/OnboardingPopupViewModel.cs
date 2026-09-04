@@ -1,4 +1,3 @@
-using System.IO;
 using Chatly.Contracts.Endpoints.Users.Requests;
 using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Extensions;
@@ -12,7 +11,7 @@ namespace Chatly.Desktop.ViewModels.Popups;
 public sealed partial class OnboardingPopupViewModel(
     IToastService toastService,
     UserSessionContext userContext,
-    UserWebService userWebService) : PopupOverlayViewModel
+    UserWebService userWebService) : ProfilePicturePopupViewModel
 {
     public override string Title => "Complete your profile";
 
@@ -46,13 +45,7 @@ public sealed partial class OnboardingPopupViewModel(
         }
 
         await using var content = await ProfilePicture.OpenReadAsync();
-        var contentType = Path.GetExtension(ProfilePicture.Name).ToLowerInvariant() switch
-        {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".webp" => "image/webp",
-            _ => "application/octet-stream"
-        };
+        var contentType = GetContentType(ProfilePicture);
 
         var result =
             await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username, content,

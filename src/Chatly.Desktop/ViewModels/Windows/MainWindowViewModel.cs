@@ -13,11 +13,9 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 
     public MainWindowViewModel(
         INavigationService navigationService,
-        UserSessionContext userContext,
         ChatSidebarViewModel chatSidebar)
     {
         _navigationService = navigationService;
-        UserContext = userContext;
         TopNavigationItems =
         [
             NavigationItemViewModel.Create<UserPageViewModel>("User", Symbol.People, navigationService),
@@ -32,15 +30,11 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         navigationService.Navigated += NavigationService_OnNavigated;
     }
 
-    public UserSessionContext UserContext { get; }
-
     public List<NavigationItemViewModel> TopNavigationItems { get; }
 
     [ObservableProperty] public partial ObservableCollection<ChatPreviewViewModel> Chats { get; set; }
 
     public List<NavigationItemViewModel> FooterNavigationItems { get; }
-
-    [ObservableProperty] public partial NavigationItemViewModel CurrentNavigationItem { get; set; } = null!;
 
     public void Dispose()
     {

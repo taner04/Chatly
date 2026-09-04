@@ -13,4 +13,15 @@ public sealed class NotificationPublisher(
         ArgumentNullException.ThrowIfNull(message);
         await hubContext.Clients.Group(NotificationHubGroups.User(receiverId)).Receive(message);
     }
+
+    public Task PublishAsync(IEnumerable<UserId> receiverIds, NotificationMessage message)
+    {
+        ArgumentNullException.ThrowIfNull(receiverIds);
+        ArgumentNullException.ThrowIfNull(message);
+
+        return Task.WhenAll(receiverIds
+            .Distinct()
+            .Select(receiverId =>
+                hubContext.Clients.Group(NotificationHubGroups.User(receiverId)).Receive(message)));
+    }
 }

@@ -8,7 +8,7 @@ public sealed class EmptyCollectionToVisibilityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {
-        return value is ICollection collection && collection.Count == 0;
+        return value is ICollection { Count: 0 };
     }
 
     public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)

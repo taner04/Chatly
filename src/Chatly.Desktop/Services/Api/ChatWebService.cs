@@ -14,4 +14,13 @@ public sealed class ChatWebService(IChatlyApi chatlyApi)
             () => chatlyApi.GetChatsAsync(cancellationToken),
             cancellationToken);
     }
+
+    public async Task<WebClientResult> MarkChatReadAsync(
+        Guid chatId,
+        CancellationToken cancellationToken = default)
+    {
+        return await ApiRequestExecutor.ExecuteAsync(
+            () => chatlyApi.MarkChatReadAsync(chatId, cancellationToken),
+            cancellationToken);
+    }
 }

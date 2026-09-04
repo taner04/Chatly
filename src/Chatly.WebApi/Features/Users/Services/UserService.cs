@@ -35,6 +35,24 @@ public sealed class UserService(
         user.Username = username;
     }
 
+    public async Task<List<UserId>> GetProfileUpdateRecipientIdsAsync(
+        UserId userId,
+        CancellationToken cancellationToken)
+    {
+        var recipientIds = await context.Friendships
+            .AsNoTracking()
+            .Where(friendship =>
+                friendship.FirstUserId == userId ||
+                friendship.SecondUserId == userId)
+            .Select(friendship => friendship.FirstUserId == userId
+                ? friendship.SecondUserId
+                : friendship.FirstUserId)
+            .ToListAsync(cancellationToken);
+
+        recipientIds.Add(userId);
+        return recipientIds;
+    }
+
     public CurrentUserResponse CreateResponse(User user)
     {
         return new CurrentUserResponse(

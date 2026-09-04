@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="Aspire.Npgsql.EntityFrameworkCore.PostgreSQL"/>
         <PackageReference Include="Azure.Storage.Blobs"/>
         <PackageReference Include="FluentValidation"/>
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions"/>
@@ -40,14 +39,6 @@
         <ProjectReference Include="..\Chatly.SourceGenerator\Chatly.SourceGenerator.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="false"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Common\Infrastructure\Persistence\Migrations\"/>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Remove="app.manifest.json"/>
     </ItemGroup>
 
 </Project>

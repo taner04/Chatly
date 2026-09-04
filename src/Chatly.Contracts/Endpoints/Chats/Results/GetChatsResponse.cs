@@ -5,4 +5,5 @@ public sealed record GetChatsResponse(
     Guid AssociatedUserId,
     string AssociatedUsername,
     string? AssociatedProfilePictureUrl,
-    bool IsOnline);
+    bool IsOnline,
+    int UnreadMessageCount);

@@ -62,6 +62,24 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.ChatReadState", b =>
+                {
+                    b.Property<Guid>("ChatId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("LastReadAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.HasKey("ChatId", "UserId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("ChatReadStates");
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -265,6 +283,21 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .WithMany()
                         .HasForeignKey("SecondUserId")
                         .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.ChatReadState", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", null)
+                        .WithMany()
+                        .HasForeignKey("ChatId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });
 

@@ -11,8 +11,7 @@ public sealed partial class ToastNotificationViewModel : ViewModelBase, IToastVi
         string title,
         string message,
         Symbol icon,
-        ToastType type = ToastType.Information,
-        IReadOnlyCollection<ToastButton>? buttons = null)
+        ToastType type = ToastType.Information)
     {
         Id = Guid.CreateVersion7();
 
@@ -20,12 +19,6 @@ public sealed partial class ToastNotificationViewModel : ViewModelBase, IToastVi
         Message = message;
         Icon = icon;
         Type = type;
-        Buttons = buttons ?? [];
-
-        foreach (var button in Buttons)
-        {
-            button.Clicked += OnButtonClicked;
-        }
     }
 
     public ToastType Type { get; }
@@ -37,21 +30,12 @@ public sealed partial class ToastNotificationViewModel : ViewModelBase, IToastVi
     public string Title { get; set; }
     public string Message { get; set; }
     public Symbol Icon { get; set; }
-    public IReadOnlyCollection<ToastButton> Buttons { get; set; }
 
-    public event EventHandler<ToastButtonClickedEventArgs>? ButtonClicked;
+    public event EventHandler? Dismissed;
 
     [RelayCommand]
     private void Dismiss()
     {
-        ButtonClicked?.Invoke(this, new ToastButtonClickedEventArgs(null, true));
-    }
-
-    private void OnButtonClicked(object? sender, EventArgs e)
-    {
-        if (sender is ToastButton button)
-        {
-            ButtonClicked?.Invoke(this, new ToastButtonClickedEventArgs(button));
-        }
+        Dismissed?.Invoke(this, EventArgs.Empty);
     }
 }

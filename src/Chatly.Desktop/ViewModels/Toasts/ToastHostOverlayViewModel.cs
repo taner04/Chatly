@@ -4,7 +4,7 @@ using Chatly.Desktop.Abstraction.Toasts;
 namespace Chatly.Desktop.ViewModels.Toasts;
 
 [SingletonService]
-public sealed partial class ToastHostOverlayViewModel : ViewModelBase, IToastHostViewModel
+public sealed partial class ToastHostOverlayViewModel : ViewModelBase
 {
     [ObservableProperty] public partial ObservableCollection<IToastViewModel> Toasts { get; set; } = [];
 }

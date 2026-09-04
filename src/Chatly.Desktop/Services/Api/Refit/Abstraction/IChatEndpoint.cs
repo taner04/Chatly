@@ -8,4 +8,9 @@ public interface IChatEndpoint
     [Get("/api/chats")]
     Task<ApiResponse<IReadOnlyList<GetChatsResponse>>> GetChatsAsync(
         CancellationToken cancellationToken);
+
+    [Put("/api/chats/{chatId}/read")]
+    Task<IApiResponse> MarkChatReadAsync(
+        Guid chatId,
+        CancellationToken cancellationToken);
 }

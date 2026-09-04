@@ -29,12 +29,12 @@ internal static class ApiRequestExecutor
         catch (HttpRequestException exception)
         {
             return WebClientError.CustomError(
-                "network.unavailable", "Connection failed", exception.Message);
+                "network.unavailable", exception.Message);
         }
         catch (Exception exception)
         {
             return WebClientError.CustomError(
-                "client.unexpected", "Unexpected client error", exception.Message);
+                "client.unexpected", exception.Message);
         }
     }
 
@@ -60,12 +60,12 @@ internal static class ApiRequestExecutor
         catch (HttpRequestException exception)
         {
             return WebClientError.CustomError(
-                "network.unavailable", "Connection failed", exception.Message);
+                "network.unavailable", exception.Message);
         }
         catch (Exception exception)
         {
             return WebClientError.CustomError(
-                "client.unexpected", "Unexpected client error", exception.Message);
+                "client.unexpected", exception.Message);
         }
     }
 
@@ -75,7 +75,6 @@ internal static class ApiRequestExecutor
         {
             return WebClientError.CustomError(
                 "response.invalid",
-                "Invalid API response",
                 "The API returned neither content nor error details.");
         }
 
@@ -96,6 +95,6 @@ internal static class ApiRequestExecutor
         }
 
         return WebClientError.CustomError(
-            "api.error", "API request failed", exception.Message);
+            "api.error", exception.Message);
     }
 }

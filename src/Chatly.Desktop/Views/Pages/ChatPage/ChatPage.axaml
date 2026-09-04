@@ -196,10 +196,18 @@
                     BorderThickness="1"
                     CornerRadius="12"
                     IsVisible="{Binding ViewModel.HasCurrentChat}">
-                <TextBlock Text="{Binding ViewModel.CurrentChat.Name}"
-                           FontSize="16"
-                           FontWeight="SemiBold"
-                           Foreground="{DynamicResource ChatlyTextBrush}" />
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <controls:UserAvatar Width="32"
+                                         Height="32"
+                                         DisplayName="{Binding ViewModel.CurrentChat.User.Username}"
+                                         ProfilePictureUrl="{Binding ViewModel.CurrentChat.User.ProfilePictureUrl}"
+                                         IsOnline="{Binding ViewModel.CurrentChat.User.IsOnline}" />
+                    <TextBlock Text="{Binding ViewModel.CurrentChat.Name}"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                </StackPanel>
             </Border>
 
             <ScrollViewer x:Name="MessagesScrollViewer"

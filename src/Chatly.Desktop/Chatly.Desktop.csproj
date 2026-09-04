@@ -50,10 +50,6 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="Styles\ChatlyTheme.axaml"/>
-    </ItemGroup>
-
-    <ItemGroup>
         <Compile Update="App.axaml.cs">
             <DependentUpon>App.axaml</DependentUpon>
         </Compile>
@@ -97,12 +93,6 @@
             <DependentUpon>UserAvatar.axaml</DependentUpon>
         </Compile>
         <Compile Update="Services\Navigation\NavigationService.Lifecycle.cs">
-            <DependentUpon>NavigationService.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Services\Navigation\NavigationService.Navigation.cs">
-            <DependentUpon>NavigationService.cs</DependentUpon>
-        </Compile>
-        <Compile Update="Services\Navigation\NavigationService.Properties.cs">
             <DependentUpon>NavigationService.cs</DependentUpon>
         </Compile>
         <Compile Update="Views\Pages\UserPage\UserPage.axaml.cs">

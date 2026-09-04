@@ -4,8 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="using:Chatly.Desktop.Views.Toasts"
              xmlns:toastViews="using:Chatly.Desktop.Views.Toasts"
-             xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
-             xmlns:toasts="using:Chatly.Desktop.Services.Toasts"
+              xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
              xmlns:ic="using:FluentIcons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Chatly.Desktop.Views.Toasts.ToastHostOverlay"
@@ -54,7 +53,7 @@
                         BorderThickness="1"
                         CornerRadius="14"
                         BoxShadow="0 12 28 0 #80000000">
-                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto,Auto" ColumnSpacing="9"
+                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="9"
                           RowSpacing="3">
                         <Border Grid.RowSpan="2"
                                 Classes="toast-icon"
@@ -89,25 +88,6 @@
                                    FontSize="11"
                                    TextWrapping="Wrap"
                                    Foreground="{DynamicResource ChatlyMutedTextBrush}" />
-                        <ItemsControl Grid.Row="2"
-                                      Grid.Column="1"
-                                      Grid.ColumnSpan="2"
-                                      Margin="0,5,0,0"
-                                      HorizontalAlignment="Right"
-                                      ItemsSource="{Binding Buttons}">
-                            <ItemsControl.ItemsPanel>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal" Spacing="6" />
-                                </ItemsPanelTemplate>
-                            </ItemsControl.ItemsPanel>
-                            <ItemsControl.ItemTemplate>
-                                <DataTemplate x:DataType="toasts:ToastButton">
-                                    <Button Classes="accent-button opacity-hover toast-action"
-                                            Content="{Binding Text}"
-                                            Command="{Binding ClickCommand}" />
-                                </DataTemplate>
-                            </ItemsControl.ItemTemplate>
-                        </ItemsControl>
                     </Grid>
                 </Border>
             </DataTemplate>

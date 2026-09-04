@@ -7,18 +7,13 @@ public sealed class UpdateProfilePictureEndpoint : IEndpoint
         app.MapPut(
                 "/api/users/me/profile-picture",
                 async (
-                    [FromForm] IFormFile file,
+                    [FromForm] IFormFile? file,
                     [FromServices] IMediator mediator,
                     CancellationToken cancellationToken) =>
                 {
-                    await using var content = file.OpenReadStream();
-                    var command = new UpdateProfilePictureCommand(
-                        content,
-                        file.FileName,
-                        file.ContentType,
-                        file.Length);
-
-                    return Results.Ok(await mediator.Send(command, cancellationToken));
+                    return Results.Ok(await mediator.Send(
+                        new UpdateProfilePictureCommand(file),
+                        cancellationToken));
                 })
             .WithName("UpdateProfilePicture")
             .WithTags("User")

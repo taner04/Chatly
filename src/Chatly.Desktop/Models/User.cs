@@ -6,9 +6,9 @@ public sealed partial class User : ObservableObject
 
     public string Email { get; init; } = string.Empty;
 
-    public string? Username { get; init; }
+    [ObservableProperty] public partial string? Username { get; set; }
 
-    public string? ProfilePictureUrl { get; init; }
+    [ObservableProperty] public partial string? ProfilePictureUrl { get; set; }
 
     public bool OnboardingCompleted { get; init; }
 

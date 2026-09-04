@@ -25,9 +25,4 @@ public class WebClientResult
     {
         return new WebClientResult(null);
     }
-
-    public static WebClientResult Failure(WebClientError error)
-    {
-        return new WebClientResult(error);
-    }
 }

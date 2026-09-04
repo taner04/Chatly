@@ -15,6 +15,7 @@
                             <controls:UserAvatar Width="40"
                                                  Height="40"
                                                  DisplayName="{Binding User.Username}"
+                                                 ProfilePictureUrl="{Binding User.ProfilePictureUrl}"
                                                  IsOnline="{Binding User.IsOnline}" />
                             <TextBlock Grid.Column="1"
                                        Text="{Binding User.Username}"

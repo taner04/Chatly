@@ -10,7 +10,7 @@ public partial class UserInfoPopup : UserControl, IPopupOverlay<UserInfoPopupVie
     public UserInfoPopup(UserInfoPopupViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = ViewModel;
+        DataContext = this;
 
         InitializeComponent();
     }

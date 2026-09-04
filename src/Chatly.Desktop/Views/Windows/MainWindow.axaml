@@ -8,7 +8,6 @@
         xmlns:chat="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
         xmlns:controls="using:Chatly.Desktop.Views.Controls"
         x:Class="Chatly.Desktop.Views.Windows.MainWindow"
-        x:Name="RootWindow"
         x:DataType="windows:MainWindow"
         mc:Ignorable="d"
         d:DesignWidth="1100"
@@ -128,18 +127,6 @@
             <Setter Property="Cursor" Value="Hand" />
         </Style>
         <Style Selector="Button.chat-item:pointerover">
-            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
-        </Style>
-        <Style Selector="Button.sidebar-toggle">
-            <Setter Property="Background" Value="Transparent" />
-            <Setter Property="BorderThickness" Value="0" />
-            <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Height" Value="36" />
-            <Setter Property="Width" Value="36" />
-            <Setter Property="Margin" Value="8" />
-            <Setter Property="Padding" Value="0" />
-        </Style>
-        <Style Selector="Button.sidebar-toggle:pointerover">
             <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
         </Style>
     </Window.Styles>

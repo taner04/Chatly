@@ -5,7 +5,6 @@ namespace Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop;
 internal static partial class SecurityNative
 {
     internal const int ErrSecSuccess = 0;
-    internal const int ErrSecDuplicateItem = -25299;
     internal const int ErrSecItemNotFound = -25300;
 
     private const string SecurityFramework =

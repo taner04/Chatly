@@ -26,11 +26,7 @@ public interface IUserEndpoint
     [Multipart]
     [Put("/api/users/me/profile-picture")]
     Task<ApiResponse<CurrentUserResponse>> UpdateProfilePictureAsync(
-        [AliasAs("file")] StreamPart file,
-        CancellationToken cancellationToken);
-
-    [Get("/api/users/me/profile-picture")]
-    Task<ApiResponse<GetCurrentUserProfilePictureResponse>> GetCurrentUserProfilePictureAsync(
+        [AliasAs("file")] StreamPart? file,
         CancellationToken cancellationToken);
 
     [Multipart]

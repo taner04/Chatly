@@ -13,6 +13,7 @@ namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 [SingletonService]
 public sealed partial class ChatPageViewModel(
     ChatSidebarViewModel chatSidebar,
+    ChatWebService chatWebService,
     MessageWebService messageWebService,
     UserSessionContext userSessionContext,
     IToastService toastService,
@@ -67,7 +68,6 @@ public sealed partial class ChatPageViewModel(
         CurrentChat?.IsSelected = false;
         CurrentChat = chatPreviewViewModel;
         CurrentChat.IsSelected = true;
-        CurrentChat.UnreadMessageCount = 0;
         UpdateOutgoingTypingStatus();
 
         Messages.Clear();
@@ -80,6 +80,25 @@ public sealed partial class ChatPageViewModel(
         if (CurrentChat.DirectChatId is { } chatId)
         {
             await LoadMessagesAsync(chatId, version, CancellationToken.None);
+            if (version == _conversationVersion && CurrentChat?.DirectChatId == chatId)
+            {
+                await MarkChatReadAsync(chatId);
+            }
+        }
+    }
+
+    public async Task MarkChatReadAsync(Guid chatId)
+    {
+        var result = await chatWebService.MarkChatReadAsync(chatId);
+        if (result.IsFailure)
+        {
+            LogMarkChatReadFailed(chatId, result.Error.Detail);
+            return;
+        }
+
+        if (CurrentChat?.DirectChatId == chatId)
+        {
+            CurrentChat.UnreadMessageCount = 0;
         }
     }
 
@@ -162,4 +181,7 @@ public sealed partial class ChatPageViewModel(
         _conversationVersion++;
         NotifyMessagesChanged();
     }
+
+    [LoggerMessage(LogLevel.Warning, "Failed to mark chat {ChatId} as read: {ErrorDetail}")]
+    private partial void LogMarkChatReadFailed(Guid chatId, string errorDetail);
 }

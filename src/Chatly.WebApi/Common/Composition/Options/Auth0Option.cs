@@ -16,8 +16,5 @@ public sealed class Auth0Option
     [Required(ErrorMessage = "Auth0 client id is required.")]
     public string ClientId { get; init; } = null!;
 
-    [Required(ErrorMessage = "Auth0 client secret is required.")]
-    public string ClientSecret { get; init; } = null!;
-
     public bool UsePersistentStorage { get; init; }
 }

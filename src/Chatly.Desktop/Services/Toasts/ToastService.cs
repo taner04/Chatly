@@ -52,7 +52,7 @@ internal sealed class ToastService : IToastService
         var cancellationTokenSource = new CancellationTokenSource();
         var orderNode = _toastOrder.AddFirst(toastViewModel.Id);
         _toasts.Add(toastViewModel.Id, new ActiveToast(toastViewModel, cancellationTokenSource, orderNode));
-        toastViewModel.ButtonClicked += OnToastButtonClicked;
+        toastViewModel.Dismissed += OnToastDismissed;
         GetToastHost().AddToast(toastViewModel);
         _ = AutoDismissAsync(toastViewModel.Id, cancellationTokenSource);
     }
@@ -71,7 +71,7 @@ internal sealed class ToastService : IToastService
         UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id, cancellationTokenSource));
     }
 
-    private void OnToastButtonClicked(object? sender, ToastButtonClickedEventArgs e)
+    private void OnToastDismissed(object? sender, EventArgs e)
     {
         if (sender is IToastViewModel toastViewModel)
         {
@@ -90,7 +90,7 @@ internal sealed class ToastService : IToastService
 
         _toasts.Remove(id);
         _toastOrder.Remove(toast.OrderNode);
-        toast.ViewModel.ButtonClicked -= OnToastButtonClicked;
+        toast.ViewModel.Dismissed -= OnToastDismissed;
         toast.CancellationTokenSource.Cancel();
         toast.CancellationTokenSource.Dispose();
         GetToastHost().RemoveToast(id);

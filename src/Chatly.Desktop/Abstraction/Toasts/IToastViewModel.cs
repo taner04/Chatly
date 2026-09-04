@@ -1,5 +1,4 @@
-﻿using Chatly.Desktop.Services.Toasts;
-using FluentIcons.Common;
+﻿using FluentIcons.Common;
 
 namespace Chatly.Desktop.Abstraction.Toasts;
 
@@ -10,7 +9,5 @@ public interface IToastViewModel
     string Title { get; set; }
     string Message { get; set; }
     Symbol Icon { get; set; }
-    IReadOnlyCollection<ToastButton> Buttons { get; set; }
-
-    event EventHandler<ToastButtonClickedEventArgs> ButtonClicked;
+    event EventHandler Dismissed;
 }

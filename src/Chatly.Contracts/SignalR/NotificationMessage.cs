@@ -11,6 +11,7 @@ namespace Chatly.Contracts.SignalR;
 [JsonDerivedType(typeof(TypingStatusChangedMessage), "TypingStatusChanged")]
 [JsonDerivedType(typeof(OnlineStatusChangedMessage), "OnlineStatusChanged")]
 [JsonDerivedType(typeof(FriendshipRemovedMessage), "FriendshipRemoved")]
+[JsonDerivedType(typeof(UserProfileUpdatedMessage), "UserProfileUpdated")]
 public abstract class NotificationMessage(NotificationType type)
 {
     public NotificationType Type { get; } = type;

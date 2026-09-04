@@ -9,10 +9,4 @@
     <Style Selector="TextBox.chatly-input:focus-within">
         <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
     </Style>
-    <Style Selector="TextBox.friend-search">
-        <Setter Property="Height" Value="44" />
-        <Setter Property="Padding" Value="14,0" />
-        <Setter Property="FontSize" Value="14" />
-        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
-    </Style>
 </Styles>

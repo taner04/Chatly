@@ -21,7 +21,7 @@ public static class ServiceCollectionExtensions
                 return new BlobServiceClient(connectionString);
             });
             services
-                .AddGeneratedOptions(builder.Configuration)
+                .AddGeneratedOptions()
                 .AddGeneratedServices()
                 .AddChatlyAuthentication(builder.Configuration)
                 .AddChatlyDbContext(builder)

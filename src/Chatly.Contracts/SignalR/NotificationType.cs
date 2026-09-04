@@ -11,5 +11,6 @@ public enum NotificationType
     IncomingMessage,
     TypingStatusChanged,
     OnlineStatusChanged,
-    FriendshipRemoved
+    FriendshipRemoved,
+    UserProfileUpdated
 }

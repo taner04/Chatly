@@ -6,8 +6,4 @@ public interface IPopupViewModel
     Task Completion { get; }
 
     public void CloseOverlay();
-
-    public void CancelOverlay();
-
-    public void FailOverlay(Exception exception);
 }

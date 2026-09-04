@@ -1,23 +1,33 @@
+using System.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
-public sealed partial class ChatPreviewViewModel(
-    DirectChat chat,
-    INavigationService navigationService,
-    int unreadMessageCount = 0) : ViewModelBase
+public sealed partial class ChatPreviewViewModel : ViewModelBase
 {
-    public User User { get; } = chat.User;
+    private readonly INavigationService _navigationService;
 
-    public Guid? DirectChatId { get; } = chat.Id;
+    public ChatPreviewViewModel(
+        DirectChat chat,
+        INavigationService navigationService,
+        int unreadMessageCount = 0)
+    {
+        _navigationService = navigationService;
+        User = chat.User;
+        DirectChatId = chat.Id;
+        UnreadMessageCount = unreadMessageCount;
+        User.PropertyChanged += OnUserPropertyChanged;
+    }
+
+    public User User { get; }
+
+    public Guid? DirectChatId { get; }
 
     public string Name => User.Username ?? "Unknown user";
 
     public string Preview => "Start a conversation";
 
-    public string Time => string.Empty;
-
-    [ObservableProperty] public partial int UnreadMessageCount { get; set; } = unreadMessageCount;
+    [ObservableProperty] public partial int UnreadMessageCount { get; set; }
 
     [ObservableProperty] public partial bool IsSelected { get; set; }
 
@@ -31,7 +41,14 @@ public sealed partial class ChatPreviewViewModel(
     [RelayCommand]
     private void Navigate()
     {
-        UnreadMessageCount = 0;
-        navigationService.NavigateTo<ChatPageViewModel>(this);
+        _navigationService.NavigateTo<ChatPageViewModel>(this);
+    }
+
+    private void OnUserPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(User.Username))
+        {
+            OnPropertyChanged(nameof(Name));
+        }
     }
 }

@@ -10,6 +10,7 @@ public static class DirectChatMapper
         return new DirectChat
         {
             Id = response.ChatId,
+            UnreadMessageCount = response.UnreadMessageCount,
             User = new User
             {
                 Id = response.AssociatedUserId,
@@ -25,6 +26,7 @@ public static class DirectChatMapper
         return new DirectChat
         {
             Id = response.DirectChatId,
+            UnreadMessageCount = 0,
             User = new User
             {
                 Id = response.FriendUserId,
@@ -40,6 +42,7 @@ public static class DirectChatMapper
         return new DirectChat
         {
             Id = message.DirectChatId,
+            UnreadMessageCount = 0,
             User = new User
             {
                 Id = message.FriendUserId,
