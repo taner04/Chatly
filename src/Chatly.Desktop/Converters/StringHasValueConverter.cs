@@ -13,7 +13,7 @@ public sealed class StringHasValueConverter : IValueConverter
             string text => !string.IsNullOrWhiteSpace(text),
             _ => false
         };
-        
+
         return string.Equals(parameter as string, "Invert", StringComparison.Ordinal) ? !hasValue : hasValue;
     }
 

@@ -7,6 +7,8 @@
     <Application.Styles>
         <FluentTheme />
         <StyleInclude Source="avares://Chatly.Desktop/Styles/ButtonStyles.axaml" />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/ComboBoxStyles.axaml" />
+        <StyleInclude Source="avares://Chatly.Desktop/Styles/SelectionControlStyles.axaml" />
         <StyleInclude Source="avares://Chatly.Desktop/Styles/TextBoxStyles.axaml" />
         <StyleInclude Source="avares://Chatly.Desktop/Styles/BorderStyles.axaml" />
     </Application.Styles>

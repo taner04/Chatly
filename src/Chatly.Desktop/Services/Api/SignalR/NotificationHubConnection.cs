@@ -3,6 +3,7 @@ using Chatly.Desktop.Options;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Api.SignalR;
 

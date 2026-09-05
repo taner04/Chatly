@@ -5,6 +5,7 @@ using Chatly.Desktop.Extensions;
 using Chatly.Desktop.Utilities;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using Microsoft.Extensions.Logging;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 

@@ -22,6 +22,7 @@ public sealed class GetFriendRequestsQueryHandler(
             .Where(request => request.Status == FriendRequestStatus.Pending)
             .Where(request => request.SenderUser.Username != null)
             .OrderByDescending(request => request.CreatedAt)
+            .ThenByDescending(request => request.Id)
             .Select(request => new
             {
                 RequestId = request.Id.Value,

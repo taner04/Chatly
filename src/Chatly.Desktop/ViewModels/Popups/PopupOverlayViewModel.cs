@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.ViewModels.Popups;
 
-public abstract partial class PopupOverlayViewModel : ViewModelBase, IPopupViewModel
+public abstract class PopupOverlayViewModel : ViewModelBase, IPopupViewModel
 {
     private readonly TaskCompletionSource _completed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public abstract string Title { get; }
@@ -11,5 +11,4 @@ public abstract partial class PopupOverlayViewModel : ViewModelBase, IPopupViewM
     {
         _completed.TrySetResult();
     }
-
 }

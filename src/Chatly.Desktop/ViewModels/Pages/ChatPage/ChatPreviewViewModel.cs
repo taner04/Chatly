@@ -39,9 +39,12 @@ public sealed partial class ChatPreviewViewModel : ViewModelBase
     }
 
     [RelayCommand]
-    private void Navigate()
+    private async Task Navigate(CancellationToken cancellationToken)
     {
-        _navigationService.NavigateTo<ChatPageViewModel>(this);
+        if (DirectChatId is { } chatId)
+        {
+            await _navigationService.NavigateToAsync<ChatPageViewModel>(chatId, cancellationToken);
+        }
     }
 
     private void OnUserPropertyChanged(object? sender, PropertyChangedEventArgs e)

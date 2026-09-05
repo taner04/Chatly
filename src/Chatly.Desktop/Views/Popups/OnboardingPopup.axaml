@@ -39,7 +39,7 @@
             <Setter Property="HorizontalAlignment" Value="Stretch" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
             <Setter Property="CornerRadius" Value="10" />
         </Style>
     </UserControl.Styles>
@@ -130,11 +130,11 @@
                         <Border Width="9"
                                 Height="1.5"
                                 CornerRadius="1"
-                                Background="White" />
+                                Background="{DynamicResource ChatlyOnAccentBrush}" />
                         <Border Width="1.5"
                                 Height="9"
                                 CornerRadius="1"
-                                Background="White" />
+                                Background="{DynamicResource ChatlyOnAccentBrush}" />
                     </Grid>
                 </Border>
             </Grid>

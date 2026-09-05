@@ -1,5 +1,6 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Api.Refit.DelegatingHandlers;
 

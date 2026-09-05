@@ -11,11 +11,41 @@
     </Style>
     <Style Selector="Button.accent-button">
         <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
         <Setter Property="BorderThickness" Value="0" />
         <Setter Property="FontWeight" Value="SemiBold" />
     </Style>
+    <Style Selector="Button.accent-button /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
+    <Style Selector="Button.accent-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
+    <Style Selector="Button.accent-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
     <Style Selector="Button.opacity-hover:pointerover">
         <Setter Property="Opacity" Value="0.88" />
+    </Style>
+    <Style Selector="Button.fluent-button">
+        <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.fluent-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+    </Style>
+    <Style Selector="Button.fluent-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
     </Style>
     <Style Selector="Button.friend-action">
         <Setter Property="Width" Value="36" />
@@ -37,7 +67,6 @@
         <Setter Property="Foreground" Value="#FFAAA4" />
     </Style>
     <Style Selector="Button.add-friend">
-        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
         <Setter Property="CornerRadius" Value="10" />
         <Setter Property="Padding" Value="16,9" />
     </Style>
@@ -45,5 +74,25 @@
         <Setter Property="Width" Value="28" />
         <Setter Property="Height" Value="28" />
         <Setter Property="CornerRadius" Value="8" />
+    </Style>
+    <Style Selector="Button.load-more-button">
+        <Setter Property="Padding" Value="14,8" />
+        <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="FontSize" Value="12" />
+        <Setter Property="FontWeight" Value="SemiBold" />
+    </Style>
+    <Style Selector="Button.load-more-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+    </Style>
+    <Style Selector="Button.load-more-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
     </Style>
 </Styles>

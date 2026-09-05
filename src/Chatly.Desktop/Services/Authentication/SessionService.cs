@@ -1,15 +1,16 @@
 using System.Linq;
 using Chatly.Desktop.Mappers;
 using Chatly.Desktop.Services.Api;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Authentication;
 
 [SingletonService]
 public sealed class SessionService(
     AuthenticationService authenticationService,
-    UserWebService userWebService,
-    FriendsWebService friendsWebService,
-    ChatWebService chatWebService,
+    UserApiClient userApiClient,
+    FriendsApiClient friendsApiClient,
+    ChatApiClient chatApiClient,
     UserSessionContext sessionContext)
 {
     public async Task StartAsync(CancellationToken cancellationToken)
@@ -19,7 +20,7 @@ public sealed class SessionService(
         sessionContext.SetAccessToken(accessToken);
         try
         {
-            var userResult = await userWebService.GetCurrentUserAsync(cancellationToken);
+            var userResult = await userApiClient.GetCurrentUserAsync(cancellationToken);
             if (userResult.IsFailure)
             {
                 throw new InvalidOperationException(
@@ -28,7 +29,7 @@ public sealed class SessionService(
 
             sessionContext.SetAuthenticated(UserMapper.Map(userResult.Value));
 
-            var friendshipsResult = await friendsWebService.GetFriendshipsAsync(cancellationToken);
+            var friendshipsResult = await friendsApiClient.GetFriendshipsAsync(cancellationToken);
             if (friendshipsResult.IsFailure)
             {
                 throw new InvalidOperationException(
@@ -37,7 +38,17 @@ public sealed class SessionService(
 
             sessionContext.SetFriends(friendshipsResult.Value.Select(FriendMapper.Map));
 
-            var chatsResult = await chatWebService.GetChatsAsync(cancellationToken);
+            var pendingFriendRequestsResult = await friendsApiClient.GetFriendRequestsAsync(1, 1, cancellationToken);
+            if (pendingFriendRequestsResult.IsFailure)
+            {
+                throw new InvalidOperationException(
+                    $"Failed to retrieve pending friend request count: {pendingFriendRequestsResult.Error.Detail}");
+            }
+
+            sessionContext.SetPendingFriendRequestCount(
+                pendingFriendRequestsResult.Value.Pagination.TotalCount);
+
+            var chatsResult = await chatApiClient.GetChatsAsync(cancellationToken);
             if (chatsResult.IsFailure)
             {
                 throw new InvalidOperationException(

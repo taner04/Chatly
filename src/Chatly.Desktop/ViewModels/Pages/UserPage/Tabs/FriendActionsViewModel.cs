@@ -5,13 +5,14 @@ using Chatly.Desktop.Services.Api;
 using Chatly.Desktop.Services.Chat;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using CommunityToolkit.Mvvm.Input;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 [SingletonService]
 public sealed partial class FriendActionsViewModel(
     ChatNavigationService chatNavigationService,
-    FriendsWebService friendsWebService,
+    FriendsApiClient friendsApiClient,
     UserSessionContext userSessionContext,
     ChatPageViewModel chatPageViewModel,
     IToastService toastService) : ViewModelBase
@@ -22,11 +23,11 @@ public sealed partial class FriendActionsViewModel(
     }
 
     [RelayCommand(CanExecute = nameof(CanOpenChat))]
-    private void OpenChat(Friend? friend)
+    private async Task OpenChat(Friend? friend, CancellationToken cancellationToken)
     {
         if (friend?.ChatId is { } chatId)
         {
-            chatNavigationService.Navigate(chatId);
+            await chatNavigationService.NavigateAsync(chatId, cancellationToken);
         }
     }
 
@@ -38,7 +39,7 @@ public sealed partial class FriendActionsViewModel(
             return;
         }
 
-        var result = await friendsWebService.RemoveFriendshipAsync(friend.User.Id);
+        var result = await friendsApiClient.RemoveFriendshipAsync(friend.User.Id);
         if (result.IsFailure)
         {
             toastService.ShowError(result.Error);

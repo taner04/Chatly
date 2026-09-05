@@ -48,6 +48,9 @@ ScaffoldingReadMe.txt
 # Local application configuration
 **/appsettings.json
 
+# macOS metadata
+.DS_Store
+
 # Others
 ~$*
 *~

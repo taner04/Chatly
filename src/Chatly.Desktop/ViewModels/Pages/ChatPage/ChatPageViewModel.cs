@@ -7,21 +7,23 @@ using Chatly.Desktop.Extensions;
 using Chatly.Desktop.Services.Api;
 using CommunityToolkit.Mvvm.Input;
 using Microsoft.Extensions.Logging;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
 [SingletonService]
 public sealed partial class ChatPageViewModel(
     ChatSidebarViewModel chatSidebar,
-    ChatWebService chatWebService,
-    MessageWebService messageWebService,
+    ChatApiClient chatApiClient,
+    MessageApiClient messageApiClient,
     UserSessionContext userSessionContext,
     IToastService toastService,
     INotificationHubServer notificationHubServer,
     ILogger<ChatPageViewModel> logger)
-    : PageViewModelBase, INavigationParameterAware
+    : PageViewModelBase
 {
     private const int MessagePageSize = 50;
+    private CancellationTokenSource? _conversationCancellation;
     private int _conversationVersion;
     private Guid? _nextBeforeMessageId;
     private DateTimeOffset? _nextBeforeSentAt;
@@ -48,24 +50,42 @@ public sealed partial class ChatPageViewModel(
 
     public bool IsEmptyChat => HasCurrentChat && !IsLoadingMessages && !HasMessages;
 
-    public async Task OnNavigatedToAsync(object parameter)
+    public override async Task OnNavigatedToAsync(
+        object? parameter,
+        CancellationToken cancellationToken)
     {
+        if (parameter is null)
+        {
+            return;
+        }
+
+        if (parameter is not Guid selectedChatId)
+        {
+            throw new ArgumentException(
+                "Expected a chat ID navigation parameter.",
+                nameof(parameter));
+        }
+
+        var version = ++_conversationVersion;
+        _conversationCancellation?.Cancel();
+        _conversationCancellation?.Dispose();
+        _conversationCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+
         await StopOutgoingTypingAsync();
+        if (version != _conversationVersion)
+        {
+            return;
+        }
+
         ClearOtherUserTyping();
 
-        var chatPreviewViewModel = parameter switch
-        {
-            ChatPreviewViewModel chat => chat,
-            Guid selectedChatId => Chats.FirstOrDefault(chat => chat.DirectChatId == selectedChatId)
+        var chatPreviewViewModel = Chats.FirstOrDefault(chat => chat.DirectChatId == selectedChatId)
                                    ?? throw new ArgumentException(
                                        $"No chat found with ID {selectedChatId}.",
-                                       nameof(parameter)),
-            _ => throw new ArgumentException(
-                $"Expected a {nameof(ChatPreviewViewModel)} or chat ID navigation parameter.",
-                nameof(parameter))
-        };
+                                       nameof(parameter));
 
         CurrentChat?.IsSelected = false;
+        DraftMessage = string.Empty;
         CurrentChat = chatPreviewViewModel;
         CurrentChat.IsSelected = true;
         UpdateOutgoingTypingStatus();
@@ -76,10 +96,9 @@ public sealed partial class ChatPageViewModel(
         HasOlderMessages = false;
         NotifyMessagesChanged();
 
-        var version = ++_conversationVersion;
         if (CurrentChat.DirectChatId is { } chatId)
         {
-            await LoadMessagesAsync(chatId, version, CancellationToken.None);
+            await LoadMessagesAsync(chatId, version, _conversationCancellation.Token);
             if (version == _conversationVersion && CurrentChat?.DirectChatId == chatId)
             {
                 await MarkChatReadAsync(chatId);
@@ -87,9 +106,14 @@ public sealed partial class ChatPageViewModel(
         }
     }
 
+    public override async Task OnNavigatedFromAsync(CancellationToken cancellationToken)
+    {
+        await ClearCurrentChatAsync();
+    }
+
     public async Task MarkChatReadAsync(Guid chatId)
     {
-        var result = await chatWebService.MarkChatReadAsync(chatId);
+        var result = await chatApiClient.MarkChatReadAsync(chatId);
         if (result.IsFailure)
         {
             LogMarkChatReadFailed(chatId, result.Error.Detail);
@@ -100,11 +124,6 @@ public sealed partial class ChatPageViewModel(
         {
             CurrentChat.UnreadMessageCount = 0;
         }
-    }
-
-    public async Task OnNavigatedFromAsync()
-    {
-        await ClearCurrentChatAsync();
     }
 
     partial void OnCurrentChatChanged(ChatPreviewViewModel? value)
@@ -139,7 +158,7 @@ public sealed partial class ChatPageViewModel(
         }
 
         var content = DraftMessage.Trim();
-        var result = await messageWebService.SendMessageAsync(
+        var result = await messageApiClient.SendMessageAsync(
             new SendMessageRequest(chatId.Value, content));
 
         if (result.IsFailure)
@@ -172,13 +191,21 @@ public sealed partial class ChatPageViewModel(
 
     private async Task ClearCurrentChatAsync()
     {
+        _conversationVersion++;
+        _conversationCancellation?.Cancel();
+        _conversationCancellation?.Dispose();
+        _conversationCancellation = null;
+
         await StopOutgoingTypingAsync();
         ClearOtherUserTyping();
         CurrentChat?.IsSelected = false;
+        DraftMessage = string.Empty;
         CurrentChat = null;
         Messages.Clear();
+        _nextBeforeSentAt = null;
+        _nextBeforeMessageId = null;
         HasOlderMessages = false;
-        _conversationVersion++;
+        IsLoadingMessages = false;
         NotifyMessagesChanged();
     }
 

@@ -28,6 +28,7 @@ internal static class OptionTemplate
                 .AppendLine("            .ValidateOnStart();");
         }
 
-        return TemplateLoader.Load("Options.cs.template").Replace(RegistrationPlaceholder, registrations.ToString().TrimEnd());
+        return TemplateLoader.Load("Options.cs.template")
+            .Replace(RegistrationPlaceholder, registrations.ToString().TrimEnd());
     }
 }

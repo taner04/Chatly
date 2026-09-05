@@ -2,34 +2,69 @@ using Chatly.Desktop.Abstraction.Authentication;
 using Chatly.Desktop.Options;
 using Duende.IdentityModel.Client;
 using Duende.IdentityModel.OidcClient;
+using Duende.IdentityModel.OidcClient.Browser;
+using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Authentication;
 
 [SingletonService]
-public sealed class AuthenticationService
+public sealed partial class AuthenticationService
 {
     private readonly OidcClient _client;
+    private readonly ILogger<AuthenticationService> _logger;
+    private readonly SemaphoreSlim _operationLock = new(1, 1);
     private readonly Auth0Option _options;
     private readonly ISecureTokenStore _secureTokenStore;
+    private string? _identityToken;
 
     public AuthenticationService(
         IOptions<Auth0Option> auth0Options,
-        ISecureTokenStore secureTokenStore)
+        ISecureTokenStore secureTokenStore,
+        IBrowser browser,
+        ILogger<AuthenticationService> logger)
     {
         _options = auth0Options.Value;
         _secureTokenStore = secureTokenStore;
+        _logger = logger;
         _client = new OidcClient(new OidcClientOptions
         {
             Authority = $"https://{_options.Domain}",
             ClientId = _options.ClientId,
             Scope = _options.Scope,
             RedirectUri = _options.RedirectUri,
-            Browser = new AvaloniaAuthenticationBrowser()
+            PostLogoutRedirectUri = _options.RedirectUri,
+            Browser = browser
         });
     }
 
     public async Task<string> AuthenticateAsync(CancellationToken cancellationToken)
+    {
+        await _operationLock.WaitAsync(cancellationToken);
+        try
+        {
+            return await AuthenticateCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            _operationLock.Release();
+        }
+    }
+
+    public async Task LogoutAsync(CancellationToken cancellationToken)
+    {
+        await _operationLock.WaitAsync(cancellationToken);
+        try
+        {
+            await LogoutCoreAsync(cancellationToken);
+        }
+        finally
+        {
+            _operationLock.Release();
+        }
+    }
+
+    private async Task<string> AuthenticateCoreAsync(CancellationToken cancellationToken)
     {
         var refreshToken =
             await _secureTokenStore.TryReadRefreshTokenAsync(cancellationToken);
@@ -50,14 +85,25 @@ public sealed class AuthenticationService
         return await LoginAsync(cancellationToken);
     }
 
-    public async Task LogoutAsync(CancellationToken cancellationToken)
+    private async Task LogoutCoreAsync(CancellationToken cancellationToken)
     {
         try
         {
-            await _client.LogoutAsync(cancellationToken: cancellationToken);
+            await _client.LogoutAsync(
+                new LogoutRequest { IdTokenHint = _identityToken },
+                cancellationToken);
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            LogRemoteLogoutFailed(exception);
         }
         finally
         {
+            _identityToken = null;
             await _secureTokenStore.DeleteRefreshTokenAsync(CancellationToken.None);
         }
     }
@@ -87,6 +133,7 @@ public sealed class AuthenticationService
 
         var accessToken = RequireToken(result.AccessToken, "access");
         var refreshToken = RequireToken(result.RefreshToken, "refresh");
+        _identityToken = result.IdentityToken;
 
         await _secureTokenStore.SaveRefreshTokenAsync(refreshToken, cancellationToken);
         return accessToken;
@@ -110,6 +157,7 @@ public sealed class AuthenticationService
         EnsureSuccessful(result);
 
         var accessToken = RequireToken(result.AccessToken, "access");
+        _identityToken = result.IdentityToken;
         var nextRefreshToken = string.IsNullOrWhiteSpace(result.RefreshToken)
             ? refreshToken
             : result.RefreshToken;
@@ -138,4 +186,9 @@ public sealed class AuthenticationService
             ? token
             : throw new InvalidOperationException($"Auth0 did not return a {tokenType} token.");
     }
+
+    [LoggerMessage(
+        LogLevel.Warning,
+        "Remote Auth0 logout failed. Local credentials will still be removed.")]
+    private partial void LogRemoteLogoutFailed(Exception exception);
 }

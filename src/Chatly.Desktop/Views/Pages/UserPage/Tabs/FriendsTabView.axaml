@@ -6,7 +6,8 @@
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Tabs.FriendsTabView"
              x:DataType="local:FriendsTabView">
     <Grid>
-        <ItemsControl ItemsSource="{Binding ViewModel.Friends, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}">
+        <ItemsControl
+            ItemsSource="{Binding ViewModel.Friends, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}">
             <ItemsControl.ItemTemplate>
                 <DataTemplate>
                     <Border Classes="list-row"

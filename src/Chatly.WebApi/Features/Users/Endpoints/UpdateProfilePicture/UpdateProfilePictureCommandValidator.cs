@@ -8,9 +8,6 @@ public sealed class UpdateProfilePictureCommandValidator
 {
     public UpdateProfilePictureCommandValidator()
     {
-        When(command => command.File is not null, () =>
-        {
-            this.AddProfilePictureRules(command => command.File);
-        });
+        When(command => command.File is not null, () => { this.AddProfilePictureRules(command => command.File); });
     }
 }

@@ -8,7 +8,7 @@ using Refit;
 namespace Chatly.Desktop.Services.Api;
 
 [TransientService]
-public sealed class UserWebService(IChatlyApi chatlyApi)
+public sealed class UserApiClient(IChatlyApi chatlyApi)
 {
     public async Task<WebClientResult<PaginationResult<UserSearchResponse>>> SearchUsersAsync(
         SearchUsersRequest request,

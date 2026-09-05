@@ -41,16 +41,16 @@ public partial class MainWindow : Window, INavigationView
         PageHost.Content = view;
     }
 
-    protected override void OnPointerReleased(PointerReleasedEventArgs e)
+    protected override async void OnPointerReleased(PointerReleasedEventArgs e)
     {
         base.OnPointerReleased(e);
         switch (e.InitialPressMouseButton)
         {
             case MouseButton.XButton1:
-                _navigationService.GoBack();
+                await _navigationService.GoBackAsync();
                 break;
             case MouseButton.XButton2:
-                _navigationService.GoForward();
+                await _navigationService.GoForwardAsync();
                 break;
             case MouseButton.None:
             case MouseButton.Left:

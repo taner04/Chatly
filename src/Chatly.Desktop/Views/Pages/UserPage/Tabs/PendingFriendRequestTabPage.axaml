@@ -5,38 +5,50 @@
              xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage.Tabs"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Tabs.PendingFriendRequestTabPage"
              x:DataType="local:PendingFriendRequestTabPage">
-    <ItemsControl ItemsSource="{Binding ViewModel.FriendRequests}">
-        <ItemsControl.ItemTemplate>
-            <DataTemplate>
-                <Border Classes="list-row" Margin="0,0,0,8">
-                    <Grid ColumnDefinitions="44,*,Auto,Auto" ColumnSpacing="8">
-                        <controls:UserAvatar Width="40"
-                                             Height="40"
-                                             DisplayName="{Binding SenderUsername}"
-                                             ProfilePictureUrl="{Binding ProfilePictureUrl}" />
-                        <TextBlock Grid.Column="1"
-                                   Text="{Binding SenderUsername}"
-                                   VerticalAlignment="Center"
-                                   FontSize="15"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource ChatlyTextBrush}" />
-                        <Button Grid.Column="2"
-                                Classes="icon-button friend-action friend-request-accept"
-                                ToolTip.Tip="Accept friend request"
-                                Command="{Binding ViewModel.AcceptFriendRequestCommand, RelativeSource={RelativeSource AncestorType=local:PendingFriendRequestTabPage}}"
-                                CommandParameter="{Binding}">
-                            <ic:SymbolIcon Symbol="Checkmark" FontSize="18" />
-                        </Button>
-                        <Button Grid.Column="3"
-                                Classes="icon-button friend-action friend-request-decline"
-                                ToolTip.Tip="Decline friend request"
-                                Command="{Binding ViewModel.DeclineFriendRequestCommand, RelativeSource={RelativeSource AncestorType=local:PendingFriendRequestTabPage}}"
-                                CommandParameter="{Binding}">
-                            <ic:SymbolIcon Symbol="Dismiss" FontSize="18" />
-                        </Button>
-                    </Grid>
-                </Border>
-            </DataTemplate>
-        </ItemsControl.ItemTemplate>
-    </ItemsControl>
+    <ScrollViewer x:Name="FriendRequestsScrollViewer"
+                  VerticalScrollBarVisibility="Auto"
+                  ScrollChanged="FriendRequestsScrollViewer_OnScrollChanged"
+                  HorizontalScrollBarVisibility="Disabled">
+        <StackPanel>
+            <ItemsControl ItemsSource="{Binding ViewModel.FriendRequests}">
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Border Classes="list-row" Margin="0,0,0,8">
+                            <Grid ColumnDefinitions="44,*,Auto,Auto" ColumnSpacing="8">
+                                <controls:UserAvatar Width="40"
+                                                     Height="40"
+                                                     DisplayName="{Binding SenderUsername}"
+                                                     ProfilePictureUrl="{Binding ProfilePictureUrl}" />
+                                <TextBlock Grid.Column="1"
+                                           Text="{Binding SenderUsername}"
+                                           VerticalAlignment="Center"
+                                           FontSize="15"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource ChatlyTextBrush}" />
+                                <Button Grid.Column="2"
+                                        Classes="icon-button friend-action friend-request-accept"
+                                        ToolTip.Tip="Accept friend request"
+                                        Command="{Binding ViewModel.AcceptFriendRequestCommand, RelativeSource={RelativeSource AncestorType=local:PendingFriendRequestTabPage}}"
+                                        CommandParameter="{Binding}">
+                                    <ic:SymbolIcon Symbol="Checkmark" FontSize="18" />
+                                </Button>
+                                <Button Grid.Column="3"
+                                        Classes="icon-button friend-action friend-request-decline"
+                                        ToolTip.Tip="Decline friend request"
+                                        Command="{Binding ViewModel.DeclineFriendRequestCommand, RelativeSource={RelativeSource AncestorType=local:PendingFriendRequestTabPage}}"
+                                        CommandParameter="{Binding}">
+                                    <ic:SymbolIcon Symbol="Dismiss" FontSize="18" />
+                                </Button>
+                            </Grid>
+                        </Border>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+            <TextBlock Text="Loading requests..."
+                       IsVisible="{Binding ViewModel.IsLoadingFriendRequests}"
+                       HorizontalAlignment="Center"
+                       Margin="0,8"
+                       Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+        </StackPanel>
+    </ScrollViewer>
 </UserControl>

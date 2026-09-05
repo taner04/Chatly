@@ -22,24 +22,24 @@ public sealed class GetChatsQueryHandler(
                     friendship.SecondUserId == chat.SecondUserId)
                 let associatedUserId = chat.FirstUserId == userId ? chat.SecondUserId : chat.FirstUserId
                 join associatedUser in context.Users.AsNoTracking() on associatedUserId equals associatedUser.Id
-                 where associatedUser.Username != null
-                 let lastReadAt = context.ChatReadStates
-                     .Where(state => state.ChatId == chat.Id && state.UserId == userId)
-                     .Select(state => (DateTimeOffset?)state.LastReadAt)
-                     .FirstOrDefault()
-                 let unreadMessageCount = context.Messages.Count(message =>
-                     message.ChatId == chat.Id &&
-                     message.SenderUserId != userId &&
-                     (lastReadAt == null || message.SentAt > lastReadAt))
-                 orderby associatedUser.Username, associatedUser.Id
-                 select new
-                 {
+                where associatedUser.Username != null
+                let lastReadAt = context.ChatReadStates
+                    .Where(state => state.ChatId == chat.Id && state.UserId == userId)
+                    .Select(state => (DateTimeOffset?)state.LastReadAt)
+                    .FirstOrDefault()
+                let unreadMessageCount = context.Messages.Count(message =>
+                    message.ChatId == chat.Id &&
+                    message.SenderUserId != userId &&
+                    (lastReadAt == null || message.SentAt > lastReadAt))
+                orderby associatedUser.Username, associatedUser.Id
+                select new
+                {
                     ChatId = chat.Id.Value,
-                     AssociatedUserId = associatedUser.Id.Value,
-                     associatedUser.Username,
-                     associatedUser.ProfilePictureKey,
-                     UnreadMessageCount = unreadMessageCount
-                 })
+                    AssociatedUserId = associatedUser.Id.Value,
+                    associatedUser.Username,
+                    associatedUser.ProfilePictureKey,
+                    UnreadMessageCount = unreadMessageCount
+                })
             .ToListAsync(cancellationToken);
 
         return
@@ -47,10 +47,10 @@ public sealed class GetChatsQueryHandler(
             .. chats.Select(chat => new GetChatsResponse(
                 chat.ChatId,
                 chat.AssociatedUserId,
-                 chat.Username!,
-                 blobService.CreateReadUrl(chat.ProfilePictureKey)?.ToString(),
-                 presenceTracker.IsOnline(UserId.From(chat.AssociatedUserId)),
-                 chat.UnreadMessageCount))
+                chat.Username!,
+                blobService.CreateReadUrl(chat.ProfilePictureKey)?.ToString(),
+                presenceTracker.IsOnline(UserId.From(chat.AssociatedUserId)),
+                chat.UnreadMessageCount))
         ];
     }
 }

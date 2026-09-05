@@ -7,7 +7,7 @@ public sealed partial class NavigationItemViewModel(
     string title,
     Symbol icon,
     Type viewModelType,
-    Action navigate) : ViewModelBase
+    Func<Task> navigate) : ViewModelBase
 {
     public string Title { get; } = title;
 
@@ -15,7 +15,7 @@ public sealed partial class NavigationItemViewModel(
 
     public Type ViewModelType { get; } = viewModelType;
 
-    public IRelayCommand NavigateCommand { get; } = new RelayCommand(navigate);
+    public IAsyncRelayCommand NavigateCommand { get; } = new AsyncRelayCommand(navigate);
 
     [ObservableProperty] public partial bool IsSelected { get; set; }
 
@@ -24,6 +24,6 @@ public sealed partial class NavigationItemViewModel(
         Symbol icon,
         INavigationService navigationService) where T : INavigableViewModel
     {
-        return new NavigationItemViewModel(title, icon, typeof(T), () => navigationService.NavigateTo<T>());
+        return new NavigationItemViewModel(title, icon, typeof(T), () => navigationService.NavigateToAsync<T>());
     }
 }

@@ -16,7 +16,14 @@ public sealed partial class ChatPageViewModel
             return;
         }
 
-        await LoadMessagesAsync(CurrentChat.DirectChatId.Value, _conversationVersion, cancellationToken);
+        using var linkedCancellation = _conversationCancellation is null
+            ? CancellationTokenSource.CreateLinkedTokenSource(cancellationToken)
+            : CancellationTokenSource.CreateLinkedTokenSource(cancellationToken, _conversationCancellation.Token);
+
+        await LoadMessagesAsync(
+            CurrentChat.DirectChatId.Value,
+            _conversationVersion,
+            linkedCancellation.Token);
     }
 
     public bool ReceiveIncomingMessage(IncomingChatMessage message)
@@ -45,7 +52,7 @@ public sealed partial class ChatPageViewModel
 
         try
         {
-            var result = await messageWebService.GetMessagesAsync(
+            var result = await messageApiClient.GetMessagesAsync(
                 new GetMessagesRequest(
                     chatId,
                     _nextBeforeSentAt,
@@ -78,6 +85,9 @@ public sealed partial class ChatPageViewModel
             _nextBeforeMessageId = result.Value.NextBeforeMessageId;
             HasOlderMessages = result.Value.HasMore;
             NotifyMessagesChanged();
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
         }
         finally
         {

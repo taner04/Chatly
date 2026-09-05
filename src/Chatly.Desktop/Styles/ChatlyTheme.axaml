@@ -1,13 +1,36 @@
 <ResourceDictionary xmlns="https://github.com/avaloniaui"
                     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
-    <SolidColorBrush x:Key="ChatlyWindowBrush" Color="#000000" />
-    <SolidColorBrush x:Key="ChatlySidebarBrush" Color="#1C1C1E" />
-    <SolidColorBrush x:Key="ChatlyContentBrush" Color="#1C1C1E" />
-    <SolidColorBrush x:Key="ChatlyElevatedBrush" Color="#2C2C2E" />
-    <SolidColorBrush x:Key="ChatlyBorderBrush" Color="#3A3A3C" />
-    <SolidColorBrush x:Key="ChatlyHoverBrush" Color="#3A3A3C" />
+    <ResourceDictionary.ThemeDictionaries>
+        <ResourceDictionary x:Key="Dark">
+            <SolidColorBrush x:Key="ChatlyWindowBrush" Color="#000000" />
+            <SolidColorBrush x:Key="ChatlySidebarBrush" Color="#1C1C1E" />
+            <SolidColorBrush x:Key="ChatlyContentBrush" Color="#1C1C1E" />
+            <SolidColorBrush x:Key="ChatlyElevatedBrush" Color="#2C2C2E" />
+            <SolidColorBrush x:Key="ChatlyBorderBrush" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="ChatlyHoverBrush" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="ChatlyIncomingMessageBrush" Color="#2C2C2E" />
+            <SolidColorBrush x:Key="ChatlyOutgoingMessageBrush" Color="#3A3A3C" />
+            <SolidColorBrush x:Key="ChatlyTextBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ChatlyMutedTextBrush" Color="#AEAEB2" />
+            <SolidColorBrush x:Key="ChatlyOverlayBrush" Color="#B8000000" />
+        </ResourceDictionary>
+        <ResourceDictionary x:Key="Light">
+            <SolidColorBrush x:Key="ChatlyWindowBrush" Color="#F4F5F7" />
+            <SolidColorBrush x:Key="ChatlySidebarBrush" Color="#ECEEF2" />
+            <SolidColorBrush x:Key="ChatlyContentBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ChatlyElevatedBrush" Color="#FFFFFF" />
+            <SolidColorBrush x:Key="ChatlyBorderBrush" Color="#D9DCE3" />
+            <SolidColorBrush x:Key="ChatlyHoverBrush" Color="#E5E8ED" />
+            <SolidColorBrush x:Key="ChatlyIncomingMessageBrush" Color="#ECEEF2" />
+            <SolidColorBrush x:Key="ChatlyOutgoingMessageBrush" Color="#E5E8ED" />
+            <SolidColorBrush x:Key="ChatlyTextBrush" Color="#1A1D24" />
+            <SolidColorBrush x:Key="ChatlyMutedTextBrush" Color="#626875" />
+            <SolidColorBrush x:Key="ChatlyOverlayBrush" Color="#66000000" />
+        </ResourceDictionary>
+    </ResourceDictionary.ThemeDictionaries>
+
     <SolidColorBrush x:Key="ChatlyAccentBrush" Color="#0A84FF" />
-    <SolidColorBrush x:Key="ChatlyTextBrush" Color="#FFFFFF" />
-    <SolidColorBrush x:Key="ChatlyMutedTextBrush" Color="#AEAEB2" />
-    <SolidColorBrush x:Key="ChatlyOverlayBrush" Color="#B8000000" />
+    <SolidColorBrush x:Key="ChatlyAccentSubtleBrush" Color="#220A84FF" />
+    <SolidColorBrush x:Key="ChatlyOnAccentBrush" Color="#FFFFFF" />
+    <SolidColorBrush x:Key="TabItemHeaderSelectedPipeFill" Color="#0A84FF" />
 </ResourceDictionary>

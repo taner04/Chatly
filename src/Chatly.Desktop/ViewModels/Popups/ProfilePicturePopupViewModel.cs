@@ -5,9 +5,15 @@ using CommunityToolkit.Mvvm.Input;
 
 namespace Chatly.Desktop.ViewModels.Popups;
 
-public abstract partial class ProfilePicturePopupViewModel(string? existingProfilePictureUrl = null)
-    : PopupOverlayViewModel
+public abstract partial class ProfilePicturePopupViewModel : PopupOverlayViewModel
 {
+    private string? _existingProfilePictureUrl;
+
+    protected ProfilePicturePopupViewModel(string? existingProfilePictureUrl = null)
+    {
+        _existingProfilePictureUrl = existingProfilePictureUrl;
+    }
+
     [ObservableProperty] public partial IStorageFile? ProfilePicture { get; private set; }
 
     [ObservableProperty] public partial Bitmap? ProfilePicturePreview { get; private set; }
@@ -18,11 +24,11 @@ public abstract partial class ProfilePicturePopupViewModel(string? existingProfi
 
     public bool HasProfilePicture => HasProfilePicturePreview ||
                                      (!IsProfilePictureRemoved &&
-                                      !string.IsNullOrWhiteSpace(existingProfilePictureUrl));
+                                      !string.IsNullOrWhiteSpace(_existingProfilePictureUrl));
 
     public string? VisibleProfilePictureUrl => IsProfilePictureRemoved
         ? null
-        : existingProfilePictureUrl;
+        : _existingProfilePictureUrl;
 
     public override void CloseOverlay()
     {
@@ -92,6 +98,18 @@ public abstract partial class ProfilePicturePopupViewModel(string? existingProfi
 
     protected virtual void OnProfilePictureSelectionChanged()
     {
+    }
+
+    protected void SetExistingProfilePictureUrl(string? profilePictureUrl)
+    {
+        if (_existingProfilePictureUrl == profilePictureUrl)
+        {
+            return;
+        }
+
+        _existingProfilePictureUrl = profilePictureUrl;
+        OnPropertyChanged(nameof(VisibleProfilePictureUrl));
+        OnPropertyChanged(nameof(HasProfilePicture));
     }
 
     protected static string GetContentType(IStorageFile file)

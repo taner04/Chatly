@@ -20,7 +20,7 @@ public partial class UserPage
 
         _tabNavigationService = navigationServiceFactory.Create();
         _tabNavigationService.SetNavigationView(this);
-        _tabNavigationService.NavigateTo<OnlineFriendsTabPageViewModel>();
+        Loaded += UserPage_OnLoaded;
         TabNavigation.SelectionChanged += TabNavigation_OnSelectionChanged;
     }
 
@@ -31,18 +31,26 @@ public partial class UserPage
         TabPageHost.Content = view;
     }
 
-    private void TabNavigation_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
+    private async void UserPage_OnLoaded(object? sender, EventArgs e)
+    {
+        if (TabPageHost.Content is null)
+        {
+            await _tabNavigationService.NavigateToAsync<OnlineFriendsTabPageViewModel>();
+        }
+    }
+
+    private async void TabNavigation_OnSelectionChanged(object? sender, SelectionChangedEventArgs e)
     {
         switch (TabNavigation.SelectedIndex)
         {
             case 0:
-                _tabNavigationService.NavigateTo<OnlineFriendsTabPageViewModel>();
+                await _tabNavigationService.NavigateToAsync<OnlineFriendsTabPageViewModel>();
                 break;
             case 1:
-                _tabNavigationService.NavigateTo<AllFriendsTabPageViewModel>();
+                await _tabNavigationService.NavigateToAsync<AllFriendsTabPageViewModel>();
                 break;
             case 2:
-                _tabNavigationService.NavigateTo<PendingFriendRequestTabPageViewModel>();
+                await _tabNavigationService.NavigateToAsync<PendingFriendRequestTabPageViewModel>();
                 break;
         }
     }

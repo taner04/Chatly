@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Chatly.Desktop.Models;
+namespace Chatly.Desktop.Models.UserSession;
 
 public sealed partial class UserSessionContext
 {
@@ -67,9 +67,16 @@ public sealed partial class UserSessionContext
     public void UpdateUserProfile(Guid userId, string? username, string? profilePictureUrl)
     {
         UpdateProfile(CurrentUser);
-        UpdateProfile(Friends.FirstOrDefault(friend => friend.User.Id == userId)?.User);
-        UpdateProfile(DirectChats.FirstOrDefault(chat => chat.User.Id == userId)?.User);
-        return;
+
+        foreach (var friend in Friends.Where(friend => friend.User.Id == userId))
+        {
+            UpdateProfile(friend.User);
+        }
+
+        foreach (var chat in DirectChats.Where(chat => chat.User.Id == userId))
+        {
+            UpdateProfile(chat.User);
+        }
 
         void UpdateProfile(User? user)
         {

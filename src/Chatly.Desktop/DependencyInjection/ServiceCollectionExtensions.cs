@@ -1,9 +1,11 @@
 using Chatly.Desktop.Abstraction.Authentication;
+using Chatly.Desktop.Abstraction.Settings;
 using Chatly.Desktop.Options;
 using Chatly.Desktop.Services.Api.Refit.Abstraction;
 using Chatly.Desktop.Services.Api.Refit.DelegatingHandlers;
 using Chatly.Desktop.Services.Authentication.Storage;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs;
+using Chatly.Desktop.Services.Settings.DirectoryProviders;
 using Chatly.Generated;
 using Chatly.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +31,7 @@ internal static class ServiceCollectionExtensions
                 })
                 .AddHttpMessageHandler<BearerDelegatingHandler>();
 
-            services.AddSecureTokenStore();
+            services.AddOsSpecificServices();
 
             services.AddGeneratedOptions();
             services.AddGeneratedServices();
@@ -37,21 +39,22 @@ internal static class ServiceCollectionExtensions
             return services;
         }
 
-        private void AddSecureTokenStore()
+        private void AddOsSpecificServices()
         {
             if (OperatingSystem.IsMacOS())
             {
                 services.AddSingleton<ISecureTokenStore, MacOsSecureTokenStore>();
-                return;
+                services.AddSingleton<ISettingsDirectoryProvider, MacOsSettingsDirectoryProvider>();
             }
-
-            if (OperatingSystem.IsWindows())
+            else if (OperatingSystem.IsWindows())
             {
+                services.AddSingleton<ISettingsDirectoryProvider, WindowsSettingsDirectoryProvider>();
                 services.AddSingleton<ISecureTokenStore, WindowsSecureTokenStore>();
-                return;
             }
-
-            throw new PlatformNotSupportedException();
+            else
+            {
+                throw new PlatformNotSupportedException();
+            }
         }
     }
 }

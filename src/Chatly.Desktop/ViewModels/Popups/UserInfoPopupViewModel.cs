@@ -1,3 +1,4 @@
+using System.ComponentModel;
 using Chatly.Contracts.Endpoints.Users.Requests;
 using Chatly.Contracts.Endpoints.Users.Results;
 using Chatly.Desktop.Abstraction.Toasts;
@@ -6,25 +7,25 @@ using Chatly.Desktop.Mappers;
 using Chatly.Desktop.Services.Api;
 using Chatly.Desktop.Services.Api.Results;
 using CommunityToolkit.Mvvm.Input;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Popups;
 
 [TransientService]
 public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewModel
 {
-    private readonly string _originalUsername;
     private readonly UserSessionContext _sessionContext;
     private readonly IToastService _toastService;
-    private readonly UserWebService _userWebService;
+    private readonly UserApiClient _userApiClient;
 
     public UserInfoPopupViewModel(
         UserSessionContext sessionContext,
         IToastService toastService,
-        UserWebService userWebService)
+        UserApiClient userApiClient)
         : this(
             sessionContext,
             toastService,
-            userWebService,
+            userApiClient,
             sessionContext.CurrentUser
             ?? throw new InvalidOperationException("A signed-in user is required."))
     {
@@ -33,23 +34,24 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
     private UserInfoPopupViewModel(
         UserSessionContext sessionContext,
         IToastService toastService,
-        UserWebService userWebService,
+        UserApiClient userApiClient,
         User user)
         : base(user.ProfilePictureUrl)
     {
         _sessionContext = sessionContext;
         _toastService = toastService;
-        _userWebService = userWebService;
+        _userApiClient = userApiClient;
         User = user;
-        _originalUsername = user.Username ?? string.Empty;
-        Username = _originalUsername;
+        OriginalUsername = user.Username ?? string.Empty;
+        Username = OriginalUsername;
+        User.PropertyChanged += OnUserPropertyChanged;
     }
 
     public override string Title => "Your profile";
 
     public User User { get; }
 
-    public string OriginalUsername => _originalUsername;
+    public string OriginalUsername { get; }
 
     [ObservableProperty]
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
@@ -59,6 +61,12 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
     [NotifyCanExecuteChangedFor(nameof(SaveCommand))]
     public partial bool IsSaving { get; private set; }
 
+    public override void CloseOverlay()
+    {
+        User.PropertyChanged -= OnUserPropertyChanged;
+        base.CloseOverlay();
+    }
+
     [RelayCommand(CanExecute = nameof(CanSave))]
     private async Task Save(CancellationToken cancellationToken)
     {
@@ -67,9 +75,9 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
 
         try
         {
-            if (!string.Equals(Username, _originalUsername, StringComparison.Ordinal))
+            if (!string.Equals(Username, OriginalUsername, StringComparison.Ordinal))
             {
-                var usernameResult = await _userWebService.UpdateUsernameAsync(
+                var usernameResult = await _userApiClient.UpdateUsernameAsync(
                     new UpdateUsernameRequest(Username),
                     cancellationToken);
 
@@ -84,7 +92,7 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
             if (ProfilePicture is not null)
             {
                 await using var content = await ProfilePicture.OpenReadAsync();
-                var pictureResult = await _userWebService.UpdateProfilePictureAsync(
+                var pictureResult = await _userApiClient.UpdateProfilePictureAsync(
                     new UpdateProfilePictureRequest(
                         content,
                         ProfilePicture.Name,
@@ -100,7 +108,7 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
             }
             else if (IsProfilePictureRemoved && !string.IsNullOrWhiteSpace(User.ProfilePictureUrl))
             {
-                var pictureResult = await _userWebService.UpdateProfilePictureAsync(
+                var pictureResult = await _userApiClient.UpdateProfilePictureAsync(
                     new UpdateProfilePictureRequest(),
                     cancellationToken);
 
@@ -145,7 +153,7 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
 
     private bool CanSave()
     {
-        var usernameChanged = !string.Equals(Username, _originalUsername, StringComparison.Ordinal);
+        var usernameChanged = !string.Equals(Username, OriginalUsername, StringComparison.Ordinal);
         var pictureChanged = ProfilePicture is not null ||
                              (IsProfilePictureRemoved && !string.IsNullOrWhiteSpace(User.ProfilePictureUrl));
 
@@ -157,5 +165,13 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
     protected override void OnProfilePictureSelectionChanged()
     {
         SaveCommand.NotifyCanExecuteChanged();
+    }
+
+    private void OnUserPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(User.ProfilePictureUrl))
+        {
+            SetExistingProfilePictureUrl(User.ProfilePictureUrl);
+        }
     }
 }

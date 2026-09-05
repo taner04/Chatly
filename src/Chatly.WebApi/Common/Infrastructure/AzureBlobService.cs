@@ -28,6 +28,24 @@ public sealed partial class AzureBlobService(
         }
     }
 
+    internal async Task<bool> IsReadyAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            await _containerClient.GetPropertiesAsync(cancellationToken: cancellationToken);
+            return true;
+        }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            LogReadinessCheckFailed(exception);
+            return false;
+        }
+    }
+
     internal async Task<BlobUploadResult> UploadAsync(
         string contentType,
         Stream stream,

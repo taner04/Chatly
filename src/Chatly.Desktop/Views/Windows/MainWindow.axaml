@@ -12,7 +12,7 @@
         mc:Ignorable="d"
         d:DesignWidth="1100"
         d:DesignHeight="700"
-        Icon="/Assets/avalonia-logo.ico"
+        Icon="/Assets/chatly-logo.ico"
         Title="Chatly"
         Width="1100"
         Height="700"
@@ -25,7 +25,7 @@
                 <Grid ColumnDefinitions="64,*">
                     <Border Width="3"
                             Height="20"
-                            Background="#0A84FF"
+                            Background="{DynamicResource ChatlyAccentBrush}"
                             CornerRadius="2"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"
@@ -46,7 +46,7 @@
                 <Grid ColumnDefinitions="64,*">
                     <Border Width="3"
                             Height="24"
-                            Background="#0A84FF"
+                            Background="{DynamicResource ChatlyAccentBrush}"
                             CornerRadius="2"
                             HorizontalAlignment="Left"
                             VerticalAlignment="Center"

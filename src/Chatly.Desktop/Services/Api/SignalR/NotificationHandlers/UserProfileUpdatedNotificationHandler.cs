@@ -1,6 +1,7 @@
 using Chatly.Contracts.SignalR;
 using Chatly.Desktop.Utilities;
 using Microsoft.Extensions.Logging;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 

@@ -41,6 +41,7 @@ internal static class DependencyInjectionTemplate
             registrations.AppendLine(">();");
         }
 
-        return TemplateLoader.Load("Services.cs.template").Replace(RegistrationPlaceholder, registrations.ToString().TrimEnd());
+        return TemplateLoader.Load("Services.cs.template")
+            .Replace(RegistrationPlaceholder, registrations.ToString().TrimEnd());
     }
 }

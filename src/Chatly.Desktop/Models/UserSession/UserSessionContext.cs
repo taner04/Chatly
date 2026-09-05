@@ -1,4 +1,4 @@
-namespace Chatly.Desktop.Models;
+namespace Chatly.Desktop.Models.UserSession;
 
 [SingletonService]
 public sealed partial class UserSessionContext : ObservableObject
@@ -25,5 +25,6 @@ public sealed partial class UserSessionContext : ObservableObject
         OnlineFriends.Clear();
         DirectChats.Clear();
         FriendRequests.Clear();
+        SetPendingFriendRequestCount(0);
     }
 }

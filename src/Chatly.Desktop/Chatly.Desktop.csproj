@@ -4,6 +4,7 @@
         <TargetFramework>net10.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ApplicationManifest>app.manifest</ApplicationManifest>
+        <ApplicationIcon>Assets\chatly-logo.ico</ApplicationIcon>
         <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
         <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     </PropertyGroup>
@@ -29,6 +30,8 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
+        <PackageReference Include="NAudio"/>
+        <PackageReference Include="SoundFlow"/>
         <PackageReference Include="System.Security.Cryptography.ProtectedData"/>
         <PackageReference Include="Refit"/>
         <PackageReference Include="Refit.HttpClientFactory"/>
@@ -91,9 +94,6 @@
         </Compile>
         <Compile Update="Views\Controls\UserAvatar.axaml.cs">
             <DependentUpon>UserAvatar.axaml</DependentUpon>
-        </Compile>
-        <Compile Update="Services\Navigation\NavigationService.Lifecycle.cs">
-            <DependentUpon>NavigationService.cs</DependentUpon>
         </Compile>
         <Compile Update="Views\Pages\UserPage\UserPage.axaml.cs">
             <DependentUpon>UserPage.axaml</DependentUpon>

@@ -4,8 +4,8 @@ namespace Chatly.Desktop.Views.Controls;
 
 public partial class UserAvatar : UserControl
 {
-    public static readonly StyledProperty<object?> ProfilePictureUrlProperty =
-        AvaloniaProperty.Register<UserAvatar, object?>(nameof(ProfilePictureUrl));
+    public static readonly StyledProperty<string?> ProfilePictureUrlProperty =
+        AvaloniaProperty.Register<UserAvatar, string?>(nameof(ProfilePictureUrl));
 
     public static readonly StyledProperty<string?> DisplayNameProperty =
         AvaloniaProperty.Register<UserAvatar, string?>(nameof(DisplayName));
@@ -18,7 +18,7 @@ public partial class UserAvatar : UserControl
         InitializeComponent();
     }
 
-    public object? ProfilePictureUrl
+    public string? ProfilePictureUrl
     {
         get => GetValue(ProfilePictureUrlProperty);
         set => SetValue(ProfilePictureUrlProperty, value);

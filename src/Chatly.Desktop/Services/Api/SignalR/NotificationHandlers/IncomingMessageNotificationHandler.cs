@@ -1,5 +1,6 @@
 using Chatly.Contracts.Endpoints.Messages.Results;
 using Chatly.Contracts.SignalR;
+using Chatly.Desktop.Abstraction.Notification;
 using Chatly.Desktop.Utilities;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using Microsoft.Extensions.Logging;
@@ -10,6 +11,7 @@ namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 public sealed class IncomingMessageNotificationHandler(
     ChatSidebarViewModel chatSidebar,
     ChatPageViewModel chatPage,
+    INotificationService notificationService,
     ILogger<ClientNotificationHandler<IncomingChatMessage>> logger)
     : ClientNotificationHandler<IncomingChatMessage>(logger)
 {
@@ -22,10 +24,13 @@ public sealed class IncomingMessageNotificationHandler(
             if (chatPage.ReceiveIncomingMessage(message))
             {
                 await chatPage.MarkChatReadAsync(message.ChatId);
-                return;
+            }
+            else
+            {
+                chatSidebar.ReceiveIncomingMessage(message.ChatId);
             }
 
-            chatSidebar.ReceiveIncomingMessage(message.ChatId);
+            await notificationService.PlayNotificationSoundAsync();
         });
     }
 }

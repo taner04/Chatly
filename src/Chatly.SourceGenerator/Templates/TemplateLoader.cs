@@ -7,7 +7,8 @@ internal static class TemplateLoader
     internal static string Load(string templateName)
     {
         var resourceName = ResourcePrefix + templateName;
-        using var stream = typeof(TemplateLoader).Assembly.GetManifestResourceStream(resourceName) ?? throw new InvalidOperationException($"Embedded template '{resourceName}' was not found.");
+        using var stream = typeof(TemplateLoader).Assembly.GetManifestResourceStream(resourceName) ??
+                           throw new InvalidOperationException($"Embedded template '{resourceName}' was not found.");
         using var reader = new StreamReader(stream);
         return reader.ReadToEnd();
     }

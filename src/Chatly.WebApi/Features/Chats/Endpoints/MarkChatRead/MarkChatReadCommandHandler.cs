@@ -26,11 +26,11 @@ public sealed class MarkChatReadCommandHandler(
 
         var readAt = DateTimeOffset.UtcNow;
         await context.Database.ExecuteSqlInterpolatedAsync($"""
-            INSERT INTO "ChatReadStates" ("ChatId", "UserId", "LastReadAt")
-            VALUES ({command.ChatId.Value}, {userId.Value}, {readAt})
-            ON CONFLICT ("ChatId", "UserId") DO UPDATE
-            SET "LastReadAt" = GREATEST("ChatReadStates"."LastReadAt", EXCLUDED."LastReadAt")
-            """, cancellationToken);
+                                                            INSERT INTO "ChatReadStates" ("ChatId", "UserId", "LastReadAt")
+                                                            VALUES ({command.ChatId.Value}, {userId.Value}, {readAt})
+                                                            ON CONFLICT ("ChatId", "UserId") DO UPDATE
+                                                            SET "LastReadAt" = GREATEST("ChatReadStates"."LastReadAt", EXCLUDED."LastReadAt")
+                                                            """, cancellationToken);
 
         return Unit.Value;
     }

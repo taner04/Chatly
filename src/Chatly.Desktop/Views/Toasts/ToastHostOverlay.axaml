@@ -4,7 +4,7 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:local="using:Chatly.Desktop.Views.Toasts"
              xmlns:toastViews="using:Chatly.Desktop.Views.Toasts"
-              xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
+             xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
              xmlns:ic="using:FluentIcons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:Class="Chatly.Desktop.Views.Toasts.ToastHostOverlay"
@@ -23,13 +23,15 @@
             </Style.Animations>
         </Style>
         <Style Selector="Border.toast-icon">
-            <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
         </Style>
-        <Style Selector="Border.toast-icon.success">
-            <Setter Property="Background" Value="#23A559" />
-        </Style>
-        <Style Selector="Border.toast-icon.error">
-            <Setter Property="Background" Value="#FF453A" />
+        <Style Selector="Border.toast-icon ic|SymbolIcon">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
         </Style>
     </UserControl.Styles>
 
@@ -46,48 +48,47 @@
             <DataTemplate x:DataType="vm:ToastNotificationViewModel">
                 <Border Classes="toast-card"
                         Width="400"
-                        Margin="0,0,0,8"
-                        Padding="12"
+                        Margin="0,0,0,10"
+                        Padding="16"
                         Background="{DynamicResource ChatlyElevatedBrush}"
                         BorderBrush="{DynamicResource ChatlyBorderBrush}"
                         BorderThickness="1"
-                        CornerRadius="14"
-                        BoxShadow="0 12 28 0 #80000000">
-                    <Grid ColumnDefinitions="30,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="9"
-                          RowSpacing="3">
-                        <Border Grid.RowSpan="2"
-                                Classes="toast-icon"
+                        CornerRadius="12"
+                        BoxShadow="0 8 24 0 #40000000">
+                    <Grid ColumnDefinitions="36,*,28" ColumnSpacing="12">
+                        <Border Classes="toast-icon"
                                 Classes.success="{Binding IsSuccess}"
                                 Classes.error="{Binding IsError}"
-                                Width="26"
-                                Height="26"
-                                CornerRadius="7">
+                                VerticalAlignment="Center">
                             <ic:SymbolIcon Symbol="{Binding Icon}"
-                                           FontSize="15"
+                                           FontSize="18"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
                         </Border>
-                        <TextBlock Grid.Column="1"
-                                   Text="{Binding Title}"
-                                   FontSize="13"
-                                   FontWeight="SemiBold"
-                                   Foreground="{DynamicResource ChatlyTextBrush}" />
+                        <StackPanel Grid.Column="1"
+                                    Spacing="4"
+                                    VerticalAlignment="Center">
+                            <TextBlock Text="{Binding Title}"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource ChatlyTextBrush}" />
+                            <TextBlock Text="{Binding Message}"
+                                       FontSize="12"
+                                       LineHeight="17"
+                                       TextWrapping="Wrap"
+                                       Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+                        </StackPanel>
                         <Button Grid.Column="2"
                                 Classes="icon-button toast-dismiss"
                                 Command="{Binding DismissCommand}"
+                                VerticalAlignment="Top"
                                 ToolTip.Tip="Dismiss">
                             <ic:SymbolIcon Symbol="Dismiss"
                                            FontSize="16"
                                            HorizontalAlignment="Center"
                                            VerticalAlignment="Center" />
                         </Button>
-                        <TextBlock Grid.Row="1"
-                                   Grid.Column="1"
-                                   Grid.ColumnSpan="2"
-                                   Text="{Binding Message}"
-                                   FontSize="11"
-                                   TextWrapping="Wrap"
-                                   Foreground="{DynamicResource ChatlyMutedTextBrush}" />
                     </Grid>
                 </Border>
             </DataTemplate>

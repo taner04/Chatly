@@ -6,7 +6,7 @@ using Chatly.Desktop.Services.Api.Results;
 namespace Chatly.Desktop.Services.Api;
 
 [TransientService]
-public sealed class MessageWebService(IChatlyApi chatlyApi)
+public sealed class MessageApiClient(IChatlyApi chatlyApi)
 {
     public async Task<WebClientResult<GetMessagesResponse>> GetMessagesAsync(
         GetMessagesRequest request,

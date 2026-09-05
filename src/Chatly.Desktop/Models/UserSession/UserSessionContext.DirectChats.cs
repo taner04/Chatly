@@ -1,7 +1,7 @@
 using System.Collections.ObjectModel;
 using System.Linq;
 
-namespace Chatly.Desktop.Models;
+namespace Chatly.Desktop.Models.UserSession;
 
 public sealed partial class UserSessionContext
 {

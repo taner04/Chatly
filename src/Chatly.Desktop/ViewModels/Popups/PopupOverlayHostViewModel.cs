@@ -12,13 +12,13 @@ public sealed partial class PopupOverlayHostViewModel : ViewModelBase
     [ObservableProperty] public partial string? Title { get; set; }
 
     [ObservableProperty] public partial object? Content { get; set; }
-    
+
     [ObservableProperty] public partial IStorageFile? ProfilePicture { get; private set; }
 
     [ObservableProperty] public partial Bitmap? ProfilePicturePreview { get; private set; }
 
     [ObservableProperty] public partial bool HasProfilePicturePreview { get; private set; }
-    
+
     [RelayCommand]
     private void RemoveProfilePicture()
     {
@@ -59,5 +59,4 @@ public sealed partial class PopupOverlayHostViewModel : ViewModelBase
         ProfilePicturePreview = new Bitmap(stream);
         HasProfilePicturePreview = true;
     }
-
 }

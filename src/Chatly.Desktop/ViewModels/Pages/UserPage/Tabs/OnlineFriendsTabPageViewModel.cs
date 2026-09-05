@@ -1,3 +1,5 @@
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
+
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 [SingletonService]

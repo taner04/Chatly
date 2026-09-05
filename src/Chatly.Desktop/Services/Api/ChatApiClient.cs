@@ -5,7 +5,7 @@ using Chatly.Desktop.Services.Api.Results;
 namespace Chatly.Desktop.Services.Api;
 
 [TransientService]
-public sealed class ChatWebService(IChatlyApi chatlyApi)
+public sealed class ChatApiClient(IChatlyApi chatlyApi)
 {
     public async Task<WebClientResult<IReadOnlyList<GetChatsResponse>>> GetChatsAsync(
         CancellationToken cancellationToken = default)

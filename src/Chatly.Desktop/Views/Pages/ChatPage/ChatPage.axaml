@@ -23,7 +23,6 @@
             <Setter Property="Padding" Value="0" />
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
-            <Setter Property="Foreground" Value="White" />
             <Setter Property="CornerRadius" Value="10" />
         </Style>
         <Style Selector="Border.message-bubble">
@@ -31,24 +30,24 @@
             <Setter Property="Padding" Value="12,8" />
             <Setter Property="Margin" Value="0,3" />
             <Setter Property="CornerRadius" Value="12" />
-            <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyIncomingMessageBrush}" />
             <Setter Property="HorizontalAlignment" Value="Left" />
         </Style>
         <Style Selector="Border.message-bubble.own">
-            <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyOutgoingMessageBrush}" />
             <Setter Property="HorizontalAlignment" Value="Right" />
         </Style>
         <Style Selector="TextBlock.message-content">
             <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
         </Style>
         <Style Selector="TextBlock.message-content.own">
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
         </Style>
         <Style Selector="TextBlock.message-time">
             <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
         </Style>
         <Style Selector="TextBlock.message-time.own">
-            <Setter Property="Foreground" Value="#DCEEFF" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
         </Style>
         <Style Selector="Border.typing-dot">
             <Setter Property="Width" Value="5" />
@@ -147,7 +146,7 @@
                                 <Grid>
                                     <Border Width="3"
                                             Height="24"
-                                            Background="#0A84FF"
+                                            Background="{DynamicResource ChatlyAccentBrush}"
                                             CornerRadius="2"
                                             HorizontalAlignment="Left"
                                             VerticalAlignment="Center"
@@ -214,15 +213,9 @@
                           Grid.Row="1"
                           Margin="0,12"
                           VerticalScrollBarVisibility="Auto"
+                          ScrollChanged="MessagesScrollViewer_OnScrollChanged"
                           IsVisible="{Binding ViewModel.HasCurrentChat}">
                 <StackPanel>
-                    <Button Content="Load earlier messages"
-                            Command="{Binding ViewModel.LoadOlderMessagesCommand}"
-                            HorizontalAlignment="Center"
-                            Margin="0,0,0,10"
-                            IsVisible="{Binding ViewModel.HasOlderMessages}"
-                            IsEnabled="{Binding !ViewModel.IsLoadingMessages}" />
-
                     <TextBlock Text="Loading messages..."
                                HorizontalAlignment="Center"
                                Margin="0,16"
@@ -303,7 +296,7 @@
                              KeyDown="MessageTextBox_OnKeyDown" />
                     <Button Grid.Column="1"
                             Grid.Row="1"
-                            Classes="accent-button opacity-hover send-message"
+                            Classes="fluent-button send-message"
                             VerticalAlignment="Center"
                             Command="{Binding ViewModel.SendMessageCommand}"
                             ToolTip.Tip="Send message">

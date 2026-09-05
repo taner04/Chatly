@@ -43,4 +43,10 @@ public sealed partial class AzureBlobService
         Level = LogLevel.Error,
         Message = "Failed to initialize Azure Blob Storage.")]
     private partial void LogInitializationFailed(Exception exception);
+
+    [LoggerMessage(
+        EventId = 7,
+        Level = LogLevel.Warning,
+        Message = "Azure Blob Storage readiness check failed.")]
+    private partial void LogReadinessCheckFailed(Exception exception);
 }

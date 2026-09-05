@@ -80,6 +80,7 @@ public static class ServiceDefaultsExtensions
         {
             builder.Services.AddOpenTelemetry().UseOtlpExporter();
         }
+
         return builder;
     }
 

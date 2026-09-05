@@ -5,8 +5,8 @@ namespace Chatly.Desktop.Services.Chat;
 [SingletonService]
 public sealed class ChatNavigationService(INavigationService navigationService)
 {
-    public bool Navigate(Guid chatId)
+    public Task<bool> NavigateAsync(Guid chatId, CancellationToken cancellationToken = default)
     {
-        return navigationService.NavigateTo<ChatPageViewModel>(chatId);
+        return navigationService.NavigateToAsync<ChatPageViewModel>(chatId, cancellationToken);
     }
 }

@@ -55,6 +55,5 @@ public static class Guard
                 "InvalidEmail",
                 $"{prop} must be a valid email address.");
         }
-
     }
 }

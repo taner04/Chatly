@@ -1,6 +1,5 @@
 using System.Linq.Expressions;
 using FluentValidation;
-using Microsoft.AspNetCore.Http;
 
 namespace Chatly.WebApi.Features.Users.Validation;
 

@@ -1,16 +1,16 @@
 <UserControl xmlns="https://github.com/avaloniaui"
-              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
-              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-              xmlns:controls="using:Chatly.Desktop.Views.Controls"
-              xmlns:ic="using:FluentIcons.Avalonia"
-              xmlns:local="using:Chatly.Desktop.Views.Popups"
-              mc:Ignorable="d"
-              d:DesignWidth="492"
-              d:DesignHeight="390"
-              x:Class="Chatly.Desktop.Views.Popups.UserInfoPopup"
-              x:DataType="local:UserInfoPopup"
-              x:Name="Root">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             xmlns:controls="using:Chatly.Desktop.Views.Controls"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             xmlns:local="using:Chatly.Desktop.Views.Popups"
+             mc:Ignorable="d"
+             d:DesignWidth="492"
+             d:DesignHeight="390"
+             x:Class="Chatly.Desktop.Views.Popups.UserInfoPopup"
+             x:DataType="local:UserInfoPopup"
+             x:Name="Root">
     <UserControl.Styles>
         <Style Selector="Border.profile-card">
             <Setter Property="Padding" Value="18" />
@@ -37,7 +37,7 @@
             <Setter Property="Cursor" Value="Hand" />
         </Style>
         <Style Selector="Button.avatar-select:pointerover">
-            <Setter Property="Background" Value="#220A84FF" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyAccentSubtleBrush}" />
         </Style>
         <Style Selector="Button.remove-picture">
             <Setter Property="Width" Value="25" />
@@ -69,7 +69,7 @@
             <Setter Property="HorizontalContentAlignment" Value="Center" />
             <Setter Property="VerticalContentAlignment" Value="Center" />
             <Setter Property="CornerRadius" Value="10" />
-            <Setter Property="Foreground" Value="White" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
         </Style>
     </UserControl.Styles>
 
@@ -96,14 +96,14 @@
                                 Height="25"
                                 CornerRadius="13"
                                 Background="{DynamicResource ChatlyElevatedBrush}"
-                                BorderBrush="#636366"
+                                BorderBrush="{DynamicResource ChatlyBorderBrush}"
                                 BorderThickness="1"
                                 HorizontalAlignment="Right"
                                 VerticalAlignment="Bottom"
                                 IsHitTestVisible="False">
                             <ic:SymbolIcon Symbol="Edit"
                                            FontSize="13"
-                                           Foreground="White" />
+                                           Foreground="{DynamicResource ChatlyTextBrush}" />
                         </Border>
                     </Grid>
                     <Button Classes="remove-picture"

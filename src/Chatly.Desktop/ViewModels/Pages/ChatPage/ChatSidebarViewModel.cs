@@ -2,6 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
@@ -38,16 +39,24 @@ public sealed class ChatSidebarViewModel : ViewModelBase
 
     private void DirectChats_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
     {
-        Chats.Clear();
-
         if (sender is not IEnumerable<DirectChat> chats)
         {
             return;
         }
 
+        var existingPreviews = Chats
+            .Where(chat => chat.DirectChatId.HasValue)
+            .ToDictionary(chat => chat.DirectChatId!.Value);
+
+        foreach (var chat in Chats)
+        {
+            chat.PropertyChanged -= Chat_PropertyChanged;
+        }
+
+        Chats.Clear();
         foreach (var chat in chats)
         {
-            Chats.Add(CreateChatPreview(chat));
+            Chats.Add(existingPreviews.GetValueOrDefault(chat.Id) ?? CreateChatPreview(chat));
         }
 
         SubscribeToChats();

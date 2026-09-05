@@ -4,6 +4,7 @@ using Chatly.Desktop.Extensions;
 using Chatly.Desktop.Mappers;
 using Chatly.Desktop.Services.Api;
 using CommunityToolkit.Mvvm.Input;
+using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Popups;
 
@@ -11,7 +12,7 @@ namespace Chatly.Desktop.ViewModels.Popups;
 public sealed partial class OnboardingPopupViewModel(
     IToastService toastService,
     UserSessionContext userContext,
-    UserWebService userWebService) : ProfilePicturePopupViewModel
+    UserApiClient userApiClient) : ProfilePicturePopupViewModel
 {
     public override string Title => "Complete your profile";
 
@@ -30,7 +31,7 @@ public sealed partial class OnboardingPopupViewModel(
         if (ProfilePicture is null)
         {
             var onboardingResult =
-                await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username));
+                await userApiClient.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username));
 
             if (onboardingResult.IsFailure)
             {
@@ -48,7 +49,7 @@ public sealed partial class OnboardingPopupViewModel(
         var contentType = GetContentType(ProfilePicture);
 
         var result =
-            await userWebService.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username, content,
+            await userApiClient.CompleteOnboardingAsync(new CompleteOnboardingRequest(Username, content,
                 ProfilePicture.Name, contentType));
 
         if (result.IsFailure)

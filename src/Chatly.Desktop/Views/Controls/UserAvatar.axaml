@@ -27,7 +27,7 @@
                     IsVisible="{Binding ProfilePictureUrl, RelativeSource={RelativeSource AncestorType=local:UserAvatar}, Converter={StaticResource StringHasValueConverter}, ConverterParameter=Invert}"
                     FontSize="15"
                     FontWeight="SemiBold"
-                    Foreground="White"
+                    Foreground="{DynamicResource ChatlyOnAccentBrush}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Center" />
             </Grid>

@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Services.Api.Refit.Abstraction;
 
-public interface IChatlyApi : IChatEndpoint, IFriendRequestEndpoint, IFriendshipEndpoint, IMessageEndpoint,
-    IUserEndpoint
+public interface IChatlyApi : IChatEndpoint, IFriendRequestEndpoint, IFriendshipEndpoint, IHealthEndpoint,
+    IMessageEndpoint, IUserEndpoint
 {
 }

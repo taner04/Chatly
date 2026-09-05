@@ -24,7 +24,7 @@ public static class ToastExtensions
 
         public void ShowError(WebClientError error)
         {
-            toastService.AddToast(BuildNotificationViewModel(error.ErrorCode, error.Detail, Symbol.ErrorCircle,
+            toastService.AddToast(BuildNotificationViewModel("Something went wrong", error.Detail, Symbol.ErrorCircle,
                 ToastType.Error));
         }
     }
