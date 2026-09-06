@@ -1,0 +1,310 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Chatly.Desktop.Views.Pages.ChatPage"
+             xmlns:controls="using:Chatly.Desktop.Views.Controls"
+             xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             x:Class="Chatly.Desktop.Views.Pages.ChatPage.ChatPage"
+             x:DataType="local:ChatPage">
+    <UserControl.Styles>
+        <Style Selector="Button.chat-row-button:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="Button.chat-row-button:pressed /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+        </Style>
+        <Style Selector="TextBox.chat-message">
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Padding" Value="14,0" />
+        </Style>
+        <Style Selector="Button.send-message">
+            <Setter Property="Width" Value="44" />
+            <Setter Property="Height" Value="44" />
+            <Setter Property="Padding" Value="0" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="CornerRadius" Value="10" />
+        </Style>
+        <Style Selector="Border.message-bubble">
+            <Setter Property="MaxWidth" Value="520" />
+            <Setter Property="Padding" Value="12,8" />
+            <Setter Property="Margin" Value="0,3" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyIncomingMessageBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style Selector="Border.message-bubble.own">
+            <Setter Property="Background" Value="{DynamicResource ChatlyOutgoingMessageBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="TextBlock.message-content">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message-content.own">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message-time">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message-time.own">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+        </Style>
+        <Style Selector="Border.typing-dot">
+            <Setter Property="Width" Value="5" />
+            <Setter Property="Height" Value="5" />
+            <Setter Property="CornerRadius" Value="3" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyMutedTextBrush}" />
+            <Setter Property="Opacity" Value="0.35" />
+        </Style>
+        <Style Selector="Border.typing-dot.first">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="20%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.typing-dot.second">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="20%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+        <Style Selector="Border.typing-dot.third">
+            <Style.Animations>
+                <Animation Duration="0:0:1.2" IterationCount="Infinite">
+                    <KeyFrame Cue="0%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="40%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="60%">
+                        <Setter Property="Opacity" Value="1" />
+                    </KeyFrame>
+                    <KeyFrame Cue="80%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                    <KeyFrame Cue="100%">
+                        <Setter Property="Opacity" Value="0.35" />
+                    </KeyFrame>
+                </Animation>
+            </Style.Animations>
+        </Style>
+    </UserControl.Styles>
+
+    <Grid ColumnDefinitions="220,*" ColumnSpacing="20">
+        <Border Background="{DynamicResource ChatlyElevatedBrush}"
+                BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                BorderThickness="1"
+                CornerRadius="12"
+                Padding="10">
+            <ItemsControl ItemsSource="{Binding ViewModel.Chats}">
+                <ItemsControl.Styles>
+                    <Style Selector="ContentPresenter">
+                        <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                    </Style>
+                </ItemsControl.Styles>
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <Button Classes="chat-row-button"
+                                Command="{Binding NavigateCommand}"
+                                Background="Transparent"
+                                BorderThickness="0"
+                                Padding="0"
+                                HorizontalAlignment="Stretch"
+                                HorizontalContentAlignment="Stretch">
+                            <Border Classes="chat-row"
+                                    Classes.selected="{Binding IsSelected}"
+                                    Padding="0"
+                                    Margin="0,0,0,8">
+                                <Grid>
+                                    <Border Width="3"
+                                            Height="24"
+                                            Background="{DynamicResource ChatlyAccentBrush}"
+                                            CornerRadius="2"
+                                            HorizontalAlignment="Left"
+                                            VerticalAlignment="Center"
+                                            IsVisible="{Binding IsSelected}" />
+                                    <Grid Margin="10,9"
+                                          ColumnDefinitions="44,*,Auto"
+                                          ColumnSpacing="8">
+                                        <controls:UserAvatar Width="40"
+                                                             Height="40"
+                                                             DisplayName="{Binding Name}"
+                                                             ProfilePictureUrl="{Binding User.ProfilePictureUrl}"
+                                                             IsOnline="{Binding User.IsOnline}" />
+                                        <TextBlock Grid.Column="1"
+                                                   Text="{Binding Name}"
+                                                   VerticalAlignment="Center"
+                                                   FontSize="15"
+                                                   FontWeight="SemiBold"
+                                                   Foreground="{DynamicResource ChatlyTextBrush}" />
+                                        <Border Grid.Column="2"
+                                                Width="14"
+                                                Height="14"
+                                                CornerRadius="7"
+                                                Background="#E5484D"
+                                                VerticalAlignment="Center"
+                                                IsVisible="{Binding HasUnreadMessages}">
+                                            <TextBlock Text="{Binding UnreadMessageCount}"
+                                                       FontSize="8"
+                                                       FontWeight="Bold"
+                                                       Foreground="White"
+                                                       HorizontalAlignment="Center"
+                                                       VerticalAlignment="Center" />
+                                        </Border>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </Button>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+        </Border>
+        <Grid Grid.Column="1" RowDefinitions="Auto,*,Auto">
+            <Border Grid.Row="0"
+                    Padding="16,12"
+                    Background="{DynamicResource ChatlyElevatedBrush}"
+                    BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    IsVisible="{Binding ViewModel.HasCurrentChat}">
+                <StackPanel Orientation="Horizontal" Spacing="10">
+                    <controls:UserAvatar Width="32"
+                                         Height="32"
+                                         DisplayName="{Binding ViewModel.CurrentChat.User.Username}"
+                                         ProfilePictureUrl="{Binding ViewModel.CurrentChat.User.ProfilePictureUrl}"
+                                         IsOnline="{Binding ViewModel.CurrentChat.User.IsOnline}" />
+                    <TextBlock Text="{Binding ViewModel.CurrentChat.Name}"
+                               VerticalAlignment="Center"
+                               FontSize="16"
+                               FontWeight="SemiBold"
+                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                </StackPanel>
+            </Border>
+
+            <ScrollViewer x:Name="MessagesScrollViewer"
+                          Grid.Row="1"
+                          Margin="0,12"
+                          VerticalScrollBarVisibility="Auto"
+                          ScrollChanged="MessagesScrollViewer_OnScrollChanged"
+                          IsVisible="{Binding ViewModel.HasCurrentChat}">
+                <StackPanel>
+                    <TextBlock Text="Loading messages..."
+                               HorizontalAlignment="Center"
+                               Margin="0,16"
+                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                               IsVisible="{Binding ViewModel.IsLoadingMessages}" />
+
+                    <TextBlock Text="No messages yet. Start the conversation."
+                               HorizontalAlignment="Center"
+                               VerticalAlignment="Center"
+                               Margin="0,28"
+                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                               IsVisible="{Binding ViewModel.IsEmptyChat}" />
+
+                    <ItemsControl ItemsSource="{Binding ViewModel.Messages}">
+                        <ItemsControl.Styles>
+                            <Style Selector="ContentPresenter">
+                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+                            </Style>
+                        </ItemsControl.Styles>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="viewModels:ChatMessageViewModel">
+                                <Border Classes="message-bubble"
+                                        Classes.own="{Binding IsOwnMessage}">
+                                    <StackPanel Spacing="3">
+                                        <TextBlock Classes="message-content"
+                                                   Classes.own="{Binding IsOwnMessage}"
+                                                   Text="{Binding Content}"
+                                                   TextWrapping="Wrap" />
+                                        <TextBlock Classes="message-time"
+                                                   Classes.own="{Binding IsOwnMessage}"
+                                                   Text="{Binding Time}"
+                                                   FontSize="10"
+                                                   HorizontalAlignment="Right" />
+                                    </StackPanel>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+
+            <Border Grid.Row="2"
+                    Padding="10"
+                    Background="{DynamicResource ChatlyElevatedBrush}"
+                    BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="12"
+                    IsVisible="{Binding ViewModel.HasCurrentChat}">
+                <Grid ColumnDefinitions="*,Auto"
+                      RowDefinitions="Auto,Auto"
+                      ColumnSpacing="10"
+                      VerticalAlignment="Center">
+                    <StackPanel Grid.ColumnSpan="2"
+                                Orientation="Horizontal"
+                                Spacing="5"
+                                Margin="4,0,4,7"
+                                VerticalAlignment="Center"
+                                IsVisible="{Binding ViewModel.IsOtherUserTyping}">
+                        <TextBlock FontSize="11"
+                                   VerticalAlignment="Center"
+                                   Foreground="{DynamicResource ChatlyMutedTextBrush}">
+                            <Run Text="{Binding ViewModel.CurrentChat.Name}" FontWeight="SemiBold" />
+                            <Run Text=" is typing" />
+                        </TextBlock>
+                        <StackPanel Orientation="Horizontal"
+                                    Spacing="3"
+                                    VerticalAlignment="Center">
+                            <Border Classes="typing-dot first" />
+                            <Border Classes="typing-dot second" />
+                            <Border Classes="typing-dot third" />
+                        </StackPanel>
+                    </StackPanel>
+                    <TextBox Classes="chatly-input chat-message"
+                             Grid.Row="1"
+                             VerticalAlignment="Center"
+                             Text="{Binding ViewModel.DraftMessage, Mode=TwoWay}"
+                             PlaceholderText="Write a message..."
+                             KeyDown="MessageTextBox_OnKeyDown" />
+                    <Button Grid.Column="1"
+                            Grid.Row="1"
+                            Classes="fluent-button send-message"
+                            VerticalAlignment="Center"
+                            Command="{Binding ViewModel.SendMessageCommand}"
+                            ToolTip.Tip="Send message">
+                        <ic:SymbolIcon Symbol="Send" FontSize="19" />
+                    </Button>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+
+</UserControl>
