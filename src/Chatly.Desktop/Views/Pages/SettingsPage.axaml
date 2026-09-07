@@ -1,0 +1,298 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             xmlns:local="using:Chatly.Desktop.Views.Pages"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+             mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:DataType="local:SettingsPage"
+             x:Class="Chatly.Desktop.Views.Pages.SettingsPage">
+    <UserControl.Styles>
+        <Style Selector="Border.settings-card">
+            <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+        </Style>
+        <Style Selector="ToggleButton.settings-card-header">
+            <Setter Property="Padding" Value="18,15" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderThickness" Value="0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+            <Setter Property="CornerRadius" Value="12" />
+        </Style>
+        <Style Selector="ToggleButton.settings-card-header:pointerover">
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        </Style>
+        <Style Selector="ToggleButton.settings-card-header:checked">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="ToggleButton.settings-card-header:checked /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style
+            Selector="ToggleButton.settings-card-header:checked:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+            <Setter Property="BorderBrush" Value="Transparent" />
+        </Style>
+        <Style Selector="ToggleButton.settings-card-header:checked ic|SymbolIcon.settings-card-arrow">
+            <Setter Property="RenderTransform" Value="rotate(180deg)" />
+        </Style>
+        <Style Selector="Border.settings-card-icon">
+            <Setter Property="Width" Value="36" />
+            <Setter Property="Height" Value="36" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Border.settings-card-icon ic|SymbolIcon">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.settings-label">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.settings-description">
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+        </Style>
+        <Style Selector="Border.settings-card-content">
+            <Setter Property="MaxHeight" Value="0" />
+            <Setter Property="Opacity" Value="0" />
+            <Setter Property="ClipToBounds" Value="True" />
+            <Setter Property="IsHitTestVisible" Value="False" />
+            <Setter Property="Transitions">
+                <Transitions>
+                    <DoubleTransition Property="MaxHeight"
+                                      Duration="0:0:0.22"
+                                      Easing="CubicEaseInOut" />
+                    <DoubleTransition Property="Opacity"
+                                      Duration="0:0:0.16" />
+                </Transitions>
+            </Setter>
+        </Style>
+        <Style Selector="Border.settings-card-content.expanded">
+            <Setter Property="Opacity" Value="1" />
+            <Setter Property="IsHitTestVisible" Value="True" />
+        </Style>
+        <Style Selector="Border.settings-card-content.appearance.expanded">
+            <Setter Property="MaxHeight" Value="140" />
+        </Style>
+        <Style Selector="Border.settings-card-content.notifications.expanded">
+            <Setter Property="MaxHeight" Value="84" />
+        </Style>
+        <Style Selector="Border.settings-card-content.about.expanded">
+            <Setter Property="MaxHeight" Value="130" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid RowDefinitions="*,Auto">
+        <ScrollViewer HorizontalScrollBarVisibility="Disabled"
+                      HorizontalContentAlignment="Stretch"
+                      VerticalScrollBarVisibility="Auto">
+            <StackPanel Margin="10" Spacing="18" HorizontalAlignment="Stretch">
+                <StackPanel Spacing="4">
+                    <TextBlock Text="Settings"
+                               FontSize="28"
+                               FontWeight="Bold"
+                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                    <TextBlock Text="Personalize how Chatly looks and notifies you."
+                               Classes="settings-description"
+                               FontSize="14" />
+                </StackPanel>
+
+                <Border Classes="settings-card">
+                    <StackPanel>
+                        <ToggleButton x:Name="AppearanceCardToggle"
+                                      Classes="settings-card-header">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Border Classes="settings-card-icon">
+                                    <ic:SymbolIcon Symbol="Color"
+                                                   FontSize="18" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Appearance"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    <TextBlock Text="Theme and accent color"
+                                               Classes="settings-description" />
+                                </StackPanel>
+                                <ic:SymbolIcon Grid.Column="2"
+                                               Classes="settings-card-arrow"
+                                               Symbol="ChevronUp"
+                                               FontSize="18"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                                               RenderTransformOrigin="50%,50%">
+                                    <ic:SymbolIcon.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Property="RenderTransform"
+                                                                           Duration="0:0:0.18" />
+                                        </Transitions>
+                                    </ic:SymbolIcon.Transitions>
+                                </ic:SymbolIcon>
+                            </Grid>
+                        </ToggleButton>
+
+                        <Border Padding="18,4,18,18"
+                                Classes="settings-card-content appearance"
+                                Classes.expanded="{Binding IsChecked, ElementName=AppearanceCardToggle}">
+                            <StackPanel Spacing="14">
+                                <Separator Background="{DynamicResource ChatlyBorderBrush}" />
+                                <Grid ColumnDefinitions="*,180" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Theme" Classes="settings-label" />
+                                        <TextBlock Text="Choose light, dark, or your system setting."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1"
+                                              ItemsSource="{Binding ViewModel.ThemeModes}"
+                                              SelectedItem="{Binding ViewModel.ThemeSettings.Mode, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,180" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Accent color" Classes="settings-label" />
+                                        <TextBlock Text="Choose the highlight color used across Chatly."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1"
+                                              ItemsSource="{Binding ViewModel.AccentColors}"
+                                              SelectedItem="{Binding ViewModel.ThemeSettings.AccentColor, Mode=TwoWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="settings-card">
+                    <StackPanel>
+                        <ToggleButton x:Name="NotificationsCardToggle"
+                                      Classes="settings-card-header">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Border Classes="settings-card-icon">
+                                    <ic:SymbolIcon Symbol="Alert"
+                                                   FontSize="18" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Notifications"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    <TextBlock Text="Sounds and notification behavior"
+                                               Classes="settings-description" />
+                                </StackPanel>
+                                <ic:SymbolIcon Grid.Column="2"
+                                               Classes="settings-card-arrow"
+                                               Symbol="ChevronUp"
+                                               FontSize="18"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                                               RenderTransformOrigin="50%,50%">
+                                    <ic:SymbolIcon.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Property="RenderTransform"
+                                                                           Duration="0:0:0.18" />
+                                        </Transitions>
+                                    </ic:SymbolIcon.Transitions>
+                                </ic:SymbolIcon>
+                            </Grid>
+                        </ToggleButton>
+
+                        <Border Padding="18,4,18,18"
+                                Classes="settings-card-content notifications"
+                                Classes.expanded="{Binding IsChecked, ElementName=NotificationsCardToggle}">
+                            <StackPanel Spacing="14">
+                                <Separator Background="{DynamicResource ChatlyBorderBrush}" />
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Notification sounds" Classes="settings-label" />
+                                        <TextBlock Text="Play a sound when a new notification arrives."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding ViewModel.NotificationSettings.PlaySound, Mode=TwoWay}" />
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="settings-card">
+                    <StackPanel>
+                        <ToggleButton x:Name="AboutCardToggle"
+                                      Classes="settings-card-header">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Border Classes="settings-card-icon">
+                                    <ic:SymbolIcon Symbol="Info"
+                                                   FontSize="18" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="About Chatly"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    <TextBlock Text="Application and system information"
+                                               Classes="settings-description" />
+                                </StackPanel>
+                                <ic:SymbolIcon Grid.Column="2"
+                                               Classes="settings-card-arrow"
+                                               Symbol="ChevronUp"
+                                               FontSize="18"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                                               RenderTransformOrigin="50%,50%">
+                                    <ic:SymbolIcon.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Property="RenderTransform"
+                                                                           Duration="0:0:0.18" />
+                                        </Transitions>
+                                    </ic:SymbolIcon.Transitions>
+                                </ic:SymbolIcon>
+                            </Grid>
+                        </ToggleButton>
+
+                        <Border Padding="18,4,18,18"
+                                Classes="settings-card-content about"
+                                Classes.expanded="{Binding IsChecked, ElementName=AboutCardToggle}">
+                            <StackPanel Spacing="12">
+                                <Separator Background="{DynamicResource ChatlyBorderBrush}" />
+                                <Grid ColumnDefinitions="56,*" ColumnSpacing="14">
+                                    <Image Width="48"
+                                           Height="48"
+                                           Source="/Assets/chatly-logo.ico"
+                                           Stretch="Uniform" />
+                                    <StackPanel Grid.Column="1"
+                                                Spacing="3"
+                                                VerticalAlignment="Center">
+                                        <TextBlock
+                                            Text="{Binding ViewModel.ApplicationVersion, StringFormat='Version {0}'}"
+                                            Classes="settings-description" />
+                                        <TextBlock Text="{Binding ViewModel.Platform, StringFormat='Platform: {0}'}"
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+            </StackPanel>
+        </ScrollViewer>
+
+        <Button Grid.Row="1"
+                Classes="fluent-button"
+                Margin="10,14,10,10"
+                Padding="16,9"
+                HorizontalAlignment="Right"
+                Command="{Binding ViewModel.LogoutCommand}">
+            <StackPanel Orientation="Horizontal" Spacing="8">
+                <ic:SymbolIcon Symbol="SignOut" FontSize="17" />
+                <TextBlock Text="Log out" VerticalAlignment="Center" />
+            </StackPanel>
+        </Button>
+    </Grid>
+</UserControl>

@@ -1,0 +1,30 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="TabItem:selected /template/ Border#PART_SelectedPipe">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+    <Style Selector="TabStripItem:selected /template/ Border#PART_SelectedPipe">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+
+    <Style Selector="ToggleSwitch:checked /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pointerover /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pressed /template/ Border#SwitchKnobBounds">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked /template/ Ellipse#SwitchKnobOn">
+        <Setter Property="Fill" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pointerover /template/ Ellipse#SwitchKnobOn">
+        <Setter Property="Fill" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
+    <Style Selector="ToggleSwitch:checked:pressed /template/ Ellipse#SwitchKnobOn">
+        <Setter Property="Fill" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
+</Styles>
