@@ -1,0 +1,67 @@
+<Styles xmlns="https://github.com/avaloniaui">
+    <Style Selector="ComboBox">
+        <Setter Property="MinHeight" Value="42" />
+        <Setter Property="Padding" Value="36,8" />
+        <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="VerticalAlignment" Value="Center" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ComboBox /template/ ContentControl#ContentPresenter">
+        <Setter Property="Grid.ColumnSpan" Value="2" />
+    </Style>
+    <Style Selector="ComboBox:pointerover /template/ Border#Background">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+    </Style>
+    <Style Selector="ComboBox:focus-visible /template/ Border#HighlightBackground">
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+    </Style>
+    <Style Selector="ComboBox /template/ PathIcon#DropDownGlyph">
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+    </Style>
+    <Style Selector="ComboBox /template/ Border#PopupBorder">
+        <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="10" />
+        <Setter Property="Padding" Value="4" />
+    </Style>
+    <Style Selector="ComboBox:dropdownopen /template/ Border#PopupBorder">
+        <Style.Animations>
+            <Animation Duration="0:0:0.16" Easing="CubicEaseOut" FillMode="Forward">
+                <KeyFrame Cue="0%">
+                    <Setter Property="Opacity" Value="0" />
+                </KeyFrame>
+                <KeyFrame Cue="100%">
+                    <Setter Property="Opacity" Value="1" />
+                </KeyFrame>
+            </Animation>
+        </Style.Animations>
+    </Style>
+    <Style Selector="ComboBoxItem">
+        <Setter Property="Padding" Value="10,8" />
+        <Setter Property="Background" Value="Transparent" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        <Setter Property="CornerRadius" Value="7" />
+        <Setter Property="HorizontalContentAlignment" Value="Center" />
+    </Style>
+    <Style Selector="ComboBoxItem:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+    </Style>
+    <Style Selector="ComboBoxItem:selected /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
+    </Style>
+    <Style Selector="ComboBoxItem:selected:pointerover /template/ ContentPresenter#PART_ContentPresenter">
+        <Setter Property="Background" Value="{DynamicResource ChatlyAccentBrush}" />
+        <Setter Property="Foreground" Value="{DynamicResource ChatlyOnAccentBrush}" />
+        <Setter Property="Opacity" Value="0.88" />
+    </Style>
+</Styles>
