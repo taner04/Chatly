@@ -6,7 +6,7 @@ namespace Chatly.Shared.Attributes.Service;
 public abstract class ServiceAttribute(ServiceLifetime lifetime, Type? serviceType = null, bool asSelf = false)
     : Attribute
 {
-    public ServiceLifetime Lifetime { get; } = lifetime;
-    public Type? ServiceType { get; } = serviceType;
-    public bool AsSelf { get; } = asSelf;
+    internal ServiceLifetime Lifetime { get; } = lifetime;
+    internal Type? ServiceType { get; } = serviceType;
+    internal bool AsSelf { get; } = asSelf;
 }

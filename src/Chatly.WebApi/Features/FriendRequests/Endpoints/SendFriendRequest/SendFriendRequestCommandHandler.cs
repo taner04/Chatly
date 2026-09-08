@@ -5,7 +5,7 @@ using Chatly.WebApi.Features.FriendRequests.Models;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 
-public sealed class SendFriendRequestCommandHandler(
+internal sealed class SendFriendRequestCommandHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
     AzureBlobService blobService,

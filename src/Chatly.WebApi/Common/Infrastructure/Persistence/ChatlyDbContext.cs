@@ -12,7 +12,7 @@ public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) :
     public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
     public DbSet<Friendship> Friendships => Set<Friendship>();
     public DbSet<Chat> Chats => Set<Chat>();
-    public DbSet<ChatReadState> ChatReadStates => Set<ChatReadState>();
+    internal DbSet<ChatReadState> ChatReadStates => Set<ChatReadState>();
     public DbSet<Message> Messages => Set<Message>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)

@@ -3,7 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 namespace Chatly.Desktop.Services.Popups;
 
 [SingletonService(typeof(IPopupService))]
-public sealed class PopupService(IServiceProvider serviceProvider) : IPopupService
+internal sealed class PopupService(IServiceProvider serviceProvider) : IPopupService
 {
     private bool _isOpen;
     private IPopupHost? _popupHost;

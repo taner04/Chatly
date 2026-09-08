@@ -3,12 +3,12 @@ using Chatly.WebApi.Features.Users.Exceptions;
 namespace Chatly.WebApi.Features.Users.Services;
 
 [ScopedService]
-public sealed class UserService(
+internal sealed class UserService(
     ChatlyDbContext context,
     CurrentUserService currentUser,
     AzureBlobService blobService)
 {
-    public async Task<User> GetCurrentUserAsync(CancellationToken cancellationToken)
+    internal async Task<User> GetCurrentUserAsync(CancellationToken cancellationToken)
     {
         var userId = currentUser.GetCurrentUserId();
 
@@ -18,7 +18,7 @@ public sealed class UserService(
                ?? throw new EntityNotFoundException<User>(userId.Value);
     }
 
-    public async Task UpdateUsernameAsync(
+    internal async Task UpdateUsernameAsync(
         User user,
         string username,
         CancellationToken cancellationToken)
@@ -35,7 +35,7 @@ public sealed class UserService(
         user.Username = username;
     }
 
-    public async Task<List<UserId>> GetProfileUpdateRecipientIdsAsync(
+    internal async Task<List<UserId>> GetProfileUpdateRecipientIdsAsync(
         UserId userId,
         CancellationToken cancellationToken)
     {
@@ -53,7 +53,7 @@ public sealed class UserService(
         return recipientIds;
     }
 
-    public CurrentUserResponse CreateResponse(User user)
+    internal CurrentUserResponse CreateResponse(User user)
     {
         return new CurrentUserResponse(
             user.Id.Value,

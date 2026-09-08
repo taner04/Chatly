@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateProfilePicture;
 
-public sealed class UpdateProfilePictureCommandValidator
+internal sealed class UpdateProfilePictureCommandValidator
     : AbstractValidator<UpdateProfilePictureCommand>
 {
     public UpdateProfilePictureCommandValidator()

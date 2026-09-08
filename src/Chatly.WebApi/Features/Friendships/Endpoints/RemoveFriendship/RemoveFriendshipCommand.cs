@@ -1,3 +1,3 @@
 namespace Chatly.WebApi.Features.Friendships.Endpoints.RemoveFriendship;
 
-public sealed record RemoveFriendshipCommand(UserId AssociatedUserId) : ICommand;
+internal sealed record RemoveFriendshipCommand(UserId AssociatedUserId) : ICommand;

@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Abstraction.Settings;
 
-public interface ISettingsDirectoryProvider
+internal interface ISettingsDirectoryProvider
 {
     string GetRootDirectory();
 }

@@ -8,7 +8,7 @@ using Microsoft.Extensions.Logging;
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
-public sealed class IncomingMessageNotificationHandler(
+internal sealed class IncomingMessageNotificationHandler(
     ChatSidebarViewModel chatSidebar,
     ChatPageViewModel chatPage,
     INotificationService notificationService,

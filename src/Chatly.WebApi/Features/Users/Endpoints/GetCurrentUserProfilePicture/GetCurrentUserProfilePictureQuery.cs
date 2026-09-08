@@ -1,3 +1,3 @@
 ﻿namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
-public class GetCurrentUserProfilePictureQuery : IQuery<GetCurrentUserProfilePictureResponse>;
+internal sealed class GetCurrentUserProfilePictureQuery : IQuery<GetCurrentUserProfilePictureResponse>;

@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Common.Behaviours;
 
-public sealed class FluentValidationBehaviour<TMessage, TResponse>(IEnumerable<IValidator<TMessage>> validators)
+internal sealed class FluentValidationBehaviour<TMessage, TResponse>(IEnumerable<IValidator<TMessage>> validators)
     : IPipelineBehavior<TMessage, TResponse>
     where TMessage : IMessage
 {

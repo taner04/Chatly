@@ -2,7 +2,7 @@ using System.Net;
 
 namespace Chatly.WebApi.Common.Shared.Guards.Exceptions;
 
-public sealed class GuardException : ChatlyException
+internal sealed class GuardException : ChatlyException
 {
     private GuardException(string title, string message, string errorCode)
         : base(title, message, errorCode, HttpStatusCode.BadRequest)

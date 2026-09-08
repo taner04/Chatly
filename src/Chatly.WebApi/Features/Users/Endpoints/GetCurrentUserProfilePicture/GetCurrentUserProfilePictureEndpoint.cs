@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
-public sealed class GetCurrentUserProfilePictureEndpoint : IEndpoint
+internal sealed class GetCurrentUserProfilePictureEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

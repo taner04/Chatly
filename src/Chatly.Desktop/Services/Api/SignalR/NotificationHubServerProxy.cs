@@ -1,7 +1,7 @@
 namespace Chatly.Desktop.Services.Api.SignalR;
 
 [SingletonService(typeof(INotificationHubServer))]
-public sealed class NotificationHubServerProxy(NotificationHubConnection notificationHubConnection)
+internal sealed class NotificationHubServerProxy(NotificationHubConnection notificationHubConnection)
     : INotificationHubServer
 {
     public Task IsOnline(Guid userId)

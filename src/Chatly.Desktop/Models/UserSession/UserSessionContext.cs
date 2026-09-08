@@ -17,14 +17,20 @@ public sealed partial class UserSessionContext : ObservableObject
         CurrentUser = user;
     }
 
+    internal void UpdateUserProfile(Guid userId, string? username, string? profilePictureUrl)
+    {
+        if (CurrentUser?.Id != userId)
+        {
+            return;
+        }
+
+        CurrentUser.Username = username;
+        CurrentUser.ProfilePictureUrl = profilePictureUrl;
+    }
+
     internal void Clear()
     {
         AccessToken = null;
         CurrentUser = null;
-        Friends.Clear();
-        OnlineFriends.Clear();
-        DirectChats.Clear();
-        FriendRequests.Clear();
-        SetPendingFriendRequestCount(0);
     }
 }

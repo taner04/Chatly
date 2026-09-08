@@ -2,7 +2,7 @@ using Chatly.Contracts.Endpoints.Chats.Results;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.GetChats;
 
-public sealed class GetChatsEndpoint : IEndpoint
+internal sealed class GetChatsEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

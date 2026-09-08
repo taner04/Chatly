@@ -3,7 +3,7 @@ using Chatly.Contracts.Pagination;
 
 namespace Chatly.WebApi.Common.Infrastructure.Pagination.Exceptions;
 
-public sealed class PaginationQueryException : ChatlyException
+internal sealed class PaginationQueryException : ChatlyException
 {
     private PaginationQueryException(
         string title,

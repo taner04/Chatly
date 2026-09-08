@@ -5,7 +5,7 @@ using Chatly.WebApi.Common.Composition.Extensions.ServiceCollection.Modules;
 
 namespace Chatly.WebApi.Common.Composition.Extensions.ServiceCollection;
 
-public static class ServiceCollectionExtensions
+internal static class ServiceCollectionExtensions
 {
     extension(IServiceCollection services)
     {

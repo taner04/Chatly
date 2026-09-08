@@ -19,7 +19,7 @@ public sealed partial class NavigationItemViewModel(
 
     [ObservableProperty] public partial bool IsSelected { get; set; }
 
-    public static NavigationItemViewModel Create<T>(
+    internal static NavigationItemViewModel Create<T>(
         string title,
         Symbol icon,
         INavigationService navigationService) where T : INavigableViewModel

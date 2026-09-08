@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
-public sealed class CompleteOnboardingCommandValidator
+internal sealed class CompleteOnboardingCommandValidator
     : AbstractValidator<CompleteOnboardingCommand>
 {
     public CompleteOnboardingCommandValidator()

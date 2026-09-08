@@ -10,7 +10,7 @@ using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 namespace Chatly.Desktop.Services.Startup;
 
 [SingletonService]
-public sealed class ApplicationStartupService(
+internal sealed class ApplicationStartupService(
     SplashScreenWindow splashScreen,
     MainWindow mainWindow,
     StartupConnectivityService startupConnectivityService,

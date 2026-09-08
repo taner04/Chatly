@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.FriendRequests.Enums;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 
-public sealed class SearchUsersQueryHandler(
+internal sealed class SearchUsersQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
     AzureBlobService blobService)

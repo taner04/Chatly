@@ -3,7 +3,7 @@ using Chatly.WebApi.Features.Users.Services;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateProfilePicture;
 
-public sealed class UpdateProfilePictureCommandHandler(
+internal sealed class UpdateProfilePictureCommandHandler(
     UserService userService,
     ProfilePictureService profilePictureService,
     ChatlyDbContext context,

@@ -3,7 +3,7 @@ using Chatly.WebApi.Features.Users.Services;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 
-public sealed class UpdateUsernameCommandHandler(
+internal sealed class UpdateUsernameCommandHandler(
     UserService userService,
     ChatlyDbContext context,
     NotificationPublisher notificationPublisher)

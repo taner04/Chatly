@@ -3,7 +3,7 @@ using Chatly.WebApi.Common.Infrastructure.Pagination.Exceptions;
 
 namespace Chatly.WebApi.Common.Infrastructure.Pagination;
 
-public static class PaginationExtensions
+internal static class PaginationExtensions
 {
     public const int MaxPageSize = 100;
 

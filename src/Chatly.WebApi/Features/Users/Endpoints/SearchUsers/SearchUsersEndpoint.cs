@@ -2,7 +2,7 @@ using Chatly.Contracts.Pagination;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 
-public sealed class SearchUsersEndpoint : IEndpoint
+internal sealed class SearchUsersEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

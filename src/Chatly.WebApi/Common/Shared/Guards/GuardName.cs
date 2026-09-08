@@ -2,7 +2,7 @@ using System.Text;
 
 namespace Chatly.WebApi.Common.Shared.Guards;
 
-public static class GuardName
+internal static class GuardName
 {
     public static string Clean(string? expression)
     {

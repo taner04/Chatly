@@ -2,7 +2,7 @@ using Chatly.Contracts.Endpoints.Friendships.Results;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.GetFriendships;
 
-public sealed class GetFriendshipsEndpoint : IEndpoint
+internal sealed class GetFriendshipsEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

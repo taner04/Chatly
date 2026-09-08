@@ -10,7 +10,7 @@ namespace Chatly.Desktop.Services.Api;
 [TransientService]
 public sealed class FriendsApiClient(IChatlyApi chatlyApi)
 {
-    public async Task<WebClientResult> SendFriendRequestAsync(
+    internal async Task<WebClientResult> SendFriendRequestAsync(
         SendFriendRequestRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -21,7 +21,7 @@ public sealed class FriendsApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<PaginationResult<GetFriendRequestsResponse>>> GetFriendRequestsAsync(
+    internal async Task<WebClientResult<PaginationResult<GetFriendRequestsResponse>>> GetFriendRequestsAsync(
         int pageIndex,
         int pageSize,
         CancellationToken cancellationToken = default)
@@ -31,7 +31,7 @@ public sealed class FriendsApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<IReadOnlyList<GetFriendshipsResponse>>> GetFriendshipsAsync(
+    internal async Task<WebClientResult<IReadOnlyList<GetFriendshipsResponse>>> GetFriendshipsAsync(
         CancellationToken cancellationToken = default)
     {
         return await ApiRequestExecutor.ExecuteAsync(
@@ -39,7 +39,7 @@ public sealed class FriendsApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult> RemoveFriendshipAsync(
+    internal async Task<WebClientResult> RemoveFriendshipAsync(
         Guid associatedUserId,
         CancellationToken cancellationToken = default)
     {
@@ -48,7 +48,7 @@ public sealed class FriendsApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<AcceptFriendRequestResponse>> AcceptFriendRequestAsync(
+    internal async Task<WebClientResult<AcceptFriendRequestResponse>> AcceptFriendRequestAsync(
         Guid friendRequestId,
         CancellationToken cancellationToken = default)
     {
@@ -57,7 +57,7 @@ public sealed class FriendsApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult> RejectFriendRequestAsync(
+    internal async Task<WebClientResult> RejectFriendRequestAsync(
         Guid friendRequestId,
         CancellationToken cancellationToken = default)
     {

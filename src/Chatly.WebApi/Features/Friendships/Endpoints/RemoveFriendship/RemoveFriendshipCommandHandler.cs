@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.Friendships.Models;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.RemoveFriendship;
 
-public sealed class RemoveFriendshipCommandHandler(
+internal sealed class RemoveFriendshipCommandHandler(
     CurrentUserService userService,
     ChatlyDbContext context,
     NotificationPublisher notificationPublisher) : ICommandHandler<RemoveFriendshipCommand>

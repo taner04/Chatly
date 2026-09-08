@@ -6,7 +6,7 @@ public sealed class OnlinePresenceTracker
     private readonly Dictionary<UserId, HashSet<string>> _connections = [];
     private readonly Lock _lock = new();
 
-    public bool Connect(UserId userId, string connectionId)
+    internal bool Connect(UserId userId, string connectionId)
     {
         lock (_lock)
         {
@@ -22,7 +22,7 @@ public sealed class OnlinePresenceTracker
         }
     }
 
-    public bool Disconnect(UserId userId, string connectionId)
+    internal bool Disconnect(UserId userId, string connectionId)
     {
         lock (_lock)
         {
@@ -41,7 +41,7 @@ public sealed class OnlinePresenceTracker
         }
     }
 
-    public bool IsOnline(UserId userId)
+    internal bool IsOnline(UserId userId)
     {
         lock (_lock)
         {

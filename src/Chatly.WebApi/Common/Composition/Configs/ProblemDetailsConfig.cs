@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Chatly.WebApi.Common.Composition.Configs;
 
-public static class ProblemDetailsConfig
+internal static class ProblemDetailsConfig
 {
     public static void Config(
         ProblemDetailsOptions options)

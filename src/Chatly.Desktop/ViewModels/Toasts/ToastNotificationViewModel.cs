@@ -7,7 +7,7 @@ namespace Chatly.Desktop.ViewModels.Toasts;
 
 public sealed partial class ToastNotificationViewModel : ViewModelBase, IToastViewModel
 {
-    public ToastNotificationViewModel(
+    internal ToastNotificationViewModel(
         string title,
         string message,
         Symbol icon,

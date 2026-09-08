@@ -1,11 +1,11 @@
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
+using Chatly.Desktop.Models.UserSession;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 [SingletonService]
 public sealed class OnlineFriendsTabPageViewModel(
     FriendActionsViewModel actions,
-    UserSessionContext userSessionContext)
-    : FriendsTabViewModel(actions, userSessionContext.OnlineFriends)
+    FriendState friendState)
+    : FriendsTabViewModel(actions, friendState.OnlineFriends)
 {
 }

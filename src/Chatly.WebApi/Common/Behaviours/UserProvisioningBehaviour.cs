@@ -1,6 +1,6 @@
 ﻿namespace Chatly.WebApi.Common.Behaviours;
 
-public sealed partial class UserProvisioningBehaviour<TMessage, TResponse>(
+internal sealed partial class UserProvisioningBehaviour<TMessage, TResponse>(
     ILogger<UserProvisioningBehaviour<TMessage, TResponse>> logger,
     CurrentUserService currentUserService,
     ChatlyDbContext context,

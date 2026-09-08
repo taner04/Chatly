@@ -15,7 +15,7 @@ public readonly partial struct MessageId
 
 public sealed class Message : Entity<MessageId>
 {
-    public const int MaxContentLength = 4_000;
+    internal const int MaxContentLength = 4_000;
 
     private Message()
     {

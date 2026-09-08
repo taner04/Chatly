@@ -1,6 +1,6 @@
 ﻿namespace Chatly.WebApi.Common.Abstraction;
 
-public interface IEndpoint
+internal interface IEndpoint
 {
     void MapEndpoint(WebApplication app);
 }

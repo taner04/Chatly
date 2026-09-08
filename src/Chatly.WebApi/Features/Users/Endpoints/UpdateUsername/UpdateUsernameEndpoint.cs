@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 
-public sealed class UpdateUsernameEndpoint : IEndpoint
+internal sealed class UpdateUsernameEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

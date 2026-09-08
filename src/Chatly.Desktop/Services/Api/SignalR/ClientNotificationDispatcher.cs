@@ -5,7 +5,7 @@ using Microsoft.Extensions.Logging;
 namespace Chatly.Desktop.Services.Api.SignalR;
 
 [SingletonService]
-public sealed partial class ClientNotificationDispatcher(
+internal sealed partial class ClientNotificationDispatcher(
     ILogger<ClientNotificationDispatcher> logger,
     IEnumerable<IClientNotificationHandler> notificationHandlers)
 {

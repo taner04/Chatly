@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.Friendships.Endpoints.RemoveFriendship;
 
-public sealed class RemoveFriendshipEndpoint : IEndpoint
+internal sealed class RemoveFriendshipEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

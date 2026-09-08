@@ -7,7 +7,7 @@ using Chatly.Desktop.Models.Settings.Theme;
 namespace Chatly.Desktop.Services.Settings;
 
 [SingletonService]
-public sealed class ThemeService : IDisposable
+internal sealed class ThemeService : IDisposable
 {
     private readonly ThemeSettings _settings;
 

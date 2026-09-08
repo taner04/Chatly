@@ -1,6 +1,6 @@
 ﻿namespace Chatly.WebApi.Common.Extensions;
 
-public static class RouteHandlerBuilderExtensions
+internal static class RouteHandlerBuilderExtensions
 {
     private static readonly int[] DefaultProblemCodes =
     [

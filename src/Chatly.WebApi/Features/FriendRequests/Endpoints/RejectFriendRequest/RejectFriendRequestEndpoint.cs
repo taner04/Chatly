@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.RejectFriendRequest;
 
-public sealed class RejectFriendRequestEndpoint : IEndpoint
+internal sealed class RejectFriendRequestEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Common.Extensions;
 
-public static class VogenIdValidationExtensions
+internal static class VogenIdValidationExtensions
 {
     extension(Guid guid)
     {

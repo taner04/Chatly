@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Common.Behaviours;
 
-public sealed partial class LoggingBehaviour<TMessage, TResponse>(
+internal sealed partial class LoggingBehaviour<TMessage, TResponse>(
     IHttpContextAccessor httpContextAccessor,
     ILogger<LoggingBehaviour<TMessage, TResponse>> logger) : IPipelineBehavior<TMessage, TResponse>
     where TMessage : IMessage

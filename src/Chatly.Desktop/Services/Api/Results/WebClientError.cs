@@ -2,7 +2,7 @@ using Chatly.Contracts.Results;
 
 namespace Chatly.Desktop.Services.Api.Results;
 
-public readonly record struct WebClientError
+internal readonly record struct WebClientError
 {
     private WebClientError(
         string errorCode,

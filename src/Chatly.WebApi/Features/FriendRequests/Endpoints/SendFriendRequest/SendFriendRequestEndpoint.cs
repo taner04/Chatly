@@ -2,7 +2,7 @@ using Chatly.Contracts.Endpoints.FriendRequests.Requests;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 
-public sealed class SendFriendRequestEndpoint : IEndpoint
+internal sealed class SendFriendRequestEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

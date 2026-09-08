@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.Messages.Models;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 
-public sealed class GetMessagesQueryHandler(
+internal sealed class GetMessagesQueryHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context) : IQueryHandler<GetMessagesQuery, GetMessagesResponse>
 {

@@ -1,6 +1,6 @@
 ﻿namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
-public class GetCurrentUserProfilePictureQueryHandler(
+internal sealed class GetCurrentUserProfilePictureQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
     AzureBlobService blobService)

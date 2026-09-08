@@ -62,8 +62,8 @@
                             <TextBlock Text="Pending Requests"
                                        VerticalAlignment="Center" />
                             <Border Classes="pending-request-badge"
-                                    IsVisible="{Binding ViewModel.UserContext.HasPendingFriendRequests}">
-                                <TextBlock Text="{Binding ViewModel.UserContext.PendingFriendRequestCount}"
+                                    IsVisible="{Binding ViewModel.FriendRequestState.HasPendingRequests}">
+                                <TextBlock Text="{Binding ViewModel.FriendRequestState.PendingCount}"
                                            FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource ChatlyTextBrush}"

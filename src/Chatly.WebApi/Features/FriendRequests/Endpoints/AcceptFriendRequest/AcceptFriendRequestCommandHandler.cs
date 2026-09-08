@@ -7,7 +7,7 @@ using Chatly.WebApi.Features.Hubs;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 
-public sealed class AcceptFriendRequestCommandHandler(
+internal sealed class AcceptFriendRequestCommandHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
     AzureBlobService blobService,

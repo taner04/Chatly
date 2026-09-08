@@ -7,7 +7,7 @@ namespace Chatly.Desktop.Services.Api;
 [TransientService]
 public sealed class ChatApiClient(IChatlyApi chatlyApi)
 {
-    public async Task<WebClientResult<IReadOnlyList<GetChatsResponse>>> GetChatsAsync(
+    internal async Task<WebClientResult<IReadOnlyList<GetChatsResponse>>> GetChatsAsync(
         CancellationToken cancellationToken = default)
     {
         return await ApiRequestExecutor.ExecuteAsync(
@@ -15,7 +15,7 @@ public sealed class ChatApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult> MarkChatReadAsync(
+    internal async Task<WebClientResult> MarkChatReadAsync(
         Guid chatId,
         CancellationToken cancellationToken = default)
     {

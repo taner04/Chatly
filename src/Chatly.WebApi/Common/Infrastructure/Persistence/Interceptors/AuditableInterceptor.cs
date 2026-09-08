@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Diagnostics;
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Interceptors;
 
 [ScopedService(typeof(ISaveChangesInterceptor))]
-public sealed partial class AuditableInterceptor(
+internal sealed partial class AuditableInterceptor(
     CurrentUserService currentUserService,
     ILogger<AuditableInterceptor> logger)
     : SaveChangesInterceptor

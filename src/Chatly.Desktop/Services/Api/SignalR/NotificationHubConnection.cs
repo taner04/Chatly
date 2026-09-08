@@ -8,7 +8,7 @@ using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 namespace Chatly.Desktop.Services.Api.SignalR;
 
 [SingletonService]
-public sealed partial class NotificationHubConnection(
+internal sealed partial class NotificationHubConnection(
     IOptions<WebApiClientOption> options,
     UserSessionContext sessionContext,
     ILogger<NotificationHubConnection> logger) : IAsyncDisposable

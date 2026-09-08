@@ -2,7 +2,7 @@ using System.Net;
 
 namespace Chatly.WebApi.Features.Users.Exceptions;
 
-public sealed class UsernameAlreadyExistsException(string username)
+internal sealed class UsernameAlreadyExistsException(string username)
     : ChatlyException(
         "Username already exists",
         $"The username '{username}' is already in use.",

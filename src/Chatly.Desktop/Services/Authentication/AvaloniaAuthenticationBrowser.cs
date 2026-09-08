@@ -9,7 +9,7 @@ using Duende.IdentityModel.OidcClient.Browser;
 namespace Chatly.Desktop.Services.Authentication;
 
 [SingletonService(typeof(IBrowser))]
-public sealed class AvaloniaAuthenticationBrowser : IBrowser
+internal sealed class AvaloniaAuthenticationBrowser : IBrowser
 {
     private static readonly Uri LoginCompletePageUri =
         new("avares://Chatly.Desktop/Assets/login-complete.html");

@@ -4,7 +4,7 @@ using Chatly.Shared.Attributes;
 namespace Chatly.Desktop.Options;
 
 [Option]
-public sealed class WebApiClientOption
+internal sealed class WebApiClientOption
 {
     [Required(ErrorMessage = "BaseAddress is required.")]
     public Uri BaseAddress { get; set; } = null!;

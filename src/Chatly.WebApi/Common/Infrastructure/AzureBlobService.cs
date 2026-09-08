@@ -6,7 +6,7 @@ using Chatly.ServiceDefaults;
 namespace Chatly.WebApi.Common.Infrastructure;
 
 [SingletonService]
-public sealed partial class AzureBlobService(
+internal sealed partial class AzureBlobService(
     ILogger<AzureBlobService> logger,
     BlobServiceClient blobServiceClient)
 {

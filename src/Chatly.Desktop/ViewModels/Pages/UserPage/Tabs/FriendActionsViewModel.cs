@@ -1,11 +1,11 @@
 using System.Linq;
 using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Extensions;
+using Chatly.Desktop.Models.UserSession;
 using Chatly.Desktop.Services.Api;
 using Chatly.Desktop.Services.Chat;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using CommunityToolkit.Mvvm.Input;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
@@ -13,7 +13,8 @@ namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 public sealed partial class FriendActionsViewModel(
     ChatNavigationService chatNavigationService,
     FriendsApiClient friendsApiClient,
-    UserSessionContext userSessionContext,
+    FriendState friendState,
+    DirectChatState directChatState,
     ChatPageViewModel chatPageViewModel,
     IToastService toastService) : ViewModelBase
 {
@@ -46,13 +47,14 @@ public sealed partial class FriendActionsViewModel(
             return;
         }
 
-        var chatId = friend.ChatId ?? userSessionContext.DirectChats
+        var chatId = friend.ChatId ?? directChatState.Items
             .FirstOrDefault(chat => chat.User.Id == friend.User.Id)?.Id;
         if (chatId is not null)
         {
             await chatPageViewModel.CloseChatAsync(chatId.Value);
         }
 
-        userSessionContext.RemoveFriend(friend.User.Id);
+        friendState.Remove(friend.User.Id);
+        directChatState.RemoveByUserId(friend.User.Id);
     }
 }

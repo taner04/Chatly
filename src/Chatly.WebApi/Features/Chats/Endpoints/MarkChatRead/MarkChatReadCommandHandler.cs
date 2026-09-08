@@ -2,7 +2,7 @@ using Chatly.WebApi.Features.Chats.Models;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.MarkChatRead;
 
-public sealed class MarkChatReadCommandHandler(
+internal sealed class MarkChatReadCommandHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context) : ICommandHandler<MarkChatReadCommand>
 {

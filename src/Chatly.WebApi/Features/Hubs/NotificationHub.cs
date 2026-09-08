@@ -3,9 +3,9 @@ using Microsoft.AspNetCore.SignalR;
 
 namespace Chatly.WebApi.Features.Hubs;
 
-public static class NotificationHubGroups
+internal static class NotificationHubGroups
 {
-    public static string User(UserId userId)
+    internal static string User(UserId userId)
     {
         return $"user:{userId.Value}";
     }

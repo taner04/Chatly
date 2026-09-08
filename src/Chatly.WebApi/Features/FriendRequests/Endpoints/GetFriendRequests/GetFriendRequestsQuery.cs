@@ -3,5 +3,5 @@ using Chatly.Contracts.Pagination;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.GetFriendRequests;
 
-public sealed record GetFriendRequestsQuery(int PageIndex, int PageSize)
+internal sealed record GetFriendRequestsQuery(int PageIndex, int PageSize)
     : PaginationQuery(PageIndex, PageSize), IQuery<PaginationResult<GetFriendRequestsResponse>>;

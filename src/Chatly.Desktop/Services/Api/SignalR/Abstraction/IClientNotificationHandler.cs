@@ -2,7 +2,7 @@
 
 namespace Chatly.Desktop.Services.Api.SignalR.Abstraction;
 
-public interface IClientNotificationHandler
+internal interface IClientNotificationHandler
 {
     NotificationType Type { get; }
 

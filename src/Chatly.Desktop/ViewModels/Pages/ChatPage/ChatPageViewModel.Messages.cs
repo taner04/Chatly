@@ -26,7 +26,7 @@ public sealed partial class ChatPageViewModel
             linkedCancellation.Token);
     }
 
-    public bool ReceiveIncomingMessage(IncomingChatMessage message)
+    internal bool ReceiveIncomingMessage(IncomingChatMessage message)
     {
         if (CurrentChat?.DirectChatId != message.ChatId)
         {

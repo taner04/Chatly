@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 
-public sealed class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
+internal sealed class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
 {
     public SearchUsersQueryValidator()
     {

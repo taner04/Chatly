@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.Messages.Models;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 
-public sealed record GetMessagesQuery(
+internal sealed record GetMessagesQuery(
     ChatId ChatId,
     DateTimeOffset? BeforeSentAt,
     MessageId? BeforeMessageId,

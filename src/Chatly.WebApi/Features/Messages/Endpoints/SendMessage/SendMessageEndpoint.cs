@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.Chats.Models;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.SendMessage;
 
-public sealed class SendMessageEndpoint : IEndpoint
+internal sealed class SendMessageEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

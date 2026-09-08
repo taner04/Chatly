@@ -15,7 +15,7 @@ public sealed partial class ChatPageViewModel
     private CancellationTokenSource? _typingIdleCancellation;
     private CancellationTokenSource? _typingStatusExpiryCancellation;
 
-    public void ReceiveTypingStatus(TypingStatusChangedMessage message)
+    internal void ReceiveTypingStatus(TypingStatusChangedMessage message)
     {
         if (CurrentChat?.DirectChatId != message.ChatId)
         {

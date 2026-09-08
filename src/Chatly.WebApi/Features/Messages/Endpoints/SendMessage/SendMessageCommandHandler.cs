@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.Messages.Models;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.SendMessage;
 
-public sealed class SendMessageCommandHandler(
+internal sealed class SendMessageCommandHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
     NotificationPublisher notificationPublisher) : ICommandHandler<SendMessageCommand, SendMessageResponse>

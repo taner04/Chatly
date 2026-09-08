@@ -1,6 +1,6 @@
 ﻿namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
 
-public sealed class GetCurrentUserEndpoint : IEndpoint
+internal sealed class GetCurrentUserEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

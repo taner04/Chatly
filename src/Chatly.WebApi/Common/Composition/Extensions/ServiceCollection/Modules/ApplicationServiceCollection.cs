@@ -22,7 +22,7 @@ internal static class ApplicationServiceCollection
             });
 
             services.AddSignalR();
-            services.AddValidatorsFromAssembly(typeof(Program).Assembly);
+            services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 
             return services;
         }

@@ -4,7 +4,7 @@ using Scalar.AspNetCore;
 
 namespace Chatly.WebApi.Common.Composition.Extensions;
 
-public static class WebApplicationExtensions
+internal static class WebApplicationExtensions
 {
     extension(WebApplication app)
     {
@@ -37,13 +37,13 @@ public static class WebApplicationExtensions
             return app;
         }
 
-        public WebApplication MapEndpoints()
+        internal WebApplication MapEndpoints()
         {
             var endpoints = typeof(Program).Assembly.GetTypes()
                 .Where(type =>
                     type is { IsClass: true, IsAbstract: false } &&
                     typeof(IEndpoint).IsAssignableFrom(type))
-                .Select(type => (IEndpoint)Activator.CreateInstance(type)!);
+                .Select(type => (IEndpoint)Activator.CreateInstance(type, nonPublic: true)!);
 
             foreach (var endpoint in endpoints)
             {

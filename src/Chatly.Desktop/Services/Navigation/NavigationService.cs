@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 namespace Chatly.Desktop.Services.Navigation;
 
 [SingletonService(typeof(INavigationService))]
-public sealed partial class NavigationService(
+internal sealed partial class NavigationService(
     IServiceProvider serviceProvider,
     ILogger<NavigationService> logger) : INavigationService
 {

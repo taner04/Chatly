@@ -4,9 +4,9 @@ namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 public abstract class FriendsTabViewModel(
     FriendActionsViewModel actions,
-    ObservableCollection<Friend> friends) : PageViewModelBase
+    ReadOnlyObservableCollection<Friend> friends) : PageViewModelBase
 {
     public FriendActionsViewModel Actions { get; } = actions;
 
-    public ObservableCollection<Friend> Friends { get; } = friends;
+    public ReadOnlyObservableCollection<Friend> Friends { get; } = friends;
 }

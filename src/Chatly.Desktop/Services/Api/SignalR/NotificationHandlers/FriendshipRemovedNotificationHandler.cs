@@ -2,16 +2,17 @@ using System.Linq;
 using Chatly.Contracts.SignalR;
 using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Extensions;
+using Chatly.Desktop.Models.UserSession;
 using Chatly.Desktop.Utilities;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using Microsoft.Extensions.Logging;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
-public sealed class FriendshipRemovedNotificationHandler(
-    UserSessionContext sessionContext,
+internal sealed class FriendshipRemovedNotificationHandler(
+    FriendState friendState,
+    DirectChatState directChatState,
     ChatPageViewModel chatPageViewModel,
     IToastService toastService,
     ILogger<ClientNotificationHandler<FriendshipRemovedMessage>> logger)
@@ -24,9 +25,9 @@ public sealed class FriendshipRemovedNotificationHandler(
         return UiThreadDispatcher.SafeInvokeAsync(async () =>
         {
             var friend =
-                sessionContext.Friends.FirstOrDefault(existing => existing.User.Id == message.AssociatedUserId);
+                friendState.Items.FirstOrDefault(existing => existing.User.Id == message.AssociatedUserId);
             var directChat =
-                sessionContext.DirectChats.FirstOrDefault(chat => chat.User.Id == message.AssociatedUserId);
+                directChatState.Items.FirstOrDefault(chat => chat.User.Id == message.AssociatedUserId);
             var username = friend?.User.Username ?? directChat?.User.Username ?? "Unknown User";
 
             if (directChat is not null)
@@ -34,7 +35,8 @@ public sealed class FriendshipRemovedNotificationHandler(
                 await chatPageViewModel.CloseChatAsync(directChat.Id);
             }
 
-            sessionContext.RemoveFriend(message.AssociatedUserId);
+            friendState.Remove(message.AssociatedUserId);
+            directChatState.RemoveByUserId(message.AssociatedUserId);
             toastService.AddNotification($"{username} removed you as a friend.");
         });
     }

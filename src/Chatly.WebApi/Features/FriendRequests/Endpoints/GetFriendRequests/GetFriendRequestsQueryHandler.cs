@@ -5,7 +5,7 @@ using Chatly.WebApi.Features.FriendRequests.Enums;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.GetFriendRequests;
 
-public sealed class GetFriendRequestsQueryHandler(
+internal sealed class GetFriendRequestsQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUserService,
     AzureBlobService blobService) : IQueryHandler<GetFriendRequestsQuery, PaginationResult<GetFriendRequestsResponse>>

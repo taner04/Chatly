@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Models;
 
-public sealed class FriendRequest
+public sealed class FriendRequest : IIdentifiable
 {
     public Guid Id { get; init; }
 

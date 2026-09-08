@@ -4,7 +4,7 @@ using Chatly.Desktop.Services.Api.Refit.Abstraction;
 namespace Chatly.Desktop.Services.Startup;
 
 [TransientService]
-public sealed class StartupConnectivityService(IChatlyApi chatlyApi)
+internal sealed class StartupConnectivityService(IChatlyApi chatlyApi)
 {
     private static readonly TimeSpan RequestTimeout = TimeSpan.FromSeconds(3);
 

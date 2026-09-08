@@ -2,7 +2,7 @@ using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Linq;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
+using Chatly.Desktop.Models.UserSession;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
@@ -13,13 +13,13 @@ public sealed class ChatSidebarViewModel : ViewModelBase
 
     public ChatSidebarViewModel(
         INavigationService navigationService,
-        UserSessionContext userSessionContext)
+        DirectChatState directChatState)
     {
         _navigationService = navigationService;
-        Chats = [.. userSessionContext.DirectChats.Select(CreateChatPreview)];
+        Chats = [.. directChatState.Items.Select(CreateChatPreview)];
         UnreadChats = [];
 
-        userSessionContext.DirectChats.CollectionChanged += DirectChats_CollectionChanged;
+        directChatState.CollectionChanged += DirectChats_CollectionChanged;
         SubscribeToChats();
         RefreshUnreadChats();
     }
@@ -28,7 +28,7 @@ public sealed class ChatSidebarViewModel : ViewModelBase
 
     public ObservableCollection<ChatPreviewViewModel> UnreadChats { get; }
 
-    public void ReceiveIncomingMessage(Guid chatId)
+    internal void ReceiveIncomingMessage(Guid chatId)
     {
         var chat = Chats.FirstOrDefault(preview => preview.DirectChatId == chatId);
         if (chat is not null)

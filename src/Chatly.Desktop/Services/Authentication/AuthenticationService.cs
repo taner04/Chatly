@@ -38,7 +38,7 @@ public sealed partial class AuthenticationService
         });
     }
 
-    public async Task<string> AuthenticateAsync(CancellationToken cancellationToken)
+    internal async Task<string> AuthenticateAsync(CancellationToken cancellationToken)
     {
         await _operationLock.WaitAsync(cancellationToken);
         try
@@ -51,7 +51,7 @@ public sealed partial class AuthenticationService
         }
     }
 
-    public async Task LogoutAsync(CancellationToken cancellationToken)
+    internal async Task LogoutAsync(CancellationToken cancellationToken)
     {
         await _operationLock.WaitAsync(cancellationToken);
         try

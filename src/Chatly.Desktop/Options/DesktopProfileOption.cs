@@ -4,7 +4,7 @@ using Chatly.Shared.Attributes;
 namespace Chatly.Desktop.Options;
 
 [Option]
-public sealed class DesktopProfileOption
+internal sealed class DesktopProfileOption
 {
     public const string DefaultName = "default";
 

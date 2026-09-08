@@ -4,7 +4,7 @@ using Avalonia.Data.Converters;
 
 namespace Chatly.Desktop.Converters;
 
-public sealed class EmptyCollectionToVisibilityConverter : IValueConverter
+internal sealed class EmptyCollectionToVisibilityConverter : IValueConverter
 {
     public object Convert(object? value, Type targetType, object? parameter, CultureInfo culture)
     {

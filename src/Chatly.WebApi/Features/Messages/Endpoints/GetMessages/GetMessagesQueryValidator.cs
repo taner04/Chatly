@@ -2,7 +2,7 @@ using FluentValidation;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 
-public sealed class GetMessagesQueryValidator : AbstractValidator<GetMessagesQuery>
+internal sealed class GetMessagesQueryValidator : AbstractValidator<GetMessagesQuery>
 {
     public GetMessagesQueryValidator()
     {

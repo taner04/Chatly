@@ -1,6 +1,6 @@
 ﻿namespace Chatly.Desktop.Services.Api.Results;
 
-public sealed class WebClientResult<T> : WebClientResult
+internal sealed class WebClientResult<T> : WebClientResult
 {
     private WebClientResult(T value) : base(null!)
     {

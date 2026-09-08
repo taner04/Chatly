@@ -9,7 +9,7 @@ public sealed partial class SplashScreenViewModel : ViewModelBase
 
     [ObservableProperty] public partial string StartupMessage { get; set; } = "Authenticating...";
 
-    public CancellationToken CancellationToken => _cts.Token;
+    internal CancellationToken CancellationToken => _cts.Token;
 
     [RelayCommand]
     private void Cancel()

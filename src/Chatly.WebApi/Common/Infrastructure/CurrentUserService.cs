@@ -3,19 +3,19 @@
 [ScopedService]
 public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
 {
-    public const string SubClaim = "sub";
-    public const string EmailClaim = "email";
-    public const string RoleClaim = "permissions";
+    internal const string SubClaim = "sub";
+    internal const string EmailClaim = "email";
+    internal const string RoleClaim = "permissions";
 
     private HttpContext HttpContext => httpContextAccessor.HttpContext ??
                                        throw new InvalidOperationException("HTTP context is not available.");
 
-    public string GetAuth0Id()
+    internal string GetAuth0Id()
     {
         return GetClaimValue<string>(SubClaim);
     }
 
-    public UserId GetCurrentUserId()
+    internal UserId GetCurrentUserId()
     {
         if (HttpContext!.Items.TryGetValue("UserId", out var id)
             && id is UserId userId)
@@ -26,7 +26,7 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
         throw new UnauthorizedAccessException("User is not authenticated.");
     }
 
-    public T GetClaimValue<T>(
+    internal T GetClaimValue<T>(
         string claimType)
     {
         var claimValue =

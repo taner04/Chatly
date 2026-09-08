@@ -8,7 +8,7 @@ namespace Chatly.Desktop.Services.Api;
 [TransientService]
 public sealed class MessageApiClient(IChatlyApi chatlyApi)
 {
-    public async Task<WebClientResult<GetMessagesResponse>> GetMessagesAsync(
+    internal async Task<WebClientResult<GetMessagesResponse>> GetMessagesAsync(
         GetMessagesRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -24,7 +24,7 @@ public sealed class MessageApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<SendMessageResponse>> SendMessageAsync(
+    internal async Task<WebClientResult<SendMessageResponse>> SendMessageAsync(
         SendMessageRequest request,
         CancellationToken cancellationToken = default)
     {

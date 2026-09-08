@@ -1,7 +1,7 @@
 using System.Linq;
 using Chatly.Desktop.Mappers;
+using Chatly.Desktop.Models.UserSession;
 using Chatly.Desktop.Services.Api;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Authentication;
 
@@ -11,9 +11,12 @@ public sealed class SessionService(
     UserApiClient userApiClient,
     FriendsApiClient friendsApiClient,
     ChatApiClient chatApiClient,
-    UserSessionContext sessionContext)
+    UserSessionContext sessionContext,
+    FriendState friendState,
+    DirectChatState directChatState,
+    FriendRequestState friendRequestState)
 {
-    public async Task StartAsync(CancellationToken cancellationToken)
+    internal async Task StartAsync(CancellationToken cancellationToken)
     {
         var accessToken = await authenticationService.AuthenticateAsync(cancellationToken);
 
@@ -36,7 +39,7 @@ public sealed class SessionService(
                     $"Failed to retrieve friendships: {friendshipsResult.Error.Detail}");
             }
 
-            sessionContext.SetFriends(friendshipsResult.Value.Select(FriendMapper.Map));
+            friendState.Set(friendshipsResult.Value.Select(FriendMapper.Map));
 
             var pendingFriendRequestsResult = await friendsApiClient.GetFriendRequestsAsync(1, 1, cancellationToken);
             if (pendingFriendRequestsResult.IsFailure)
@@ -45,7 +48,7 @@ public sealed class SessionService(
                     $"Failed to retrieve pending friend request count: {pendingFriendRequestsResult.Error.Detail}");
             }
 
-            sessionContext.SetPendingFriendRequestCount(
+            friendRequestState.SetPendingCount(
                 pendingFriendRequestsResult.Value.Pagination.TotalCount);
 
             var chatsResult = await chatApiClient.GetChatsAsync(cancellationToken);
@@ -55,16 +58,16 @@ public sealed class SessionService(
                     $"Failed to retrieve chats: {chatsResult.Error.Detail}");
             }
 
-            sessionContext.SetDirectChats(chatsResult.Value.Select(DirectChatMapper.Map));
+            directChatState.Set(chatsResult.Value.Select(DirectChatMapper.Map));
         }
         catch
         {
-            sessionContext.Clear();
+            ClearState();
             throw;
         }
     }
 
-    public async Task LogoutAsync(CancellationToken cancellationToken)
+    internal async Task LogoutAsync(CancellationToken cancellationToken)
     {
         try
         {
@@ -72,7 +75,15 @@ public sealed class SessionService(
         }
         finally
         {
-            sessionContext.Clear();
+            ClearState();
         }
+    }
+
+    private void ClearState()
+    {
+        sessionContext.Clear();
+        friendState.Clear();
+        directChatState.Clear();
+        friendRequestState.Clear();
     }
 }

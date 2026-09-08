@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Abstraction.Notification;
 
-public interface INotificationService
+internal interface INotificationService
 {
     Task PlayNotificationSoundAsync();
 }

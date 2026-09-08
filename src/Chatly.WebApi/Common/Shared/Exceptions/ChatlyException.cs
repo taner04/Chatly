@@ -2,7 +2,7 @@ using System.Net;
 
 namespace Chatly.WebApi.Common.Shared.Exceptions;
 
-public abstract class ChatlyException(string title, string message, string errorCode, HttpStatusCode statusCode)
+internal abstract class ChatlyException(string title, string message, string errorCode, HttpStatusCode statusCode)
     : Exception(message)
 {
     public string Title { get; init; } = title;

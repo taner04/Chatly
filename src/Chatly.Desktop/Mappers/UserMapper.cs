@@ -2,7 +2,7 @@ using Chatly.Contracts.Endpoints.Users.Results;
 
 namespace Chatly.Desktop.Mappers;
 
-public static class UserMapper
+internal static class UserMapper
 {
     public static User Map(CurrentUserResponse response)
     {

@@ -4,15 +4,15 @@ using Chatly.Desktop.Abstraction.Notification;
 using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Extensions;
 using Chatly.Desktop.Mappers;
+using Chatly.Desktop.Models.UserSession;
 using Chatly.Desktop.Utilities;
 using Microsoft.Extensions.Logging;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
-public sealed class IncomingFriendRequestNotificationHandler(
-    UserSessionContext userSessionContext,
+internal sealed class IncomingFriendRequestNotificationHandler(
+    FriendRequestState friendRequestState,
     IToastService toastService,
     INotificationService notificationService,
     ILogger<ClientNotificationHandler<IncomingFriendRequestMessage>> logger)
@@ -25,12 +25,12 @@ public sealed class IncomingFriendRequestNotificationHandler(
         return UiThreadDispatcher.SafeInvokeAsync(async () =>
         {
             var friendRequest = FriendRequestMapper.Map(message);
-            if (!userSessionContext.AddFriendRequest(friendRequest))
+            if (!friendRequestState.Add(friendRequest))
             {
                 return;
             }
 
-            userSessionContext.IncrementPendingFriendRequestCount();
+            friendRequestState.IncrementPendingCount();
             toastService.AddNotification($"Friend request from '{message.SenderUsername}'");
             await notificationService.PlayNotificationSoundAsync();
         });

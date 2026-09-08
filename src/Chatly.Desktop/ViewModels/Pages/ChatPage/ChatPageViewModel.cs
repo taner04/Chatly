@@ -111,7 +111,7 @@ public sealed partial class ChatPageViewModel(
         await ClearCurrentChatAsync();
     }
 
-    public async Task MarkChatReadAsync(Guid chatId)
+    internal async Task MarkChatReadAsync(Guid chatId)
     {
         var result = await chatApiClient.MarkChatReadAsync(chatId);
         if (result.IsFailure)
@@ -181,7 +181,7 @@ public sealed partial class ChatPageViewModel(
         DraftMessage = string.Empty;
     }
 
-    public async Task CloseChatAsync(Guid chatId)
+    internal async Task CloseChatAsync(Guid chatId)
     {
         if (CurrentChat?.DirectChatId == chatId)
         {

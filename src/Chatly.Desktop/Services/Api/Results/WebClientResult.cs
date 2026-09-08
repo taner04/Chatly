@@ -1,6 +1,6 @@
 ﻿namespace Chatly.Desktop.Services.Api.Results;
 
-public class WebClientResult
+internal class WebClientResult
 {
     private readonly WebClientError? _error;
 

@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Models;
 
-public sealed class DirectChat
+public sealed class DirectChat : IIdentifiable
 {
     public required Guid Id { get; init; }
 

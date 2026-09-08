@@ -10,7 +10,7 @@ public sealed partial class DatabaseMigrationWorker(
     IHostEnvironment hostEnvironment)
     : BackgroundService
 {
-    public const string ActivitySourceName = "Migrations";
+    internal const string ActivitySourceName = "Migrations";
     private readonly ActivitySource _activitySource = new(ActivitySourceName);
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)

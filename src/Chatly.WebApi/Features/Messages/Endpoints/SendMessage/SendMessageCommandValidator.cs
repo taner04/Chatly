@@ -3,7 +3,7 @@ using FluentValidation;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.SendMessage;
 
-public sealed class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
+internal sealed class SendMessageCommandValidator : AbstractValidator<SendMessageCommand>
 {
     public SendMessageCommandValidator()
     {

@@ -6,7 +6,7 @@ using Microsoft.Extensions.Logging;
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
-public sealed class TypingStatusChangedNotificationHandler(
+internal sealed class TypingStatusChangedNotificationHandler(
     ChatPageViewModel chatPage,
     ILogger<ClientNotificationHandler<TypingStatusChangedMessage>> logger)
     : ClientNotificationHandler<TypingStatusChangedMessage>(logger)

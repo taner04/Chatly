@@ -2,7 +2,7 @@ using Chatly.WebApi.Features.Users.Services;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
-public sealed class CompleteOnboardingCommandHandler(
+internal sealed class CompleteOnboardingCommandHandler(
     UserService userService,
     ProfilePictureService profilePictureService,
     ChatlyDbContext context)

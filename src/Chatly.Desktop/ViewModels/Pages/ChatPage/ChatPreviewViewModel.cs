@@ -7,7 +7,7 @@ public sealed partial class ChatPreviewViewModel : ViewModelBase
 {
     private readonly INavigationService _navigationService;
 
-    public ChatPreviewViewModel(
+    internal ChatPreviewViewModel(
         DirectChat chat,
         INavigationService navigationService,
         int unreadMessageCount = 0)

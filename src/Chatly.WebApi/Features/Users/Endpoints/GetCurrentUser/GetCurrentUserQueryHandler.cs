@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
 
-public sealed class GetCurrentUserQueryHandler(UserService userService)
+internal sealed class GetCurrentUserQueryHandler(UserService userService)
     : IQueryHandler<GetCurrentUserQuery, CurrentUserResponse>
 {
     public async ValueTask<CurrentUserResponse> Handle(GetCurrentUserQuery query, CancellationToken cancellationToken)

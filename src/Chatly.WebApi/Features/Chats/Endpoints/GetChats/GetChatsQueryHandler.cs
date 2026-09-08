@@ -3,7 +3,7 @@ using Chatly.WebApi.Features.Hubs;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.GetChats;
 
-public sealed class GetChatsQueryHandler(
+internal sealed class GetChatsQueryHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
     AzureBlobService blobService,

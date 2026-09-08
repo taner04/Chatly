@@ -10,7 +10,7 @@ namespace Chatly.Desktop.Services.Api;
 [TransientService]
 public sealed class UserApiClient(IChatlyApi chatlyApi)
 {
-    public async Task<WebClientResult<PaginationResult<UserSearchResponse>>> SearchUsersAsync(
+    internal async Task<WebClientResult<PaginationResult<UserSearchResponse>>> SearchUsersAsync(
         SearchUsersRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -25,7 +25,7 @@ public sealed class UserApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<CurrentUserResponse>> GetCurrentUserAsync(
+    internal async Task<WebClientResult<CurrentUserResponse>> GetCurrentUserAsync(
         CancellationToken cancellationToken = default)
     {
         return await ApiRequestExecutor.ExecuteAsync(
@@ -33,7 +33,7 @@ public sealed class UserApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<CurrentUserResponse>> UpdateUsernameAsync(
+    internal async Task<WebClientResult<CurrentUserResponse>> UpdateUsernameAsync(
         UpdateUsernameRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -44,7 +44,7 @@ public sealed class UserApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<CurrentUserResponse>> UpdateProfilePictureAsync(
+    internal async Task<WebClientResult<CurrentUserResponse>> UpdateProfilePictureAsync(
         UpdateProfilePictureRequest request,
         CancellationToken cancellationToken = default)
     {
@@ -65,7 +65,7 @@ public sealed class UserApiClient(IChatlyApi chatlyApi)
             cancellationToken);
     }
 
-    public async Task<WebClientResult<CurrentUserResponse>> CompleteOnboardingAsync(
+    internal async Task<WebClientResult<CurrentUserResponse>> CompleteOnboardingAsync(
         CompleteOnboardingRequest request,
         CancellationToken cancellationToken = default)
     {

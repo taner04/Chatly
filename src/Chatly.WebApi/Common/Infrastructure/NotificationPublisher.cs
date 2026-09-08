@@ -5,16 +5,16 @@ using Microsoft.AspNetCore.SignalR;
 namespace Chatly.WebApi.Common.Infrastructure;
 
 [SingletonService]
-public sealed class NotificationPublisher(
+internal sealed class NotificationPublisher(
     IHubContext<NotificationHub, INotificationHubClient> hubContext)
 {
-    public async Task PublishAsync(UserId receiverId, NotificationMessage message)
+    internal async Task PublishAsync(UserId receiverId, NotificationMessage message)
     {
         ArgumentNullException.ThrowIfNull(message);
         await hubContext.Clients.Group(NotificationHubGroups.User(receiverId)).Receive(message);
     }
 
-    public Task PublishAsync(IEnumerable<UserId> receiverIds, NotificationMessage message)
+    internal Task PublishAsync(IEnumerable<UserId> receiverIds, NotificationMessage message)
     {
         ArgumentNullException.ThrowIfNull(receiverIds);
         ArgumentNullException.ThrowIfNull(message);

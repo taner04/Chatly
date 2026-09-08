@@ -5,9 +5,9 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Chatly.Generated;
 
-public static class GeneratedOptionsExtensions
+internal static class GeneratedOptionsExtensions
 {
-    public static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddGeneratedOptions(
+    internal static global::Microsoft.Extensions.DependencyInjection.IServiceCollection AddGeneratedOptions(
         this global::Microsoft.Extensions.DependencyInjection.IServiceCollection services)
     {
         {{ optionRegistrations }}

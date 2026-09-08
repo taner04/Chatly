@@ -3,7 +3,7 @@ using Chatly.Contracts.Pagination;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.GetFriendRequests;
 
-public sealed class GetFriendRequestsEndpoint : IEndpoint
+internal sealed class GetFriendRequestsEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 
-public abstract class EntityConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
+internal abstract class EntityConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
     where TEntity : Entity<TId>
     where TId : struct
 {

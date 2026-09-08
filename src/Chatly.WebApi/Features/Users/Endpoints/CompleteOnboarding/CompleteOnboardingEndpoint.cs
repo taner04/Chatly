@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
-public sealed class CompleteOnboardingEndpoint : IEndpoint
+internal sealed class CompleteOnboardingEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

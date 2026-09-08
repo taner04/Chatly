@@ -3,7 +3,7 @@ using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Api.SignalR;
 
-public abstract partial class ClientNotificationHandler<TMessage>(ILogger<ClientNotificationHandler<TMessage>> logger)
+internal abstract partial class ClientNotificationHandler<TMessage>(ILogger<ClientNotificationHandler<TMessage>> logger)
     : IClientNotificationHandler where TMessage : NotificationMessage
 {
     public abstract NotificationType Type { get; }

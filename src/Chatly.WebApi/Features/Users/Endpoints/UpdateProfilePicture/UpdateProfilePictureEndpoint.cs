@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateProfilePicture;
 
-public sealed class UpdateProfilePictureEndpoint : IEndpoint
+internal sealed class UpdateProfilePictureEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

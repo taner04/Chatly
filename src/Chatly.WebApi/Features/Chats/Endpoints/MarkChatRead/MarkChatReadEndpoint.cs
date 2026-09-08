@@ -2,7 +2,7 @@ using Chatly.WebApi.Features.Chats.Models;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.MarkChatRead;
 
-public sealed class MarkChatReadEndpoint : IEndpoint
+internal sealed class MarkChatReadEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {

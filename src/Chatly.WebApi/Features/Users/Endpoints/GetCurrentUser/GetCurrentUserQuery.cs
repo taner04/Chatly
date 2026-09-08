@@ -1,3 +1,3 @@
 namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUser;
 
-public sealed record GetCurrentUserQuery : IQuery<CurrentUserResponse>;
+internal sealed record GetCurrentUserQuery : IQuery<CurrentUserResponse>;

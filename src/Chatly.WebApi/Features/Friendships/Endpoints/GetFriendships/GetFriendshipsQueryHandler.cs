@@ -3,7 +3,7 @@ using Chatly.WebApi.Features.Hubs;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.GetFriendships;
 
-public sealed class GetFriendshipsQueryHandler(
+internal sealed class GetFriendshipsQueryHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
     AzureBlobService blobService,

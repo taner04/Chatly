@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Features.Chats.Models;
 
-public sealed class ChatReadState
+internal sealed class ChatReadState
 {
     private ChatReadState()
     {

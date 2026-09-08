@@ -2,7 +2,7 @@ using Chatly.Contracts.Endpoints.FriendRequests.Results;
 
 namespace Chatly.Desktop.Mappers;
 
-public static class FriendRequestMapper
+internal static class FriendRequestMapper
 {
     public static FriendRequest Map(GetFriendRequestsResponse response)
     {

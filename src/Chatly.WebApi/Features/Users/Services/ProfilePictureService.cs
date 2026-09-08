@@ -1,9 +1,9 @@
 namespace Chatly.WebApi.Features.Users.Services;
 
 [ScopedService]
-public sealed class ProfilePictureService(AzureBlobService blobService)
+internal sealed class ProfilePictureService(AzureBlobService blobService)
 {
-    public async Task<ProfilePictureChange> PrepareReplacementAsync(
+    internal async Task<ProfilePictureChange> PrepareReplacementAsync(
         User user,
         Stream content,
         string contentType,
@@ -26,14 +26,14 @@ public sealed class ProfilePictureService(AzureBlobService blobService)
         return new ProfilePictureChange(upload.BlobName, previousBlobName);
     }
 
-    public ProfilePictureChange PrepareRemoval(User user)
+    internal ProfilePictureChange PrepareRemoval(User user)
     {
         var previousBlobName = user.ProfilePictureKey;
         user.ProfilePictureKey = null;
         return new ProfilePictureChange(null, previousBlobName);
     }
 
-    public async Task CompleteAsync(
+    internal async Task CompleteAsync(
         ProfilePictureChange change,
         CancellationToken cancellationToken)
     {
@@ -43,7 +43,7 @@ public sealed class ProfilePictureService(AzureBlobService blobService)
         }
     }
 
-    public async Task RollbackAsync(ProfilePictureChange change)
+    internal async Task RollbackAsync(ProfilePictureChange change)
     {
         if (change.NewBlobName is not null)
         {
@@ -51,7 +51,7 @@ public sealed class ProfilePictureService(AzureBlobService blobService)
         }
     }
 
-    public readonly record struct ProfilePictureChange(
+    internal readonly record struct ProfilePictureChange(
         string? NewBlobName,
         string? PreviousBlobName);
 }

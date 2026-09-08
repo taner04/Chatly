@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Common.Composition.Configs.OpenApi;
 
-public static class OpenApiConfig
+internal static class OpenApiConfig
 {
     public static void Config(
         OpenApiOptions options)

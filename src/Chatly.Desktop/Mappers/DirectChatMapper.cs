@@ -3,7 +3,7 @@ using Chatly.Contracts.Endpoints.FriendRequests.Results;
 
 namespace Chatly.Desktop.Mappers;
 
-public static class DirectChatMapper
+internal static class DirectChatMapper
 {
     public static DirectChat Map(GetChatsResponse response)
     {

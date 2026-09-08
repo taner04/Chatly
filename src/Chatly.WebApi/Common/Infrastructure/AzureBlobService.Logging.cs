@@ -1,6 +1,6 @@
 namespace Chatly.WebApi.Common.Infrastructure;
 
-public sealed partial class AzureBlobService
+internal sealed partial class AzureBlobService
 {
     [LoggerMessage(
         EventId = 0,

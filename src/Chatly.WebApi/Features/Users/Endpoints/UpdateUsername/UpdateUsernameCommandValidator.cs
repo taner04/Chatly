@@ -2,7 +2,7 @@
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 
-public class UpdateUsernameCommandValidator : AbstractValidator<UpdateUsernameCommand>
+internal sealed class UpdateUsernameCommandValidator : AbstractValidator<UpdateUsernameCommand>
 {
     public UpdateUsernameCommandValidator()
     {

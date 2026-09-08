@@ -16,10 +16,10 @@ public readonly partial struct UserId
 
 public sealed class User : Entity<UserId>
 {
-    public const int MaxEmailLength = 320;
-    public const int MaxAuth0IdLength = 256;
-    public const int MaxUsernameLength = 32;
-    public const int MaxProfilePictureKeyLength = 512;
+    internal const int MaxEmailLength = 320;
+    internal const int MaxAuth0IdLength = 256;
+    internal const int MaxUsernameLength = 32;
+    internal const int MaxProfilePictureKeyLength = 512;
 
     public User(string email, string auth0Id)
         : base(UserId.From(Guid.CreateVersion7()))

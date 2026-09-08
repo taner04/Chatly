@@ -3,7 +3,7 @@ using Chatly.WebApi.Features.FriendRequests.Models;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.RejectFriendRequest;
 
-public sealed class RejectFriendRequestCommandHandler(
+internal sealed class RejectFriendRequestCommandHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context) : ICommandHandler<RejectFriendRequestCommand>
 {

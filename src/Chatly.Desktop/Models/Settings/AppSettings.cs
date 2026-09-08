@@ -9,7 +9,7 @@ public sealed class AppSettings(ISettingsStore settingsStore)
     public NotificationSettings NotificationSettings { get; } = settingsStore.LoadSettings<NotificationSettings>();
     public ThemeSettings ThemeSettings { get; } = settingsStore.LoadSettings<ThemeSettings>();
 
-    public void Save()
+    internal void Save()
     {
         settingsStore.SaveSettings(NotificationSettings);
         settingsStore.SaveSettings(ThemeSettings);

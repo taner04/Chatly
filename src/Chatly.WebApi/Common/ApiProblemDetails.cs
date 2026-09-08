@@ -8,7 +8,7 @@ namespace Chatly.WebApi.Common;
 ///     such as an error code, a collection of validation errors, and a trace identifier.
 ///     This type is suitable for returning structured error responses from HTTP APIs.
 /// </remarks>
-public sealed class ApiProblemDetails : ProblemDetails
+internal sealed class ApiProblemDetails : ProblemDetails
 {
     /// <summary>
     ///     An optional application-specific error code that can be used by clients to

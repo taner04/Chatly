@@ -4,7 +4,7 @@ using Chatly.WebApi.Common.Shared.Guards.Exceptions;
 
 namespace Chatly.WebApi.Common.Shared.Guards;
 
-public static class Guard
+internal static class Guard
 {
     public static class Against
     {

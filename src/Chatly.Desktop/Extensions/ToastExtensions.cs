@@ -6,7 +6,7 @@ using FluentIcons.Common;
 
 namespace Chatly.Desktop.Extensions;
 
-public static class ToastExtensions
+internal static class ToastExtensions
 {
     extension(IToastService toastService)
     {
