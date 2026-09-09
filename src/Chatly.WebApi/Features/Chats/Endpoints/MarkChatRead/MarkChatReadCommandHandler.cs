@@ -1,3 +1,4 @@
+using Chatly.WebApi.Features.Chats.Exceptions;
 using Chatly.WebApi.Features.Chats.Models;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.MarkChatRead;
@@ -21,16 +22,25 @@ internal sealed class MarkChatReadCommandHandler(
 
         if (!canAccessChat)
         {
-            throw new EntityNotFoundException<Chat>(command.ChatId.Value);
+            throw new ChatAccessDeniedException(command.ChatId);
         }
 
-        var readAt = DateTimeOffset.UtcNow;
-        await context.Database.ExecuteSqlInterpolatedAsync($"""
-                                                            INSERT INTO "ChatReadStates" ("ChatId", "UserId", "LastReadAt")
-                                                            VALUES ({command.ChatId.Value}, {userId.Value}, {readAt})
-                                                            ON CONFLICT ("ChatId", "UserId") DO UPDATE
-                                                            SET "LastReadAt" = GREATEST("ChatReadStates"."LastReadAt", EXCLUDED."LastReadAt")
-                                                            """, cancellationToken);
+        var readState = await context.ChatReadStates
+            .SingleOrDefaultAsync(state =>
+                    state.ChatId == command.ChatId &&
+                    state.UserId == userId,
+                cancellationToken);
+        
+        if (readState is null)
+        {
+            context.ChatReadStates.Add(new ChatReadState(command.ChatId, userId));
+        }
+        else
+        {
+            readState.LastReadAt = DateTimeOffset.UtcNow;
+        }
+
+        await context.SaveChangesAsync(cancellationToken);
 
         return Unit.Value;
     }

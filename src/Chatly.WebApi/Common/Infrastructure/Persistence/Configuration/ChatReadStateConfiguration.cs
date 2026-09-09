@@ -3,15 +3,16 @@ using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 
-internal sealed class ChatReadStateConfiguration : IEntityTypeConfiguration<ChatReadState>
+internal sealed class ChatReadStateConfiguration
+    : EntityConfiguration<ChatReadState, ChatReadStateId>
 {
-    public void Configure(EntityTypeBuilder<ChatReadState> builder)
+    protected override void PostConfigure(EntityTypeBuilder<ChatReadState> builder)
     {
-        builder.HasKey(state => new
-        {
-            state.ChatId,
-            state.UserId
-        });
+        builder.Property(state => state.ChatId)
+            .IsRequired();
+
+        builder.Property(state => state.UserId)
+            .IsRequired();
 
         builder.Property(state => state.LastReadAt)
             .IsRequired();
@@ -25,5 +26,12 @@ internal sealed class ChatReadStateConfiguration : IEntityTypeConfiguration<Chat
             .WithMany()
             .HasForeignKey(state => state.UserId)
             .OnDelete(DeleteBehavior.Cascade);
+
+        builder.HasIndex(state => new
+            {
+                state.ChatId,
+                state.UserId
+            })
+            .IsUnique();
     }
 }

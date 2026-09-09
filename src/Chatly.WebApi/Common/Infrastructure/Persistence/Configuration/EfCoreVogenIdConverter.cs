@@ -10,5 +10,6 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 [EfCoreConverter<FriendRequestId>]
 [EfCoreConverter<FriendshipId>]
 [EfCoreConverter<ChatId>]
+[EfCoreConverter<ChatReadStateId>]
 [EfCoreConverter<MessageId>]
 internal sealed partial class EfCoreVogenIdConverter;

@@ -3,6 +3,7 @@ using System;
 using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 {
     [DbContext(typeof(ChatlyDbContext))]
-    partial class ChatlyDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260908131216_AlignChatReadStateEntity")]
+    partial class AlignChatReadStateEntity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder

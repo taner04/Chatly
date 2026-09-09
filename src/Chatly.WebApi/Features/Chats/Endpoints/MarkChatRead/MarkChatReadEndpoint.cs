@@ -20,6 +20,6 @@ internal sealed class MarkChatReadEndpoint : IEndpoint
             .WithTags("Chats")
             .RequireAuthorization()
             .Produces(StatusCodes.Status204NoContent)
-            .ProducesStandardErrors(StatusCodes.Status404NotFound);
+            .ProducesStandardErrors();
     }
 }
