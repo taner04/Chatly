@@ -1,33 +1,30 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
-using Chatly.WebApi.Features.Chats.Models;
+using Chatly.Contracts.Features.FriendRequests.Endpoints.AcceptFriendRequest;
+using Chatly.Contracts.Features.Friendships.Models;
 using Chatly.WebApi.Features.FriendRequests.Enums;
-using Chatly.WebApi.Features.FriendRequests.Models;
+using Chatly.WebApi.Features.FriendRequests.Services;
 using Chatly.WebApi.Features.Friendships.Models;
 using Chatly.WebApi.Features.Hubs;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
+using Chatly.WebApi.Features.Users.Services.Profiles;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 
 internal sealed class AcceptFriendRequestCommandHandler(
-    CurrentUserService currentUserService,
     ChatlyDbContext context,
-    AzureBlobService blobService,
+    PendingIncomingFriendRequestService pendingRequestService,
+    ProfilePictureUrlFactory profilePictureUrlFactory,
     NotificationPublisher notificationPublisher,
     OnlinePresenceTracker presenceTracker)
-    : ICommandHandler<AcceptFriendRequestCommand, AcceptFriendRequestResponse>
+    : ICommandHandler<AcceptFriendRequestCommand, FriendshipContract>
 {
-    public async ValueTask<AcceptFriendRequestResponse> Handle(
+    public async ValueTask<FriendshipContract> Handle(
         AcceptFriendRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
-        var friendRequestId = FriendRequestId.From(command.FriendRequestId);
-
-        var friendRequest = await context.FriendRequests
-            .FirstOrDefaultAsync(fr =>
-                    fr.Id == friendRequestId &&
-                    fr.ReceiverUserId == userId &&
-                    fr.Status == FriendRequestStatus.Pending,
-                cancellationToken) ?? throw new EntityNotFoundException<FriendRequest>(command.FriendRequestId);
+        var friendRequest = await pendingRequestService.GetAsync(
+            command.FriendRequestId,
+            cancellationToken);
+        var userId = friendRequest.ReceiverUserId;
 
         friendRequest.Status = FriendRequestStatus.Accepted;
 
@@ -45,46 +42,28 @@ internal sealed class AcceptFriendRequestCommandHandler(
             context.Chats.Add(chat);
         }
 
-        var friend = await context.Users
+        var userProfiles = await context.Users
             .AsNoTracking()
-            .Where(user => user.Id == friendRequest.SenderUserId)
-            .Select(user => new
-            {
-                user.Id,
-                user.Username,
-                user.ProfilePictureKey
-            })
-            .SingleAsync(cancellationToken);
+            .Where(user => user.Id == friendRequest.SenderUserId || user.Id == userId)
+            .SelectProfile()
+            .ToListAsync(cancellationToken);
 
-        var currentUser = await context.Users
-            .AsNoTracking()
-            .Where(user => user.Id == userId)
-            .Select(user => new
-            {
-                user.Id,
-                user.Username,
-                user.ProfilePictureKey
-            })
-            .SingleAsync(cancellationToken);
+        var friend = userProfiles.Single(user => user.UserId == friendRequest.SenderUserId);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        await notificationPublisher.PublishAsync(
-            friendRequest.SenderUserId,
-            new FriendRequestAcceptedMessage(
-                friendship.Id.Value,
-                chat.Id.Value,
-                currentUser.Id.Value,
-                currentUser.Username!,
-                blobService.CreateReadUrl(currentUser.ProfilePictureKey)?.ToString(),
-                presenceTracker.IsOnline(currentUser.Id)));
-
-        return new AcceptFriendRequestResponse(
+        var friendshipContract = new FriendshipContract(
             friendship.Id.Value,
             chat.Id.Value,
-            friend.Id.Value,
+            friend.UserId.Value,
             friend.Username!,
-            blobService.CreateReadUrl(friend.ProfilePictureKey)?.ToString(),
-            presenceTracker.IsOnline(friend.Id));
+            profilePictureUrlFactory.CreateProfilePictureUrl(friend.ProfilePictureKey),
+            presenceTracker.IsOnline(friend.UserId));
+
+        await notificationPublisher.PublishAsync(
+            friendRequest.SenderUserId,
+            new FriendRequestAcceptedNotification(friendshipContract));
+
+        return friendshipContract;
     }
 }

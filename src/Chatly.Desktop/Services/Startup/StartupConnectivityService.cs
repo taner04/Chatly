@@ -1,5 +1,5 @@
 using System.Net.Http;
-using Chatly.Desktop.Services.Api.Refit.Abstraction;
+using Chatly.Desktop.Services.Api.Refit;
 
 namespace Chatly.Desktop.Services.Startup;
 

@@ -6,17 +6,15 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 
 internal sealed class FriendRequestConfiguration
-    : EntityConfiguration<FriendRequest, FriendRequestId>
+    : UserPairEntityConfiguration<FriendRequest, FriendRequestId>
 {
-    protected override void PostConfigure(
+    protected override string TableName => "FriendRequests";
+    protected override string DistinctUsersConstraintName => "CK_FriendRequests_DistinctUsers";
+    protected override bool ConfigureParticipantForeignKeys => false;
+
+    protected override void ConfigureUserPair(
         EntityTypeBuilder<FriendRequest> builder)
     {
-        builder.Property(request => request.FirstUserId)
-            .IsRequired();
-
-        builder.Property(request => request.SecondUserId)
-            .IsRequired();
-
         builder.Property(request => request.SenderUserId)
             .IsRequired();
 
@@ -38,13 +36,6 @@ internal sealed class FriendRequestConfiguration
             .OnDelete(DeleteBehavior.Restrict);
 
         builder.HasIndex(request => new
-            {
-                request.FirstUserId,
-                request.SecondUserId
-            })
-            .IsUnique();
-
-        builder.HasIndex(request => new
         {
             request.SenderUserId,
             request.Status
@@ -58,10 +49,6 @@ internal sealed class FriendRequestConfiguration
 
         builder.ToTable("FriendRequests", table =>
         {
-            table.HasCheckConstraint(
-                "CK_FriendRequests_DistinctUsers",
-                "\"FirstUserId\" <> \"SecondUserId\"");
-
             table.HasCheckConstraint(
                 "CK_FriendRequests_ValidStatus",
                 "\"Status\" IN ('Pending', 'Accepted', 'Rejected')");

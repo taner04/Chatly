@@ -1,16 +1,12 @@
-using Chatly.WebApi.Common.Shared.Models;
-using Chatly.WebApi.Features.Chats.Models;
-using Vogen;
+using Chatly.WebApi.Features.MessageAttachments.Models;
+using Chatly.WebApi.Features.Reactions.Models;
 
 namespace Chatly.WebApi.Features.Messages.Models;
 
 [ValueObject<Guid>]
 public readonly partial struct MessageId
 {
-    private static Validation Validate(Guid value)
-    {
-        return value.Validate<MessageId>();
-    }
+    private static Validation Validate(Guid value) => value.Validate<MessageId>();
 }
 
 public sealed class Message : Entity<MessageId>
@@ -27,6 +23,8 @@ public sealed class Message : Entity<MessageId>
         ChatId = chatId;
         SenderUserId = senderUserId;
         Content = content;
+        SentAt = DateTimeOffset.UtcNow;
+        IsDeleted = false;
     }
 
     public ChatId ChatId { get; init; }
@@ -35,9 +33,15 @@ public sealed class Message : Entity<MessageId>
 
     public string Content { get; set; } = string.Empty;
 
-    public DateTimeOffset SentAt { get; set; } = DateTimeOffset.UtcNow;
+    public DateTimeOffset SentAt { get; init; }
 
     public Chat Chat { get; init; } = null!;
 
     public User SenderUser { get; init; } = null!;
+
+    public bool IsDeleted { get; set; }
+
+    public ICollection<Reaction> Reactions { get; init; } = [];
+
+    public ICollection<MessageAttachment> Attachments { get; init; } = [];
 }

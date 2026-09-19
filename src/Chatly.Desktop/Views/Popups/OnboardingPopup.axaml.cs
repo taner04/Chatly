@@ -3,7 +3,7 @@
 namespace Chatly.Desktop.Views.Popups;
 
 [TransientService(typeof(IPopupOverlay<OnboardingPopupViewModel>))]
-public partial class OnboardingPopup : UserControl, IPopupOverlay<OnboardingPopupViewModel>
+internal partial class OnboardingPopup : UserControl, IPopupOverlay<OnboardingPopupViewModel>
 {
     public OnboardingPopup(OnboardingPopupViewModel viewModel)
     {

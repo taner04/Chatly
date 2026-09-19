@@ -1,16 +1,18 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
-using Chatly.Contracts.Pagination;
+using Chatly.Contracts.Common.Pagination;
+using Chatly.Contracts.Features.FriendRequests.Models;
 using Chatly.WebApi.Common.Infrastructure.Pagination;
 using Chatly.WebApi.Features.FriendRequests.Enums;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.GetFriendRequests;
 
 internal sealed class GetFriendRequestsQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUserService,
-    AzureBlobService blobService) : IQueryHandler<GetFriendRequestsQuery, PaginationResult<GetFriendRequestsResponse>>
+    ProfilePictureUrlFactory profilePictureUrlFactory)
+    : IQueryHandler<GetFriendRequestsQuery, PaginationResult<FriendRequestContract>>
 {
-    public async ValueTask<PaginationResult<GetFriendRequestsResponse>> Handle(
+    public async ValueTask<PaginationResult<FriendRequestContract>> Handle(
         GetFriendRequestsQuery query,
         CancellationToken cancellationToken)
     {
@@ -26,14 +28,18 @@ internal sealed class GetFriendRequestsQueryHandler(
             .Select(request => new
             {
                 RequestId = request.Id.Value,
+                SenderUserId = request.SenderUserId.Value,
                 request.SenderUser.Username,
-                request.SenderUser.ProfilePictureKey
+                ProfilePictureKey = request.SenderUser.ProfilePictureFile == null
+                    ? null
+                    : request.SenderUser.ProfilePictureFile.BlobName
             })
             .ToPaginationResultAsync(query, cancellationToken);
 
-        return page.Map(request => new GetFriendRequestsResponse(
+        return page.Map(request => new FriendRequestContract(
             request.RequestId,
+            request.SenderUserId,
             request.Username!,
-            blobService.CreateReadUrl(request.ProfilePictureKey)?.ToString()));
+            profilePictureUrlFactory.CreateProfilePictureUrl(request.ProfilePictureKey)));
     }
 }

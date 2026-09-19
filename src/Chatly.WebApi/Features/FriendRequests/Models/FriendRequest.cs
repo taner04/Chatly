@@ -1,16 +1,11 @@
-﻿using Chatly.WebApi.Common.Shared.Models;
-using Chatly.WebApi.Features.FriendRequests.Enums;
-using Vogen;
+﻿using Chatly.WebApi.Features.FriendRequests.Enums;
 
 namespace Chatly.WebApi.Features.FriendRequests.Models;
 
 [ValueObject<Guid>]
 public readonly partial struct FriendRequestId
 {
-    private static Validation Validate(Guid value)
-    {
-        return value.Validate<FriendRequestId>();
-    }
+    private static Validation Validate(Guid value) => value.Validate<FriendRequestId>();
 }
 
 public sealed class FriendRequest : UserPairEntity<FriendRequestId>

@@ -11,6 +11,9 @@
         <StyleInclude Source="avares://Chatly.Desktop/Styles/SelectionControlStyles.axaml" />
         <StyleInclude Source="avares://Chatly.Desktop/Styles/TextBoxStyles.axaml" />
         <StyleInclude Source="avares://Chatly.Desktop/Styles/BorderStyles.axaml" />
+        <Style Selector="ItemsControl.stretch-items > ContentPresenter">
+            <Setter Property="HorizontalContentAlignment" Value="Stretch" />
+        </Style>
     </Application.Styles>
 
     <Application.Resources>

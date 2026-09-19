@@ -59,23 +59,22 @@ public class App : Application
 
     private async void MainWindow_OnClosing(object? sender, WindowClosingEventArgs e)
     {
-        if (_shutdownCompleted)
-        {
-            return;
-        }
-
-        e.Cancel = true;
-        await ShutdownAsync();
+        await RequestShutdownAsync(() => e.Cancel = true);
     }
 
     private async void Desktop_OnShutdownRequested(object? sender, ShutdownRequestedEventArgs e)
+    {
+        await RequestShutdownAsync(() => e.Cancel = true);
+    }
+
+    private async Task RequestShutdownAsync(Action cancelRequest)
     {
         if (_shutdownCompleted)
         {
             return;
         }
 
-        e.Cancel = true;
+        cancelRequest();
         await ShutdownAsync();
     }
 

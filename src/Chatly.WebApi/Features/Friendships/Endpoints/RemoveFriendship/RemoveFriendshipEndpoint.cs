@@ -5,7 +5,7 @@ internal sealed class RemoveFriendshipEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapDelete(
-                "/api/friendships/{associatedUserId:guid}",
+                ApiRoutes.Friendships.ByAssociatedUserId,
                 async (
                     [FromRoute] Guid associatedUserId,
                     [FromServices] IMediator mediator,

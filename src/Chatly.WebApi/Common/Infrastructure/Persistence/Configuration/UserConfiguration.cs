@@ -1,3 +1,4 @@
+using Chatly.Contracts.Common.Policies;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
@@ -17,13 +18,15 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
 
         builder.Property(user => user.Username)
             .HasColumnType(PostgresDataType.CaseInsensitiveText)
-            .HasMaxLength(User.MaxUsernameLength);
-
-        builder.Property(user => user.ProfilePictureKey)
-            .HasMaxLength(User.MaxProfilePictureKeyLength);
+            .HasMaxLength(UsernamePolicy.MaxLength);
 
         builder.Property(user => user.OnboardingCompleted)
             .IsRequired();
+
+        builder.HasOne(user => user.ProfilePictureFile)
+            .WithMany()
+            .HasForeignKey(user => user.ProfilePictureFileId)
+            .OnDelete(DeleteBehavior.SetNull);
 
         builder.HasIndex(user => user.Email)
             .IsUnique();
@@ -34,5 +37,9 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
         builder.HasIndex(user => user.Username)
             .IsUnique()
             .HasFilter("\"Username\" IS NOT NULL");
+
+        builder.HasIndex(user => user.ProfilePictureFileId)
+            .IsUnique()
+            .HasFilter("\"ProfilePictureFileId\" IS NOT NULL");
     }
 }

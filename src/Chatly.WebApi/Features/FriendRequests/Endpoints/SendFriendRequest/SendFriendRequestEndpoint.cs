@@ -1,4 +1,4 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Requests;
+using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 
@@ -7,7 +7,7 @@ internal sealed class SendFriendRequestEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPost(
-                "/api/friend-requests",
+                ApiRoutes.FriendRequests.Collection,
                 async (
                     [FromBody] SendFriendRequestRequest request,
                     [FromServices] IMediator mediator,

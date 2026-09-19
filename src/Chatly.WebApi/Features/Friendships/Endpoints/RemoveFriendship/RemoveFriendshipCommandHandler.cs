@@ -1,4 +1,4 @@
-using Chatly.Contracts.SignalR;
+using Chatly.Contracts.Features.Friendships.Endpoints.RemoveFriendship;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.Friendships.Models;
 
@@ -38,7 +38,7 @@ internal sealed class RemoveFriendshipCommandHandler(
 
         await notificationPublisher.PublishAsync(
             command.AssociatedUserId,
-            new FriendshipRemovedMessage(userId.Value));
+            new FriendshipRemovedNotification(userId.Value));
 
         return Unit.Value;
     }

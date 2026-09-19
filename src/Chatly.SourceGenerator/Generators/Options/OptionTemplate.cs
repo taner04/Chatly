@@ -1,5 +1,3 @@
-using System.Text;
-using Chatly.SourceGenerator.Templates;
 using Microsoft.CodeAnalysis.CSharp;
 
 namespace Chatly.SourceGenerator.Generators.Options;
@@ -8,12 +6,15 @@ internal static class OptionTemplate
 {
     private const string RegistrationPlaceholder = "        {{ optionRegistrations }}";
 
-    internal static string Render(IEnumerable<(string TypeName, string SectionName)> options)
+    internal static string Render(
+        IEnumerable<(string TypeName, string SectionName)> options,
+        CancellationToken cancellationToken)
     {
         var registrations = new StringBuilder();
 
         foreach (var option in options.OrderBy(static option => option.TypeName, StringComparer.Ordinal))
         {
+            cancellationToken.ThrowIfCancellationRequested();
             var sectionName = SymbolDisplay.FormatLiteral(option.SectionName, true);
 
             registrations

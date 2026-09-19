@@ -1,5 +1,3 @@
-using Microsoft.Extensions.Logging;
-
 namespace Chatly.Desktop.Services.Navigation;
 
 [SingletonService(typeof(INavigationService))]
@@ -21,10 +19,13 @@ internal sealed partial class NavigationService(
     }
 
     public Task<bool> NavigateToAsync<T>(CancellationToken cancellationToken = default)
-        where T : INavigableViewModel
-    {
-        return NavigateToAsync(typeof(T), null, cancellationToken);
-    }
+        where T : INavigableViewModel =>
+        NavigateToAsync(typeof(T), null, cancellationToken);
+
+    public Task<bool> NavigateToAsync(
+        Type viewModelType,
+        CancellationToken cancellationToken = default) =>
+        NavigateToAsync(viewModelType, null, cancellationToken);
 
     public Task<bool> NavigateToAsync<T>(
         object parameter,
@@ -35,15 +36,11 @@ internal sealed partial class NavigationService(
         return NavigateToAsync(typeof(T), parameter, cancellationToken);
     }
 
-    public Task<bool> GoBackAsync(CancellationToken cancellationToken = default)
-    {
-        return NavigateHistoryAsync(_backStack, _forwardStack, cancellationToken);
-    }
+    public Task<bool> GoBackAsync(CancellationToken cancellationToken = default) =>
+        NavigateHistoryAsync(_backStack, _forwardStack, cancellationToken);
 
-    public Task<bool> GoForwardAsync(CancellationToken cancellationToken = default)
-    {
-        return NavigateHistoryAsync(_forwardStack, _backStack, cancellationToken);
-    }
+    public Task<bool> GoForwardAsync(CancellationToken cancellationToken = default) =>
+        NavigateHistoryAsync(_forwardStack, _backStack, cancellationToken);
 
     private async Task<bool> NavigateToAsync(
         Type viewModelType,

@@ -1,7 +1,5 @@
-using System.Linq;
 using Chatly.Desktop.Mappers;
-using Chatly.Desktop.Models.UserSession;
-using Chatly.Desktop.Services.Api;
+using Chatly.Desktop.Services.Api.Clients;
 
 namespace Chatly.Desktop.Services.Authentication;
 
@@ -12,6 +10,7 @@ public sealed class SessionService(
     FriendsApiClient friendsApiClient,
     ChatApiClient chatApiClient,
     UserSessionContext sessionContext,
+    UserRegistry userRegistry,
     FriendState friendState,
     DirectChatState directChatState,
     FriendRequestState friendRequestState)
@@ -39,7 +38,7 @@ public sealed class SessionService(
                     $"Failed to retrieve friendships: {friendshipsResult.Error.Detail}");
             }
 
-            friendState.Set(friendshipsResult.Value.Select(FriendMapper.Map));
+            friendState.Set(friendshipsResult.Value.Select(friendship => FriendMapper.Map(friendship, userRegistry)));
 
             var pendingFriendRequestsResult = await friendsApiClient.GetFriendRequestsAsync(1, 1, cancellationToken);
             if (pendingFriendRequestsResult.IsFailure)
@@ -58,7 +57,7 @@ public sealed class SessionService(
                     $"Failed to retrieve chats: {chatsResult.Error.Detail}");
             }
 
-            directChatState.Set(chatsResult.Value.Select(DirectChatMapper.Map));
+            directChatState.Set(chatsResult.Value.Select(chat => DirectChatMapper.Map(chat, userRegistry)));
         }
         catch
         {

@@ -1,0 +1,17 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="using:Chatly.Desktop.Views.Controls"
+             x:Class="Chatly.Desktop.Views.Controls.UnreadBadge"
+             x:DataType="local:UnreadBadge"
+             Width="14"
+             Height="14">
+    <Border CornerRadius="7"
+            Background="#E5484D">
+        <TextBlock Text="{Binding Count, RelativeSource={RelativeSource AncestorType=local:UnreadBadge}}"
+                   FontSize="8"
+                   FontWeight="Bold"
+                   Foreground="White"
+                   HorizontalAlignment="Center"
+                   VerticalAlignment="Center" />
+    </Border>
+</UserControl>

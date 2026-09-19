@@ -1,5 +1,4 @@
-﻿using Chatly.WebApi.Common.Shared.Models;
-using Microsoft.EntityFrameworkCore.Diagnostics;
+﻿using Microsoft.EntityFrameworkCore.Diagnostics;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence.Interceptors;
 

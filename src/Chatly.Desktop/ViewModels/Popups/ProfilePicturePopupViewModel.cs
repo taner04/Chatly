@@ -1,18 +1,17 @@
 using System.IO;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
-using CommunityToolkit.Mvvm.Input;
+using Chatly.Contracts.Common.Policies;
+using Chatly.Desktop.Abstraction.Storage;
 
 namespace Chatly.Desktop.ViewModels.Popups;
 
-public abstract partial class ProfilePicturePopupViewModel : PopupOverlayViewModel
+public abstract partial class ProfilePicturePopupViewModel(
+    IFilePicker filePicker,
+    string? existingProfilePictureUrl = null)
+    : PopupOverlayViewModel
 {
-    private string? _existingProfilePictureUrl;
-
-    protected ProfilePicturePopupViewModel(string? existingProfilePictureUrl = null)
-    {
-        _existingProfilePictureUrl = existingProfilePictureUrl;
-    }
+    private string? _existingProfilePictureUrl = existingProfilePictureUrl;
 
     [ObservableProperty] public partial IStorageFile? ProfilePicture { get; private set; }
 
@@ -47,30 +46,15 @@ public abstract partial class ProfilePicturePopupViewModel : PopupOverlayViewMod
     }
 
     [RelayCommand]
-    private async Task SelectProfilePicture(UserControl userControl)
+    private async Task SelectProfilePicture()
     {
-        var topLevel = TopLevel.GetTopLevel(userControl);
-        ArgumentNullException.ThrowIfNull(topLevel);
-
-        var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-        {
-            Title = "Select Profile Picture",
-            AllowMultiple = false,
-            FileTypeFilter =
-            [
-                new FilePickerFileType("Image Files")
-                {
-                    Patterns = ["*.jpg", "*.jpeg", "*.png", "*.webp"]
-                }
-            ]
-        });
-
-        if (files.Count != 1)
+        var file = await filePicker.PickProfilePictureAsync();
+        if (file is null)
         {
             return;
         }
 
-        ProfilePicture = files[0];
+        ProfilePicture = file;
         await using var stream = await ProfilePicture.OpenReadAsync();
 
         ProfilePicturePreview?.Dispose();
@@ -114,12 +98,9 @@ public abstract partial class ProfilePicturePopupViewModel : PopupOverlayViewMod
 
     protected static string GetContentType(IStorageFile file)
     {
-        return Path.GetExtension(file.Name).ToLowerInvariant() switch
-        {
-            ".jpg" or ".jpeg" => "image/jpeg",
-            ".png" => "image/png",
-            ".webp" => "image/webp",
-            _ => "application/octet-stream"
-        };
+        var contentType = ImageContentTypePolicy.FromFileExtension(Path.GetExtension(file.Name));
+        return contentType is not null && ImageContentTypePolicy.ProfilePictureContentTypes.Contains(contentType)
+            ? contentType
+            : "application/octet-stream";
     }
 }

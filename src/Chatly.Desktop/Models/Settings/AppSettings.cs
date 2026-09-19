@@ -9,6 +9,16 @@ public sealed class AppSettings(ISettingsStore settingsStore)
     public NotificationSettings NotificationSettings { get; } = settingsStore.LoadSettings<NotificationSettings>();
     public ThemeSettings ThemeSettings { get; } = settingsStore.LoadSettings<ThemeSettings>();
 
+    public string ApplicationVersion { get; } =
+        typeof(App).Assembly.GetName().Version?.ToString(3) ?? "Unknown";
+
+    public string Platform { get; } = OperatingSystem.IsMacOS()
+        ? "macOS"
+        : OperatingSystem.IsWindows()
+            ? "Windows"
+            : Environment.OSVersion.Platform.ToString();
+
+
     internal void Save()
     {
         settingsStore.SaveSettings(NotificationSettings);

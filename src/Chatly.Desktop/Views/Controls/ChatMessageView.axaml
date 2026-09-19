@@ -1,0 +1,397 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+              xmlns:reactions="using:Chatly.Contracts.Features.Reactions.Models"
+              xmlns:asyncImageLoader="using:AsyncImageLoader"
+              xmlns:converters="using:Chatly.Desktop.Converters"
+              xmlns:ic="using:FluentIcons.Avalonia"
+              xmlns:messages="clr-namespace:Chatly.Desktop.ViewModels.Pages.ChatPage.Messages"
+             x:Class="Chatly.Desktop.Views.Controls.ChatMessageView"
+             x:DataType="messages:ChatMessageViewModel">
+    <UserControl.Resources>
+        <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
+        <ControlTheme x:Key="ReactionMenuItemTheme"
+                      TargetType="MenuItem"
+                      BasedOn="{StaticResource {x:Type MenuItem}}">
+            <Setter Property="MinWidth" Value="150" />
+            <Setter Property="Padding" Value="10,8" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+            <Setter Property="CornerRadius" Value="7" />
+            <Style Selector="^ /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="HorizontalContentAlignment" Value="Left" />
+            </Style>
+            <Style Selector="^:pointerover /template/ Border#PART_LayoutRoot">
+                <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+            </Style>
+            <Style Selector="^:pointerover /template/ ContentPresenter#PART_HeaderPresenter">
+                <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+            </Style>
+            <Style Selector="^ /template/ Path#PART_ChevronPath">
+                <Setter Property="Width" Value="4" />
+                <Setter Property="Height" Value="8" />
+            </Style>
+        </ControlTheme>
+    </UserControl.Resources>
+
+    <UserControl.DataTemplates>
+        <DataTemplate DataType="{x:Type messages:ChatReactionViewModel}">
+            <Border Background="Transparent"
+                    ToolTip.Tip="{Binding Tooltip}">
+                <Button Classes="reaction-chip"
+                        Classes.own="{Binding IsOwnReaction}"
+                        Content="{Binding Emoji}"
+                        x:CompileBindings="False"
+                        Command="{Binding DataContext.RemoveReactionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        CommandParameter="{Binding}"
+                        IsHitTestVisible="{Binding IsOwnReaction}" />
+            </Border>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type messages:MessageAttachmentViewModel}">
+            <StackPanel>
+                <Border MaxWidth="480"
+                        MaxHeight="320"
+                        CornerRadius="8"
+                        ClipToBounds="True"
+                        Background="{DynamicResource ChatlyContentBrush}"
+                        IsVisible="{Binding IsImage}">
+                    <Grid>
+                        <Image
+                            asyncImageLoader:ImageLoader.Source="{Binding Url, Converter={StaticResource ImageUrlConverter}}"
+                            MaxWidth="480"
+                            MaxHeight="320"
+                            Stretch="Uniform" />
+                        <Button Classes="icon-button attachment-download"
+                                Command="{Binding DownloadCommand}"
+                                ToolTip.Tip="Download file">
+                            <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                        </Button>
+                    </Grid>
+                </Border>
+                <Border MinWidth="210"
+                        Padding="9"
+                        Background="{DynamicResource ChatlyContentBrush}"
+                        BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                        BorderThickness="1"
+                        CornerRadius="8"
+                        IsVisible="{Binding IsFile}">
+                    <Grid ColumnDefinitions="32,*,Auto" ColumnSpacing="8">
+                        <Border Width="32"
+                                Height="32"
+                                Background="{DynamicResource ChatlyElevatedBrush}"
+                                CornerRadius="6">
+                            <TextBlock Text="FILE"
+                                       FontSize="8"
+                                       FontWeight="Bold"
+                                       Foreground="{DynamicResource ChatlyAccentBrush}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center" />
+                        </Border>
+                        <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                            <TextBlock Text="{Binding FileName}"
+                                       FontSize="12"
+                                       FontWeight="SemiBold"
+                                       TextTrimming="CharacterEllipsis"
+                                       Foreground="{DynamicResource ChatlyTextBrush}" />
+                            <TextBlock Text="{Binding SizeText}"
+                                       FontSize="10"
+                                       Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+                        </StackPanel>
+                        <Button Grid.Column="2"
+                                Classes="icon-button attachment-download"
+                                Command="{Binding DownloadCommand}"
+                                ToolTip.Tip="Download file">
+                            <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                        </Button>
+                    </Grid>
+                </Border>
+            </StackPanel>
+        </DataTemplate>
+    </UserControl.DataTemplates>
+
+    <UserControl.Styles>
+        <Style Selector="Grid.message-container">
+            <Setter Property="HorizontalAlignment" Value="Left" />
+        </Style>
+        <Style Selector="Grid.message-container.own">
+            <Setter Property="HorizontalAlignment" Value="Right" />
+        </Style>
+        <Style Selector="Border.message-bubble">
+            <Setter Property="MaxWidth" Value="520" />
+            <Setter Property="Padding" Value="12,8,12,4" />
+            <Setter Property="Margin" Value="0,3" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyIncomingMessageBrush}" />
+        </Style>
+        <Style Selector="Border.message-bubble.own">
+            <Setter Property="Background" Value="{DynamicResource ChatlyOutgoingMessageBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message-content">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.message-content.deleted">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+            <Setter Property="FontStyle" Value="Italic" />
+            <Setter Property="Padding" Value="0,0,4,0" />
+        </Style>
+        <Style Selector="TextBlock.message-time">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+        </Style>
+        <Style Selector="Button.reaction-chip">
+            <Setter Property="MinWidth" Value="28" />
+            <Setter Property="Height" Value="24" />
+            <Setter Property="Padding" Value="6,1" />
+            <Setter Property="CornerRadius" Value="12" />
+            <Setter Property="HorizontalContentAlignment" Value="Center" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyContentBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontSize" Value="14" />
+        </Style>
+        <Style Selector="Button.reaction-chip.own">
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyAccentBrush}" />
+        </Style>
+        <Style Selector="Button.attachment-download">
+            <Setter Property="Width" Value="30" />
+            <Setter Property="Height" Value="30" />
+            <Setter Property="Margin" Value="8" />
+            <Setter Property="CornerRadius" Value="8" />
+            <Setter Property="HorizontalAlignment" Value="Right" />
+            <Setter Property="VerticalAlignment" Value="Top" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+        </Style>
+    </UserControl.Styles>
+
+    <Grid Classes="message-container"
+          Classes.own="{Binding IsOwnMessage}">
+        <Border Classes="message-bubble"
+                Classes.own="{Binding IsOwnMessage}">
+            <Border.ContextFlyout>
+                <MenuFlyout>
+                    <MenuFlyout.FlyoutPresenterTheme>
+                        <ControlTheme TargetType="MenuFlyoutPresenter"
+                                      BasedOn="{StaticResource {x:Type MenuFlyoutPresenter}}">
+                            <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+                            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+                            <Setter Property="BorderThickness" Value="1" />
+                            <Setter Property="CornerRadius" Value="10" />
+                            <Setter Property="Padding" Value="4" />
+                        </ControlTheme>
+                    </MenuFlyout.FlyoutPresenterTheme>
+                    <MenuItem Header="Add reaction"
+                              IsVisible="{Binding CanReact}"
+                              Theme="{StaticResource ReactionMenuItemTheme}">
+                        <MenuItem Header="👍  Like"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Like}" />
+                        <MenuItem Header="❤️  Love"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Love}" />
+                        <MenuItem Header="😂  Laugh"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Laugh}" />
+                        <MenuItem Header="😮  Surprised"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Surprised}" />
+                        <MenuItem Header="😢  Sad"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Sad}" />
+                        <MenuItem Header="😡  Angry"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Angry}" />
+                        <MenuItem Header="👎  Dislike"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Dislike}" />
+                        <MenuItem Header="😊  Smile"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Smile}" />
+                        <MenuItem Header="🔥  Fire"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Fire}" />
+                        <MenuItem Header="🎉  Celebrate"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Celebrate}" />
+                        <MenuItem Header="👏  Clap"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Clap}" />
+                        <MenuItem Header="🙏  Thanks"
+                                  Theme="{StaticResource ReactionMenuItemTheme}"
+                                  Command="{Binding SetReactionCommand}"
+                                  CommandParameter="{x:Static reactions:ReactionType.Thanks}" />
+                    </MenuItem>
+                    <MenuItem Header="Delete message"
+                              IsVisible="{Binding CanRemoveMessage}"
+                              Theme="{StaticResource ReactionMenuItemTheme}"
+                              Command="{Binding RemoveMessageCommand}" />
+                </MenuFlyout>
+            </Border.ContextFlyout>
+            <StackPanel Spacing="4">
+                <Border Width="480"
+                        MaxHeight="320"
+                        CornerRadius="8"
+                        ClipToBounds="True"
+                        Background="{DynamicResource ChatlyContentBrush}"
+                        IsVisible="{Binding HasSingleImage}">
+                    <Grid>
+                        <Image
+                            asyncImageLoader:ImageLoader.Source="{Binding PrimaryImage.Url, Converter={StaticResource ImageUrlConverter}}"
+                            MaxHeight="320"
+                            Stretch="Uniform" />
+                        <Button Classes="icon-button attachment-download"
+                                Command="{Binding PrimaryImage.DownloadCommand}"
+                                ToolTip.Tip="Download file">
+                            <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                        </Button>
+                    </Grid>
+                </Border>
+
+                <ItemsControl Width="480"
+                              ItemsSource="{Binding ImageAttachments}"
+                              IsVisible="{Binding HasTwoImages}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2" Rows="1" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="messages:MessageAttachmentViewModel">
+                            <Border Height="230"
+                                    Margin="2"
+                                    CornerRadius="8"
+                                    ClipToBounds="True"
+                                    Background="{DynamicResource ChatlyContentBrush}">
+                                <Grid>
+                                    <Image
+                                        asyncImageLoader:ImageLoader.Source="{Binding Url, Converter={StaticResource ImageUrlConverter}}"
+                                        Stretch="UniformToFill" />
+                                    <Button Classes="icon-button attachment-download"
+                                            Command="{Binding DownloadCommand}"
+                                            ToolTip.Tip="Download file">
+                                        <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <Grid Width="480"
+                      Height="300"
+                      ColumnDefinitions="2*,*"
+                      IsVisible="{Binding HasThreeImages}">
+                    <Border Margin="2"
+                            CornerRadius="8"
+                            ClipToBounds="True"
+                            Background="{DynamicResource ChatlyContentBrush}">
+                        <Grid>
+                            <Image
+                                asyncImageLoader:ImageLoader.Source="{Binding PrimaryImage.Url, Converter={StaticResource ImageUrlConverter}}"
+                                Stretch="UniformToFill" />
+                            <Button Classes="icon-button attachment-download"
+                                    Command="{Binding PrimaryImage.DownloadCommand}"
+                                    ToolTip.Tip="Download file">
+                                <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                            </Button>
+                        </Grid>
+                    </Border>
+                    <ItemsControl Grid.Column="1"
+                                  ItemsSource="{Binding SecondaryImages}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Columns="1" Rows="2" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate x:DataType="messages:MessageAttachmentViewModel">
+                                <Border Margin="2"
+                                        CornerRadius="8"
+                                        ClipToBounds="True"
+                                        Background="{DynamicResource ChatlyContentBrush}">
+                                    <Grid>
+                                        <Image
+                                            asyncImageLoader:ImageLoader.Source="{Binding Url, Converter={StaticResource ImageUrlConverter}}"
+                                            Stretch="UniformToFill" />
+                                        <Button Classes="icon-button attachment-download"
+                                                Command="{Binding DownloadCommand}"
+                                                ToolTip.Tip="Download file">
+                                            <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                                        </Button>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+
+                <ItemsControl Width="480"
+                              ItemsSource="{Binding ImageAttachments}"
+                              IsVisible="{Binding HasImageGrid}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Columns="2" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate x:DataType="messages:MessageAttachmentViewModel">
+                            <Border Height="170"
+                                    Margin="2"
+                                    CornerRadius="8"
+                                    ClipToBounds="True"
+                                    Background="{DynamicResource ChatlyContentBrush}">
+                                <Grid>
+                                    <Image
+                                        asyncImageLoader:ImageLoader.Source="{Binding Url, Converter={StaticResource ImageUrlConverter}}"
+                                        Stretch="UniformToFill" />
+                                    <Button Classes="icon-button attachment-download"
+                                            Command="{Binding DownloadCommand}"
+                                            ToolTip.Tip="Download file">
+                                        <ic:SymbolIcon Symbol="ArrowDownload" FontSize="16" />
+                                    </Button>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <ItemsControl ItemsSource="{Binding FileAttachments}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Spacing="6" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+                <Grid ColumnDefinitions="*,Auto"
+                      ColumnSpacing="10">
+                    <TextBlock Classes="message-content"
+                               Classes.deleted="{Binding IsDeleted}"
+                               Text="{Binding Content}"
+                               TextWrapping="Wrap" />
+                    <TextBlock Grid.Column="1"
+                               Classes="message-time"
+                               Text="{Binding Time}"
+                               FontSize="10"
+                               VerticalAlignment="Bottom"
+                               Margin="0,0,0,1" />
+                </Grid>
+                <ItemsControl ItemsSource="{Binding Reactions}">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal" Spacing="4" />
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                </ItemsControl>
+            </StackPanel>
+        </Border>
+    </Grid>
+</UserControl>

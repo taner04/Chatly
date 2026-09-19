@@ -1,5 +1,5 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
-using Chatly.Contracts.Pagination;
+using Chatly.Contracts.Common.Pagination;
+using Chatly.Contracts.Features.FriendRequests.Models;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.GetFriendRequests;
 
@@ -8,12 +8,12 @@ internal sealed class GetFriendRequestsEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                "/api/friend-requests",
+                ApiRoutes.FriendRequests.Collection,
                 async (
-                    [FromQuery] int pageIndex,
-                    [FromQuery] int pageSize,
                     [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken) =>
+                    CancellationToken cancellationToken,
+                    [FromQuery] int pageIndex = PaginationPolicy.DefaultPageIndex,
+                    [FromQuery] int pageSize = PaginationPolicy.DefaultPageSize) =>
                 {
                     var query = new GetFriendRequestsQuery(pageIndex, pageSize);
 
@@ -22,7 +22,7 @@ internal sealed class GetFriendRequestsEndpoint : IEndpoint
             .WithName("GetFriendRequests")
             .WithTags("Friend Request")
             .RequireAuthorization()
-            .Produces<PaginationResult<GetFriendRequestsResponse>>()
+            .Produces<PaginationResult<FriendRequestContract>>()
             .ProducesStandardErrors(StatusCodes.Status400BadRequest);
     }
 }

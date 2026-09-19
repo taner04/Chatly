@@ -1,3 +1,5 @@
+using Chatly.Contracts.Features.Users.Endpoints.UpdateUsername;
+
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 
 internal sealed class UpdateUsernameEndpoint : IEndpoint
@@ -5,18 +7,20 @@ internal sealed class UpdateUsernameEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPut(
-                "/api/users/me/username",
+                ApiRoutes.Users.Username,
                 async (
-                    [FromBody] UpdateUsernameCommand command,
+                    [FromBody] UpdateUsernameRequest request,
                     [FromServices] IMediator mediator,
                     CancellationToken cancellationToken) =>
                 {
-                    return Results.Ok(await mediator.Send(command, cancellationToken));
+                    return Results.Ok(await mediator.Send(
+                        new UpdateUsernameCommand(request.NewUsername),
+                        cancellationToken));
                 })
             .WithName("UpdateUsername")
             .WithTags("User")
             .RequireAuthorization()
-            .Accepts<UpdateUsernameCommand>("application/json")
+            .Accepts<UpdateUsernameRequest>("application/json")
             .Produces<CurrentUserResponse>()
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,

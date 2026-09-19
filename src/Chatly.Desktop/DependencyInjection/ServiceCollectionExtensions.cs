@@ -1,7 +1,7 @@
 using Chatly.Desktop.Abstraction.Authentication;
 using Chatly.Desktop.Abstraction.Settings;
 using Chatly.Desktop.Options;
-using Chatly.Desktop.Services.Api.Refit.Abstraction;
+using Chatly.Desktop.Services.Api.Refit;
 using Chatly.Desktop.Services.Api.Refit.DelegatingHandlers;
 using Chatly.Desktop.Services.Authentication.Storage;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs;

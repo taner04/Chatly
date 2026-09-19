@@ -143,21 +143,19 @@ internal sealed class AvaloniaAuthenticationBrowser : IBrowser
         bool isLogout,
         CancellationToken cancellationToken)
     {
-        using var htmlStream = AssetLoader.Open(isLogout ? LogoutCompletePageUri : LoginCompletePageUri);
+        await using var htmlStream = AssetLoader.Open(isLogout ? LogoutCompletePageUri : LoginCompletePageUri);
         using var htmlReader = new StreamReader(htmlStream, Encoding.UTF8);
         var html = await htmlReader.ReadToEndAsync(cancellationToken);
 
-        using var logoStream = AssetLoader.Open(LogoUri);
+        await using var logoStream = AssetLoader.Open(LogoUri);
         using var logoBuffer = new MemoryStream();
         await logoStream.CopyToAsync(logoBuffer, cancellationToken);
         var logoDataUri = $"data:image/x-icon;base64,{Convert.ToBase64String(logoBuffer.ToArray())}";
         return html.Replace("{{CHATLY_LOGO_DATA_URI}}", logoDataUri, StringComparison.Ordinal);
     }
 
-    private static bool IsLogout(string startUrl)
-    {
-        return Uri.TryCreate(startUrl, UriKind.Absolute, out var uri) &&
-               (uri.AbsolutePath.Contains("logout", StringComparison.OrdinalIgnoreCase) ||
-                uri.Query.Contains("post_logout_redirect_uri", StringComparison.OrdinalIgnoreCase));
-    }
+    private static bool IsLogout(string startUrl) =>
+        Uri.TryCreate(startUrl, UriKind.Absolute, out var uri) &&
+        (uri.AbsolutePath.Contains("logout", StringComparison.OrdinalIgnoreCase) ||
+         uri.Query.Contains("post_logout_redirect_uri", StringComparison.OrdinalIgnoreCase));
 }

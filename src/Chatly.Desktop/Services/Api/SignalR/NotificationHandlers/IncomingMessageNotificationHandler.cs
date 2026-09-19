@@ -1,9 +1,8 @@
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.Contracts.SignalR;
+using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
 using Chatly.Desktop.Abstraction.Notification;
 using Chatly.Desktop.Utilities;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
-using Microsoft.Extensions.Logging;
+using ChatMessagesViewModel = Chatly.Desktop.ViewModels.Pages.ChatPage.Messages.ChatMessagesViewModel;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
@@ -11,26 +10,27 @@ namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 internal sealed class IncomingMessageNotificationHandler(
     ChatSidebarViewModel chatSidebar,
     ChatPageViewModel chatPage,
-    INotificationService notificationService,
-    ILogger<ClientNotificationHandler<IncomingChatMessage>> logger)
-    : ClientNotificationHandler<IncomingChatMessage>(logger)
+    ChatMessagesViewModel messagesViewModel,
+    ChatTypingViewModel typingViewModel,
+    INotificationSoundPlayer notificationSoundPlayer,
+    ILogger<ClientNotificationHandler<IncomingMessageNotification>> logger)
+    : ClientNotificationHandler<IncomingMessageNotification>(logger)
 {
-    public override NotificationType Type => NotificationType.IncomingMessage;
-
-    protected override Task HandleNotificationAsync(IncomingChatMessage message)
+    protected override Task HandleNotificationAsync(IncomingMessageNotification message)
     {
-        return UiThreadDispatcher.SafeInvokeAsync(async () =>
+        return UIThreadDispatcher.SafeInvokeAsync(async () =>
         {
-            if (chatPage.ReceiveIncomingMessage(message))
+            if (messagesViewModel.ReceiveIncomingMessage(message))
             {
-                await chatPage.MarkChatReadAsync(message.ChatId);
+                typingViewModel.ResetOtherUserTyping();
+                await chatPage.MarkChatReadAsync(message.Message.ChatId);
             }
             else
             {
-                chatSidebar.ReceiveIncomingMessage(message.ChatId);
+                chatSidebar.ReceiveIncomingMessage(message.Message.ChatId);
             }
 
-            await notificationService.PlayNotificationSoundAsync();
+            await notificationSoundPlayer.PlayNotificationSoundAsync();
         });
     }
 }

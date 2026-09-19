@@ -32,7 +32,7 @@ _ = app.UseAuthorization();
 
 _ = app.MapEndpoints();
 
-_ = app.MapHub<NotificationHub>("/hubs/notification");
+_ = app.MapHub<NotificationHub>(ApiRoutes.Hubs.Notification);
 
 _ = await app.InitializeBlobStorage();
 

@@ -1,55 +1,31 @@
-using Chatly.Contracts.Endpoints.Chats.Results;
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
+using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
+using Chatly.Contracts.Features.Friendships.Models;
 
 namespace Chatly.Desktop.Mappers;
 
 internal static class DirectChatMapper
 {
-    public static DirectChat Map(GetChatsResponse response)
-    {
-        return new DirectChat
+    public static DirectChat Map(GetChatsResponse response, UserRegistry userRegistry) =>
+        new()
         {
             Id = response.ChatId,
             UnreadMessageCount = response.UnreadMessageCount,
-            User = new User
-            {
-                Id = response.AssociatedUserId,
-                Username = response.AssociatedUsername,
-                ProfilePictureUrl = response.AssociatedProfilePictureUrl,
-                IsOnline = response.IsOnline
-            }
+            User = userRegistry.GetOrAdd(
+                response.AssociatedUserId,
+                response.AssociatedUsername,
+                response.AssociatedProfilePictureUrl,
+                response.IsOnline)
         };
-    }
 
-    public static DirectChat Map(AcceptFriendRequestResponse response)
-    {
-        return new DirectChat
+    public static DirectChat Map(FriendshipContract friendship, UserRegistry userRegistry) =>
+        new()
         {
-            Id = response.DirectChatId,
+            Id = friendship.DirectChatId,
             UnreadMessageCount = 0,
-            User = new User
-            {
-                Id = response.FriendUserId,
-                Username = response.FriendUsername,
-                ProfilePictureUrl = response.FriendProfilePictureUrl,
-                IsOnline = response.IsOnline
-            }
+            User = userRegistry.GetOrAdd(
+                friendship.FriendUserId,
+                friendship.FriendUsername,
+                friendship.FriendProfilePictureUrl,
+                friendship.IsOnline)
         };
-    }
-
-    public static DirectChat Map(FriendRequestAcceptedMessage message)
-    {
-        return new DirectChat
-        {
-            Id = message.DirectChatId,
-            UnreadMessageCount = 0,
-            User = new User
-            {
-                Id = message.FriendUserId,
-                Username = message.FriendUsername,
-                ProfilePictureUrl = message.FriendProfilePictureUrl,
-                IsOnline = message.IsOnline
-            }
-        };
-    }
 }

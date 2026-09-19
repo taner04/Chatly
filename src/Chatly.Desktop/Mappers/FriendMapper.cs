@@ -1,52 +1,17 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
-using Chatly.Contracts.Endpoints.Friendships.Results;
+using Chatly.Contracts.Features.Friendships.Models;
 
 namespace Chatly.Desktop.Mappers;
 
 internal static class FriendMapper
 {
-    public static Friend Map(GetFriendshipsResponse response)
-    {
-        return new Friend
+    public static Friend Map(FriendshipContract friendship, UserRegistry userRegistry) =>
+        new()
         {
-            ChatId = response.DirectChatId,
-            User = new User
-            {
-                Id = response.FriendUserId,
-                Username = response.FriendUsername,
-                ProfilePictureUrl = response.FriendProfilePictureUrl,
-                IsOnline = response.IsOnline
-            }
+            ChatId = friendship.DirectChatId,
+            User = userRegistry.GetOrAdd(
+                friendship.FriendUserId,
+                friendship.FriendUsername,
+                friendship.FriendProfilePictureUrl,
+                friendship.IsOnline)
         };
-    }
-
-    public static Friend Map(AcceptFriendRequestResponse response)
-    {
-        return new Friend
-        {
-            ChatId = response.DirectChatId,
-            User = new User
-            {
-                Id = response.FriendUserId,
-                Username = response.FriendUsername,
-                ProfilePictureUrl = response.FriendProfilePictureUrl,
-                IsOnline = response.IsOnline
-            }
-        };
-    }
-
-    public static Friend Map(FriendRequestAcceptedMessage message)
-    {
-        return new Friend
-        {
-            ChatId = message.DirectChatId,
-            User = new User
-            {
-                Id = message.FriendUserId,
-                Username = message.FriendUsername,
-                ProfilePictureUrl = message.FriendProfilePictureUrl,
-                IsOnline = message.IsOnline
-            }
-        };
-    }
 }

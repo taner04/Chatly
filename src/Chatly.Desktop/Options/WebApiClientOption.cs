@@ -11,7 +11,4 @@ internal sealed class WebApiClientOption
 
     [Required(ErrorMessage = "Timeout is required.")]
     public int TimeoutInSeconds { get; set; } = 30;
-
-    [Required(ErrorMessage = "HubAddress is required.")]
-    public string HubAddress { get; set; } = null!;
 }

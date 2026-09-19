@@ -2,7 +2,6 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Chatly.Desktop.Abstraction.Settings;
-using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Settings;
 
@@ -61,10 +60,7 @@ internal sealed partial class JsonSettingsStore(
         }
     }
 
-    private string GetFilePath<T>() where T : ISettingsGroup
-    {
-        return Path.Combine(_rootDirectory, $"{T.GroupName}.json");
-    }
+    private string GetFilePath<T>() where T : ISettingsGroup => Path.Combine(_rootDirectory, $"{T.GroupName}.json");
 
     [LoggerMessage(LogLevel.Warning, "Settings file {FilePath} contains invalid JSON. Defaults will be used.")]
     private partial void LogInvalidSettingsFile(string filePath, JsonException exception);

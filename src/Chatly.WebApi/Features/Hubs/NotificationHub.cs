@@ -1,20 +1,14 @@
+using Chatly.WebApi.Features.Chats.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Chatly.WebApi.Features.Hubs;
 
-internal static class NotificationHubGroups
-{
-    internal static string User(UserId userId)
-    {
-        return $"user:{userId.Value}";
-    }
-}
-
 [Authorize]
 public sealed partial class NotificationHub(
     CurrentUserService currentUser,
     ChatlyDbContext context,
+    ChatAccessService chatAccessService,
     OnlinePresenceTracker presenceTracker) : Hub<INotificationHubClient>, INotificationHubServer
 {
     private const string UserIdContextKey = "Chatly.UserId";
@@ -46,14 +40,10 @@ public sealed partial class NotificationHub(
         return userId;
     }
 
-    private Task<List<UserId>> GetFriendUserIdsAsync(UserId userId, CancellationToken cancellationToken)
-    {
-        return context.Friendships
+    private Task<List<UserId>> GetFriendUserIdsAsync(UserId userId, CancellationToken cancellationToken) =>
+        context.Friendships
             .AsNoTracking()
-            .Where(friendship => friendship.FirstUserId == userId || friendship.SecondUserId == userId)
-            .Select(friendship => friendship.FirstUserId == userId
-                ? friendship.SecondUserId
-                : friendship.FirstUserId)
+            .ForUser(userId)
+            .SelectOtherUserId(userId)
             .ToListAsync(cancellationToken);
-    }
 }

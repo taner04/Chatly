@@ -4,7 +4,7 @@ internal sealed class GetCurrentUserEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {
-        app.MapGet("/api/users/me",
+        app.MapGet(ApiRoutes.Users.Current,
                 async ([FromServices] IMediator mediator, CancellationToken cancellationToken) =>
                 {
                     return Results.Ok(await mediator.Send(new GetCurrentUserQuery(), cancellationToken));

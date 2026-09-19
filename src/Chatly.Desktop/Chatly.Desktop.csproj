@@ -80,8 +80,8 @@
         <Compile Update="Views\Pages\UserPage\Tabs\FriendsTabView.axaml.cs">
             <DependentUpon>FriendsTabView.axaml</DependentUpon>
         </Compile>
-        <Compile Update="Views\Pages\UserPage\Tabs\PendingFriendRequestTabPage.axaml.cs">
-            <DependentUpon>PendingFriendRequestTabPage.axaml</DependentUpon>
+        <Compile Update="Views\Pages\UserPage\Tabs\PendingFriendRequestsTabPage.axaml.cs">
+            <DependentUpon>PendingFriendRequestsTabPage.axaml</DependentUpon>
         </Compile>
         <Compile Update="Views\Pages\UserPage\Tabs\OnlineFriendsTabPage.axaml.cs">
             <DependentUpon>OnlineFriendsTabPage.axaml</DependentUpon>
@@ -94,6 +94,12 @@
         </Compile>
         <Compile Update="Views\Controls\UserAvatar.axaml.cs">
             <DependentUpon>UserAvatar.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Controls\ChatMessageView.axaml.cs">
+            <DependentUpon>ChatMessageView.axaml</DependentUpon>
+        </Compile>
+        <Compile Update="Views\Controls\UnreadBadge.axaml.cs">
+            <DependentUpon>UnreadBadge.axaml</DependentUpon>
         </Compile>
         <Compile Update="Views\Pages\UserPage\UserPage.axaml.cs">
             <DependentUpon>UserPage.axaml</DependentUpon>

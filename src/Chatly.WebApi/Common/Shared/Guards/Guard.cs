@@ -8,15 +8,9 @@ internal static class Guard
 {
     public static class Against
     {
-        private static string Owner<TOwner>()
-        {
-            return typeof(TOwner).Name;
-        }
+        private static string Owner<TOwner>() => typeof(TOwner).Name;
 
-        private static string Prop(string? paramName)
-        {
-            return GuardName.Clean(paramName);
-        }
+        private static string Prop(string? paramName) => GuardName.Clean(paramName);
 
         // ---- Strings ----
 

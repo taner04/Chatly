@@ -1,5 +1,4 @@
-﻿using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Services.Api.Results;
+﻿using Chatly.Desktop.Services.Api.Results;
 using Chatly.Desktop.Services.Toasts;
 using Chatly.Desktop.ViewModels.Toasts;
 using FluentIcons.Common;
@@ -29,12 +28,7 @@ internal static class ToastExtensions
         }
     }
 
-    private static ToastNotificationViewModel BuildNotificationViewModel(
-        string title,
-        string message,
-        Symbol icon,
-        ToastType type)
-    {
-        return new ToastNotificationViewModel(title, message, icon, type);
-    }
+    private static ToastViewModel BuildNotificationViewModel(string title, string message, Symbol icon,
+        ToastType type) =>
+        new(title, message, icon, type);
 }

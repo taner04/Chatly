@@ -1,23 +1,23 @@
-using Chatly.Contracts.Endpoints.Friendships.Results;
+using Chatly.Contracts.Features.Friendships.Models;
 using Chatly.WebApi.Features.Hubs;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.GetFriendships;
 
 internal sealed class GetFriendshipsQueryHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
-    AzureBlobService blobService,
-    OnlinePresenceTracker presenceTracker) : IQueryHandler<GetFriendshipsQuery, IReadOnlyList<GetFriendshipsResponse>>
+    ProfilePictureUrlFactory profilePictureUrlFactory,
+    OnlinePresenceTracker presenceTracker) : IQueryHandler<GetFriendshipsQuery, IReadOnlyList<FriendshipContract>>
 {
-    public async ValueTask<IReadOnlyList<GetFriendshipsResponse>> Handle(
+    public async ValueTask<IReadOnlyList<FriendshipContract>> Handle(
         GetFriendshipsQuery query,
         CancellationToken cancellationToken)
     {
         var userId = currentUserService.GetCurrentUserId();
 
         var friendships = await (
-                from friendship in context.Friendships.AsNoTracking()
-                where friendship.FirstUserId == userId || friendship.SecondUserId == userId
+                from friendship in context.Friendships.AsNoTracking().ForUser(userId)
                 let friendUserId = friendship.FirstUserId == userId ? friendship.SecondUserId : friendship.FirstUserId
                 join chat in context.Chats.AsNoTracking()
                     on new { friendship.FirstUserId, friendship.SecondUserId }
@@ -28,21 +28,23 @@ internal sealed class GetFriendshipsQueryHandler(
                 select new
                 {
                     FriendshipId = friendship.Id.Value,
-                    DirectChatId = (Guid?)chat.Id.Value,
+                    DirectChatId = chat.Id.Value,
                     FriendUserId = friend.Id.Value,
                     friend.Username,
-                    friend.ProfilePictureKey
+                    ProfilePictureKey = friend.ProfilePictureFile == null
+                        ? null
+                        : friend.ProfilePictureFile.BlobName
                 })
             .ToListAsync(cancellationToken);
 
         return
         [
-            .. friendships.Select(friendship => new GetFriendshipsResponse(
+            .. friendships.Select(friendship => new FriendshipContract(
                 friendship.FriendshipId,
                 friendship.DirectChatId,
                 friendship.FriendUserId,
                 friendship.Username!,
-                blobService.CreateReadUrl(friendship.ProfilePictureKey)?.ToString(),
+                profilePictureUrlFactory.CreateProfilePictureUrl(friendship.ProfilePictureKey),
                 presenceTracker.IsOnline(UserId.From(friendship.FriendUserId))))
         ];
     }

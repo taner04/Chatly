@@ -1,58 +1,84 @@
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.WebApi.Features.Chats.Models;
-using Chatly.WebApi.Features.Messages.Models;
+using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
+using Chatly.Contracts.Features.Messages.Models;
+using Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+using Chatly.WebApi.Features.Chats.Services;
+using Chatly.WebApi.Features.MessageAttachments.Models;
+using Chatly.WebApi.Features.StoredFiles.Models;
+using Chatly.WebApi.Features.StoredFiles.Services;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.SendMessage;
 
 internal sealed class SendMessageCommandHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
-    NotificationPublisher notificationPublisher) : ICommandHandler<SendMessageCommand, SendMessageResponse>
+    AzureBlobService blobService,
+    ChatAccessService chatAccessService,
+    StoredFileService storedFileService,
+    NotificationPublisher notificationPublisher) : ICommandHandler<SendMessageCommand, MessageContract>
 {
-    public async ValueTask<SendMessageResponse> Handle(
+    public async ValueTask<MessageContract> Handle(
         SendMessageCommand command,
         CancellationToken cancellationToken)
     {
         var userId = currentUserService.GetCurrentUserId();
 
-        var chat = await context.Chats
-                       .AsNoTracking()
-                       .Where(chat => chat.Id == command.ChatId)
-                       .Where(chat => context.Friendships.Any(friendship =>
-                           friendship.FirstUserId == chat.FirstUserId &&
-                           friendship.SecondUserId == chat.SecondUserId))
-                       .Select(chat => new
-                       {
-                           chat.Id,
-                           chat.FirstUserId,
-                           chat.SecondUserId
-                       })
-                       .FirstOrDefaultAsync(cancellationToken)
+        var chat = await chatAccessService.GetAsync(command.ChatId, userId, cancellationToken)
                    ?? throw new EntityNotFoundException<Chat>(command.ChatId.Value);
 
-        var receiverUserId = chat.FirstUserId == userId
-            ? chat.SecondUserId
-            : chat.SecondUserId == userId
-                ? chat.FirstUserId
-                : throw new EntityNotFoundException<Chat>(command.ChatId.Value);
-
-        var message = new Message(chat.Id, userId, command.Content.Trim());
+        var message = new Message(chat.ChatId, userId, command.Content?.Trim() ?? string.Empty);
         context.Messages.Add(message);
 
-        await context.SaveChangesAsync(cancellationToken);
+        var uploadedBlobNames = new List<string>();
+        var attachments = new List<StoredFile>();
 
-        await notificationPublisher.PublishAsync(receiverUserId, new IncomingChatMessage(
+        try
+        {
+            foreach (var file in command.Files)
+            {
+                await using var content = file.OpenReadStream();
+                var storedFile = await storedFileService.UploadAttachmentAsync(
+                    userId,
+                    content,
+                    file.FileName,
+                    file.ContentType,
+                    file.Length,
+                    cancellationToken);
+                uploadedBlobNames.Add(storedFile.BlobName);
+                context.MessageAttachments.Add(new MessageAttachment(message.Id, storedFile.Id));
+                attachments.Add(storedFile);
+            }
+
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch
+        {
+            await storedFileService.RollbackAsync(uploadedBlobNames);
+            throw;
+        }
+
+        var attachmentResponses = attachments
+            .Select(file => new MessageAttachmentContract(
+                file.Id.Value,
+                file.FileName,
+                file.ContentType,
+                file.Size,
+                blobService.CreateReadUrl(file.BlobName)!.ToString()))
+            .ToList();
+
+        var contract = new MessageContract(
             message.Id.Value,
             message.ChatId.Value,
             message.SenderUserId.Value,
             message.Content,
-            message.SentAt));
+            message.SentAt,
+            false,
+            attachmentResponses,
+            []);
 
-        return new SendMessageResponse(
-            message.Id.Value,
-            message.ChatId.Value,
-            message.SenderUserId.Value,
-            message.Content,
-            message.SentAt);
+        await notificationPublisher.PublishAsync(
+            chat.OtherParticipantUserId,
+            new IncomingMessageNotification(contract));
+
+        return contract;
     }
 }

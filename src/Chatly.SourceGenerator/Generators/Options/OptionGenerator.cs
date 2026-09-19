@@ -1,6 +1,3 @@
-using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
-
 namespace Chatly.SourceGenerator.Generators.Options;
 
 [Generator(LanguageNames.CSharp)]
@@ -13,8 +10,9 @@ public sealed class OptionGenerator : IIncrementalGenerator
         var options = context.SyntaxProvider.ForAttributeWithMetadataName(
             OptionAttributeMetadataName,
             static (node, _) => node is ClassDeclarationSyntax,
-            static (attributeContext, _) =>
+            static (attributeContext, cancellationToken) =>
             {
+                cancellationToken.ThrowIfCancellationRequested();
                 var type = (INamedTypeSymbol)attributeContext.TargetSymbol;
                 var attribute = attributeContext.Attributes[0];
                 var configuredName = attribute.ConstructorArguments.Length > 0
@@ -29,7 +27,10 @@ public sealed class OptionGenerator : IIncrementalGenerator
         context.RegisterSourceOutput(options.Collect(),
             static (output, discoveredOptions) =>
             {
-                output.AddSource("Options.g.cs", OptionTemplate.Render(discoveredOptions));
+                var source = OptionTemplate.Render(discoveredOptions, output.CancellationToken);
+                output.AddSource(
+                    "Chatly.Options.g.cs",
+                    SourceText.From(source, Encoding.UTF8));
             });
     }
 }

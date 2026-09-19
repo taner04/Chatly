@@ -1,7 +1,5 @@
 using Chatly.Desktop.ViewModels.Pages.UserPage.Popups;
 using Chatly.Desktop.ViewModels.Popups;
-using CommunityToolkit.Mvvm.Input;
-using Chatly.Desktop.Models.UserSession;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage;
 

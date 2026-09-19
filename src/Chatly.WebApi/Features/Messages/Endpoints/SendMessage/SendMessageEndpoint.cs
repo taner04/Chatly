@@ -1,6 +1,4 @@
-using Chatly.Contracts.Endpoints.Messages.Requests;
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.WebApi.Features.Chats.Models;
+using Chatly.Contracts.Features.Messages.Models;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.SendMessage;
 
@@ -9,21 +7,27 @@ internal sealed class SendMessageEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPost(
-                "/api/messages",
+                ApiRoutes.Messages.Collection,
                 async (
-                    [FromBody] SendMessageRequest request,
+                    [FromForm] Guid chatId,
+                    [FromForm] string? content,
+                    [FromForm] IFormFileCollection? files,
                     [FromServices] IMediator mediator,
                     CancellationToken cancellationToken) =>
                 {
                     return Results.Ok(await mediator.Send(
-                        new SendMessageCommand(ChatId.From(request.ChatId), request.Content),
+                        new SendMessageCommand(
+                            ChatId.From(chatId),
+                            content,
+                            files?.ToArray() ?? []),
                         cancellationToken));
                 })
             .WithName("SendMessage")
             .WithTags("Messages")
             .RequireAuthorization()
-            .Accepts<SendMessageRequest>("application/json")
-            .Produces<SendMessageResponse>()
+            .DisableAntiforgery()
+            .Accepts<IFormFileCollection>("multipart/form-data")
+            .Produces<MessageContract>()
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,
                 StatusCodes.Status404NotFound);

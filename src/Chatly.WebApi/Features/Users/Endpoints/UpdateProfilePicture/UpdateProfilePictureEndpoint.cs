@@ -5,7 +5,7 @@ internal sealed class UpdateProfilePictureEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPut(
-                "/api/users/me/profile-picture",
+                ApiRoutes.Users.ProfilePicture,
                 async (
                     [FromForm] IFormFile? file,
                     [FromServices] IMediator mediator,

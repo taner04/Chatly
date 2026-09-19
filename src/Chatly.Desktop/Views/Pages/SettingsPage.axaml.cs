@@ -3,7 +3,7 @@ using Chatly.Desktop.ViewModels.Pages;
 namespace Chatly.Desktop.Views.Pages;
 
 [SingletonService(typeof(INavigableView<SettingsPageViewModel>))]
-public partial class SettingsPage : UserControl, INavigableView<SettingsPageViewModel>
+internal partial class SettingsPage : UserControl, INavigableView<SettingsPageViewModel>
 {
     public SettingsPage(SettingsPageViewModel viewModel)
     {

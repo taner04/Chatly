@@ -1,4 +1,3 @@
-using CommunityToolkit.Mvvm.Input;
 using FluentIcons.Common;
 
 namespace Chatly.Desktop.ViewModels.Windows;
@@ -7,7 +6,7 @@ public sealed partial class NavigationItemViewModel(
     string title,
     Symbol icon,
     Type viewModelType,
-    Func<Task> navigate) : ViewModelBase
+    INavigationService navigationService) : ViewModelBase
 {
     public string Title { get; } = title;
 
@@ -15,15 +14,15 @@ public sealed partial class NavigationItemViewModel(
 
     public Type ViewModelType { get; } = viewModelType;
 
-    public IAsyncRelayCommand NavigateCommand { get; } = new AsyncRelayCommand(navigate);
-
     [ObservableProperty] public partial bool IsSelected { get; set; }
 
-    internal static NavigationItemViewModel Create<T>(
-        string title,
-        Symbol icon,
-        INavigationService navigationService) where T : INavigableViewModel
+    [RelayCommand]
+    private async Task NavigateAsync(CancellationToken cancellationToken)
     {
-        return new NavigationItemViewModel(title, icon, typeof(T), () => navigationService.NavigateToAsync<T>());
+        await navigationService.NavigateToAsync(ViewModelType, cancellationToken);
     }
+
+    internal static NavigationItemViewModel Create<T>(string title, Symbol icon, INavigationService navigationService)
+        where T : INavigableViewModel =>
+        new(title, icon, typeof(T), navigationService);
 }

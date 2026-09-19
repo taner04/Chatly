@@ -3,7 +3,6 @@ using Chatly.Desktop.Options;
 using Duende.IdentityModel.Client;
 using Duende.IdentityModel.OidcClient;
 using Duende.IdentityModel.OidcClient.Browser;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Authentication;
@@ -180,12 +179,10 @@ public sealed partial class AuthenticationService
             $"Authentication failed: {message ?? "Unknown error"}");
     }
 
-    private static string RequireToken(string? token, string tokenType)
-    {
-        return !string.IsNullOrWhiteSpace(token)
+    private static string RequireToken(string? token, string tokenType) =>
+        !string.IsNullOrWhiteSpace(token)
             ? token
             : throw new InvalidOperationException($"Auth0 did not return a {tokenType} token.");
-    }
 
     [LoggerMessage(
         LogLevel.Warning,

@@ -1,13 +1,13 @@
 using System.ComponentModel;
-using Chatly.Contracts.Endpoints.Users.Requests;
-using Chatly.Contracts.Endpoints.Users.Results;
-using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Extensions;
+using System.Text.RegularExpressions;
+using Chatly.Contracts.Common.Policies;
+using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUser;
+using Chatly.Contracts.Features.Users.Endpoints.UpdateProfilePicture;
+using Chatly.Contracts.Features.Users.Endpoints.UpdateUsername;
+using Chatly.Desktop.Abstraction.Storage;
 using Chatly.Desktop.Mappers;
-using Chatly.Desktop.Services.Api;
+using Chatly.Desktop.Services.Api.Clients;
 using Chatly.Desktop.Services.Api.Results;
-using CommunityToolkit.Mvvm.Input;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Popups;
 
@@ -21,11 +21,13 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
     public UserInfoPopupViewModel(
         UserSessionContext sessionContext,
         IToastService toastService,
-        UserApiClient userApiClient)
+        UserApiClient userApiClient,
+        IFilePicker filePicker)
         : this(
             sessionContext,
             toastService,
             userApiClient,
+            filePicker,
             sessionContext.CurrentUser
             ?? throw new InvalidOperationException("A signed-in user is required."))
     {
@@ -35,8 +37,9 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
         UserSessionContext sessionContext,
         IToastService toastService,
         UserApiClient userApiClient,
+        IFilePicker filePicker,
         User user)
-        : base(user.ProfilePictureUrl)
+        : base(filePicker, user.ProfilePictureUrl)
     {
         _sessionContext = sessionContext;
         _toastService = toastService;
@@ -48,6 +51,8 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
     }
 
     public override string Title => "Your profile";
+
+    public int UsernameMaxLength => UsernamePolicy.MaxLength;
 
     public User User { get; }
 
@@ -63,6 +68,7 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
 
     public override void CloseOverlay()
     {
+        SaveCommand.Cancel();
         User.PropertyChanged -= OnUserPropertyChanged;
         base.CloseOverlay();
     }
@@ -158,9 +164,14 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
                              (IsProfilePictureRemoved && !string.IsNullOrWhiteSpace(User.ProfilePictureUrl));
 
         return !IsSaving &&
-               !string.IsNullOrWhiteSpace(Username) &&
+               IsUsernameValid() &&
                (usernameChanged || pictureChanged);
     }
+
+    private bool IsUsernameValid() =>
+        !string.IsNullOrWhiteSpace(Username) &&
+        Username.Length <= UsernamePolicy.MaxLength &&
+        UsernamePolicyPatternRegex().IsMatch(Username);
 
     protected override void OnProfilePictureSelectionChanged()
     {
@@ -174,4 +185,7 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
             SetExistingProfilePictureUrl(User.ProfilePictureUrl);
         }
     }
+
+    [GeneratedRegex(UsernamePolicy.Pattern)]
+    private static partial Regex UsernamePolicyPatternRegex();
 }

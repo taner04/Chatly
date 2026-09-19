@@ -1,5 +1,4 @@
 using Avalonia.Input;
-using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.ViewModels.Windows;
 using Chatly.Desktop.Views.Popups;
 using Chatly.Desktop.Views.Toasts;
@@ -7,7 +6,7 @@ using Chatly.Desktop.Views.Toasts;
 namespace Chatly.Desktop.Views.Windows;
 
 [SingletonService]
-public partial class MainWindow : Window, INavigationView
+internal partial class MainWindow : Window, INavigationView
 {
     private readonly INavigationService _navigationService;
 

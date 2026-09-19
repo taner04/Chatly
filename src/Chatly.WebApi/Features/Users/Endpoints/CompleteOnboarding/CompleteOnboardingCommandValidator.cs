@@ -1,6 +1,3 @@
-using Chatly.WebApi.Features.Users.Validation;
-using FluentValidation;
-
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
 internal sealed class CompleteOnboardingCommandValidator
@@ -9,10 +6,7 @@ internal sealed class CompleteOnboardingCommandValidator
     public CompleteOnboardingCommandValidator()
     {
         RuleFor(command => command.NewUsername)
-            .NotEmpty()
-            .WithMessage("Username cannot be empty.")
-            .Matches("^[a-zA-Z0-9_]+$")
-            .WithMessage("Username can only contain letters, numbers, and underscores.");
+            .AddUsernameRules();
 
         When(command => command.Content is not null, () =>
         {

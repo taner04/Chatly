@@ -1,21 +1,18 @@
-using Chatly.Contracts.SignalR;
+using Chatly.Contracts.Features.Hubs.Notifications;
 using Chatly.Desktop.Utilities;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
-using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
 internal sealed class TypingStatusChangedNotificationHandler(
-    ChatPageViewModel chatPage,
-    ILogger<ClientNotificationHandler<TypingStatusChangedMessage>> logger)
-    : ClientNotificationHandler<TypingStatusChangedMessage>(logger)
+    ChatTypingViewModel typingViewModel,
+    ILogger<ClientNotificationHandler<TypingStatusChangedNotification>> logger)
+    : ClientNotificationHandler<TypingStatusChangedNotification>(logger)
 {
-    public override NotificationType Type => NotificationType.TypingStatusChanged;
-
-    protected override Task HandleNotificationAsync(TypingStatusChangedMessage message)
+    protected override Task HandleNotificationAsync(TypingStatusChangedNotification message)
     {
-        UiThreadDispatcher.SafeInvoke(() => chatPage.ReceiveTypingStatus(message));
+        UIThreadDispatcher.SafeInvoke(() => typingViewModel.ReceiveTypingStatus(message));
         return Task.CompletedTask;
     }
 }

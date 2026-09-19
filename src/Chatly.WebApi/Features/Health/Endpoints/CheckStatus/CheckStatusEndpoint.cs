@@ -1,10 +1,12 @@
+using AzureBlobService = Chatly.WebApi.Common.Infrastructure.Persistence.Blob.AzureBlobService;
+
 namespace Chatly.WebApi.Features.Health.Endpoints.CheckStatus;
 
 internal sealed class CheckStatusEndpoint : IEndpoint
 {
     public void MapEndpoint(WebApplication app)
     {
-        app.MapGet("/api/health/status",
+        app.MapGet(ApiRoutes.Health.Status,
                 async (
                     ChatlyDbContext dbContext,
                     AzureBlobService blobService,

@@ -5,7 +5,7 @@ internal sealed class GetCurrentUserProfilePictureEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                "/api/users/me/profile-picture",
+                ApiRoutes.Users.ProfilePicture,
                 async (
                     [FromServices] IMediator mediator,
                     CancellationToken cancellationToken) =>

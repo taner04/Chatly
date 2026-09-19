@@ -1,14 +1,17 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
+using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
+using Chatly.Contracts.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.FriendRequests.Exception;
 using Chatly.WebApi.Features.FriendRequests.Models;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
+using Chatly.WebApi.Features.Users.Services.Profiles;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.SendFriendRequest;
 
 internal sealed class SendFriendRequestCommandHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
-    AzureBlobService blobService,
+    ProfilePictureUrlFactory profilePictureUrlFactory,
     NotificationPublisher notificationPublisher)
     : ICommandHandler<SendFriendRequestCommand>
 {
@@ -73,20 +76,17 @@ internal sealed class SendFriendRequestCommandHandler(
         var sender = await context.Users
             .AsNoTracking()
             .Where(user => user.Id == userId)
-            .Select(user => new
-            {
-                user.Username,
-                user.ProfilePictureKey
-            })
+            .SelectProfile()
             .SingleAsync(cancellationToken);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        await notificationPublisher.PublishAsync(command.ReceiverId, new IncomingFriendRequestMessage(
-            friendRequest.Id.Value,
-            userId.Value,
-            sender.Username!,
-            blobService.CreateReadUrl(sender.ProfilePictureKey)));
+        await notificationPublisher.PublishAsync(command.ReceiverId, new IncomingFriendRequestNotification(
+            new FriendRequestContract(
+                friendRequest.Id.Value,
+                userId.Value,
+                sender.Username!,
+                profilePictureUrlFactory.CreateProfilePictureUrl(sender.ProfilePictureKey))));
 
         return Unit.Value;
     }

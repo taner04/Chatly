@@ -1,4 +1,4 @@
-using Chatly.Contracts.Endpoints.Chats.Results;
+using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.GetChats;
 
@@ -7,7 +7,7 @@ internal sealed class GetChatsEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                "/api/chats",
+                ApiRoutes.Chats.Collection,
                 async (IMediator mediator, CancellationToken cancellationToken) =>
                     Results.Ok(await mediator.Send(new GetChatsQuery(), cancellationToken)))
             .WithName("GetChats")

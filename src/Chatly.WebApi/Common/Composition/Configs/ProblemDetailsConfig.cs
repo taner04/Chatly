@@ -1,5 +1,4 @@
 ﻿using System.Diagnostics;
-using FluentValidation;
 
 namespace Chatly.WebApi.Common.Composition.Configs;
 
@@ -60,11 +59,6 @@ internal static class ProblemDetailsConfig
 
             problemDetails.Extensions["method"] = httpContext.Request.Method;
             problemDetails.Extensions["traceId"] = Activity.Current?.Id ?? httpContext.TraceIdentifier;
-
-            if (problemDetails.Errors.Count > 0)
-            {
-                problemDetails.Extensions["errors"] = problemDetails.Errors;
-            }
 
             ctx.ProblemDetails = problemDetails;
         };

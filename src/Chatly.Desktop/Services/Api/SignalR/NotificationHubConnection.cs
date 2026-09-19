@@ -1,7 +1,6 @@
-﻿using Chatly.Contracts.SignalR;
+﻿using Chatly.Contracts.Features.Hubs;
 using Chatly.Desktop.Options;
 using Microsoft.AspNetCore.SignalR.Client;
-using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
 using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
@@ -25,7 +24,7 @@ internal sealed partial class NotificationHubConnection(
         }
     }
 
-    public async Task StartHubAsync(Func<NotificationMessage, Task> dispatchAsync)
+    public async Task StartHubAsync(Func<Notification, Task> dispatchAsync)
     {
         if (_hubConnection is not null)
         {
@@ -33,7 +32,7 @@ internal sealed partial class NotificationHubConnection(
         }
 
         _hubConnection = new HubConnectionBuilder()
-            .WithUrl(_webApiClientOption.HubAddress,
+            .WithUrl(new Uri(_webApiClientOption.BaseAddress, ApiRoutes.Hubs.Notification),
                 options => { options.AccessTokenProvider = () => Task.FromResult(sessionContext.AccessToken); })
             .WithAutomaticReconnect()
             .Build();

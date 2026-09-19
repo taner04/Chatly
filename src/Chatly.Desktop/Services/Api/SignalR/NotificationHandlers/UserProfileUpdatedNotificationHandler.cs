@@ -1,27 +1,19 @@
-using Chatly.Contracts.SignalR;
-using Chatly.Desktop.Models.UserSession;
+using Chatly.Contracts.Features.Users.Notifications;
 using Chatly.Desktop.Utilities;
-using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
 internal sealed class UserProfileUpdatedNotificationHandler(
-    UserSessionContext sessionContext,
-    FriendState friendState,
-    DirectChatState directChatState,
-    ILogger<ClientNotificationHandler<UserProfileUpdatedMessage>> logger)
-    : ClientNotificationHandler<UserProfileUpdatedMessage>(logger)
+    UserRegistry userRegistry,
+    ILogger<ClientNotificationHandler<UserProfileUpdatedNotification>> logger)
+    : ClientNotificationHandler<UserProfileUpdatedNotification>(logger)
 {
-    public override NotificationType Type => NotificationType.UserProfileUpdated;
-
-    protected override Task HandleNotificationAsync(UserProfileUpdatedMessage message)
+    protected override Task HandleNotificationAsync(UserProfileUpdatedNotification message)
     {
-        UiThreadDispatcher.SafeInvoke(() =>
+        UIThreadDispatcher.SafeInvoke(() =>
         {
-            sessionContext.UpdateUserProfile(message.UserId, message.Username, message.ProfilePictureUrl);
-            friendState.UpdateUserProfile(message.UserId, message.Username, message.ProfilePictureUrl);
-            directChatState.UpdateUserProfile(message.UserId, message.Username, message.ProfilePictureUrl);
+            userRegistry.UpdateProfile(message.UserId, message.Username, message.ProfilePictureUrl);
         });
         return Task.CompletedTask;
     }

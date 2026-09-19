@@ -1,13 +1,14 @@
-using Chatly.Contracts.Pagination;
+using Chatly.Contracts.Common.Pagination;
 using Chatly.WebApi.Common.Infrastructure.Pagination;
 using Chatly.WebApi.Features.FriendRequests.Enums;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 
 internal sealed class SearchUsersQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
-    AzureBlobService blobService)
+    ProfilePictureUrlFactory profilePictureUrlFactory)
     : IQueryHandler<SearchUsersQuery, PaginationResult<UserSearchResponse>>
 {
     public async ValueTask<PaginationResult<UserSearchResponse>> Handle(
@@ -28,7 +29,9 @@ internal sealed class SearchUsersQueryHandler(
             {
                 UserId = user.Id.Value,
                 user.Username,
-                user.ProfilePictureKey,
+                ProfilePictureKey = user.ProfilePictureFile == null
+                    ? null
+                    : user.ProfilePictureFile.BlobName,
                 RelationshipStatus = context.Friendships.Any(friendship =>
                     (friendship.FirstUserId == currentUserId && friendship.SecondUserId == user.Id) ||
                     (friendship.SecondUserId == currentUserId && friendship.FirstUserId == user.Id))
@@ -48,7 +51,7 @@ internal sealed class SearchUsersQueryHandler(
         return page.Map(user => new UserSearchResponse(
             user.UserId,
             user.Username!,
-            blobService.CreateReadUrl(user.ProfilePictureKey),
+            profilePictureUrlFactory.CreateProfilePictureUrl(user.ProfilePictureKey),
             user.RelationshipStatus));
     }
 }

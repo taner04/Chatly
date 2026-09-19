@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
 using Avalonia.Styling;
 using Chatly.Desktop.Abstraction.Settings;
-using Chatly.Desktop.Extensions;
 
 namespace Chatly.Desktop.Models.Settings.Theme;
 

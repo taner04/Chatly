@@ -1,5 +1,3 @@
-using Chatly.WebApi.Features.Chats.Models;
-
 namespace Chatly.WebApi.Features.Chats.Endpoints.MarkChatRead;
 
 internal sealed class MarkChatReadEndpoint : IEndpoint
@@ -7,7 +5,7 @@ internal sealed class MarkChatReadEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPut(
-                "/api/chats/{chatId:guid}/read",
+                ApiRoutes.Chats.Read,
                 async (
                     [FromRoute] Guid chatId,
                     [FromServices] IMediator mediator,

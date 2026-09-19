@@ -1,36 +1,34 @@
 using System.Collections.ObjectModel;
-using System.Linq;
-using Chatly.Contracts.Endpoints.Messages.Requests;
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Extensions;
-using Chatly.Desktop.Services.Api;
-using CommunityToolkit.Mvvm.Input;
-using Microsoft.Extensions.Logging;
+using Avalonia.Platform.Storage;
+using Chatly.Contracts.Common.Policies;
+using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
+using Chatly.Desktop.Abstraction.Storage;
+using Chatly.Desktop.Services.Api.Clients;
+using Chatly.Desktop.ViewModels.Pages.ChatPage.Messages;
 using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
 [SingletonService]
 public sealed partial class ChatPageViewModel(
+    IFilePicker filePicker,
     ChatSidebarViewModel chatSidebar,
     ChatApiClient chatApiClient,
     MessageApiClient messageApiClient,
+    ChatMessagesViewModel messagesViewModel,
+    ChatTypingViewModel typingViewModel,
     UserSessionContext userSessionContext,
     IToastService toastService,
-    INotificationHubServer notificationHubServer,
     ILogger<ChatPageViewModel> logger)
     : PageViewModelBase
 {
-    private const int MessagePageSize = 50;
-    private CancellationTokenSource? _conversationCancellation;
-    private int _conversationVersion;
-    private Guid? _nextBeforeMessageId;
-    private DateTimeOffset? _nextBeforeSentAt;
-
     public ObservableCollection<ChatPreviewViewModel> Chats => chatSidebar.Chats;
 
-    public ObservableCollection<ChatMessageViewModel> Messages { get; } = [];
+    public ChatMessagesViewModel MessagesViewModel { get; } = messagesViewModel;
+
+    public ChatTypingViewModel TypingViewModel { get; } = typingViewModel;
+
+    public ObservableCollection<DraftAttachmentViewModel> DraftAttachments { get; } = [];
 
     [ObservableProperty] public partial ChatPreviewViewModel? CurrentChat { get; private set; }
 
@@ -38,17 +36,9 @@ public sealed partial class ChatPageViewModel(
     [NotifyCanExecuteChangedFor(nameof(SendMessageCommand))]
     public partial string DraftMessage { get; set; } = string.Empty;
 
-    [ObservableProperty] public partial bool IsLoadingMessages { get; private set; }
-
-    [ObservableProperty] public partial bool HasOlderMessages { get; private set; }
-
-    [ObservableProperty] public partial bool IsOtherUserTyping { get; private set; }
-
     public bool HasCurrentChat => CurrentChat is not null;
 
-    public bool HasMessages => Messages.Count > 0;
-
-    public bool IsEmptyChat => HasCurrentChat && !IsLoadingMessages && !HasMessages;
+    public bool HasDraftAttachments => DraftAttachments.Count > 0;
 
     public override async Task OnNavigatedToAsync(
         object? parameter,
@@ -66,42 +56,33 @@ public sealed partial class ChatPageViewModel(
                 nameof(parameter));
         }
 
-        var version = ++_conversationVersion;
-        _conversationCancellation?.Cancel();
-        _conversationCancellation?.Dispose();
-        _conversationCancellation = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
-
-        await StopOutgoingTypingAsync();
-        if (version != _conversationVersion)
-        {
-            return;
-        }
-
-        ClearOtherUserTyping();
-
         var chatPreviewViewModel = Chats.FirstOrDefault(chat => chat.DirectChatId == selectedChatId)
                                    ?? throw new ArgumentException(
                                        $"No chat found with ID {selectedChatId}.",
                                        nameof(parameter));
 
+        var currentUserId = userSessionContext.CurrentUser?.Id
+                            ?? throw new InvalidOperationException(
+                                "An authenticated user is required to open a conversation.");
+        var version = MessagesViewModel.BeginConversation(
+            selectedChatId,
+            currentUserId,
+            chatPreviewViewModel.Name,
+            cancellationToken);
+        var typingChange = TypingViewModel.CurrentChatChangedAsync(selectedChatId);
+
         CurrentChat?.IsSelected = false;
         DraftMessage = string.Empty;
         CurrentChat = chatPreviewViewModel;
         CurrentChat.IsSelected = true;
-        UpdateOutgoingTypingStatus();
+        await typingChange;
 
-        Messages.Clear();
-        _nextBeforeSentAt = null;
-        _nextBeforeMessageId = null;
-        HasOlderMessages = false;
-        NotifyMessagesChanged();
-
-        if (CurrentChat.DirectChatId is { } chatId)
+        if (MessagesViewModel.IsCurrentConversation(selectedChatId, version))
         {
-            await LoadMessagesAsync(chatId, version, _conversationCancellation.Token);
-            if (version == _conversationVersion && CurrentChat?.DirectChatId == chatId)
+            await MessagesViewModel.LoadInitialMessagesAsync(version);
+            if (MessagesViewModel.IsCurrentConversation(selectedChatId, version))
             {
-                await MarkChatReadAsync(chatId);
+                await MarkChatReadAsync(selectedChatId);
             }
         }
     }
@@ -129,23 +110,76 @@ public sealed partial class ChatPageViewModel(
     partial void OnCurrentChatChanged(ChatPreviewViewModel? value)
     {
         OnPropertyChanged(nameof(HasCurrentChat));
-        OnPropertyChanged(nameof(IsEmptyChat));
         SendMessageCommand.NotifyCanExecuteChanged();
-    }
-
-    partial void OnIsLoadingMessagesChanged(bool value)
-    {
-        OnPropertyChanged(nameof(IsEmptyChat));
     }
 
     partial void OnDraftMessageChanged(string value)
     {
-        UpdateOutgoingTypingStatus();
+        TypingViewModel.CurrentDraftChanged(value);
     }
 
-    private bool CanSendMessage()
+    private bool CanSendMessage() =>
+        CurrentChat?.DirectChatId is not null &&
+        (!string.IsNullOrWhiteSpace(DraftMessage) || HasDraftAttachments);
+
+    public async Task AddAttachmentAsync(params IStorageFile[] selectedFiles)
     {
-        return CurrentChat?.DirectChatId is not null && !string.IsNullOrWhiteSpace(DraftMessage);
+        var remainingSlots = MessageAttachmentPolicy.MaxPerMessage - DraftAttachments.Count;
+        if (remainingSlots <= 0)
+        {
+            toastService.AddNotification(
+                $"A message can contain up to {MessageAttachmentPolicy.MaxPerMessage} files.");
+            return;
+        }
+
+        if (selectedFiles.Length > remainingSlots)
+        {
+            toastService.AddNotification($"Only {remainingSlots} more file(s) can be attached.");
+        }
+
+        foreach (var file in selectedFiles.Take(remainingSlots))
+        {
+            var size = await GetFileSizeAsync(file);
+            switch (size)
+            {
+                case <= 0:
+                    toastService.AddNotification($"{file.Name} is empty.");
+                    continue;
+                case > MessageAttachmentPolicy.MaxFileSizeBytes:
+                    toastService.AddNotification(
+                        $"{file.Name} exceeds the {MessageAttachmentPolicy.MaxFileSizeBytes / (1024 * 1024)} MiB file limit.");
+                    continue;
+            }
+
+            if (DraftAttachments.Sum(attachment => attachment.Size) + size >
+                MessageAttachmentPolicy.MaxTotalSizePerMessageBytes)
+            {
+                toastService.AddNotification(
+                    $"Attachments cannot exceed {MessageAttachmentPolicy.MaxTotalSizePerMessageBytes / (1024 * 1024)} MiB in total.");
+                continue;
+            }
+
+            DraftAttachments.Add(new DraftAttachmentViewModel(file, size));
+        }
+
+        NotifyDraftAttachmentsChanged();
+    }
+
+    [RelayCommand]
+    private async Task AddAttachmentsAsync()
+    {
+        await AddAttachmentAsync([.. await filePicker.PickFileAsync(true)]);
+    }
+
+    [RelayCommand]
+    private void RemoveDraftAttachment(DraftAttachmentViewModel? attachment)
+    {
+        if (attachment is null || !DraftAttachments.Remove(attachment))
+        {
+            return;
+        }
+
+        NotifyDraftAttachmentsChanged();
     }
 
     [RelayCommand(CanExecute = nameof(CanSendMessage))]
@@ -157,28 +191,43 @@ public sealed partial class ChatPageViewModel(
             return;
         }
 
-        var content = DraftMessage.Trim();
+        var conversationVersion = MessagesViewModel.ConversationVersion;
+        var submittedDraft = DraftMessage;
+        var submittedAttachments = DraftAttachments.ToArray();
+        var content = submittedDraft.Trim();
         var result = await messageApiClient.SendMessageAsync(
-            new SendMessageRequest(chatId.Value, content));
+            new SendMessageRequest(
+                chatId.Value,
+                string.IsNullOrWhiteSpace(content) ? null : content),
+            [.. submittedAttachments.Select(attachment => attachment.File)]);
 
         if (result.IsFailure)
         {
-            toastService.ShowError(result.Error);
+            if (MessagesViewModel.IsCurrentConversation(chatId.Value, conversationVersion))
+            {
+                toastService.ShowError(result.Error);
+            }
+
             return;
         }
 
-        if (CurrentChat?.DirectChatId == result.Value.ChatId)
+        MessagesViewModel.AddSentMessage(result.Value, conversationVersion);
+
+        if (!MessagesViewModel.IsCurrentConversation(chatId.Value, conversationVersion) ||
+            DraftMessage != submittedDraft ||
+            !submittedAttachments.SequenceEqual(DraftAttachments))
         {
-            AddMessage(new GetMessagesItem(
-                result.Value.MessageId,
-                result.Value.ChatId,
-                result.Value.SenderUserId,
-                result.Value.Content,
-                result.Value.SentAt));
+            return;
         }
 
-        await StopOutgoingTypingAsync();
-        DraftMessage = string.Empty;
+        await TypingViewModel.StopOutgoingTypingAsync(chatId.Value);
+        if (MessagesViewModel.IsCurrentConversation(chatId.Value, conversationVersion) &&
+            DraftMessage == submittedDraft)
+        {
+            DraftMessage = string.Empty;
+            DraftAttachments.Clear();
+            NotifyDraftAttachmentsChanged();
+        }
     }
 
     internal async Task CloseChatAsync(Guid chatId)
@@ -191,22 +240,32 @@ public sealed partial class ChatPageViewModel(
 
     private async Task ClearCurrentChatAsync()
     {
-        _conversationVersion++;
-        _conversationCancellation?.Cancel();
-        _conversationCancellation?.Dispose();
-        _conversationCancellation = null;
-
-        await StopOutgoingTypingAsync();
-        ClearOtherUserTyping();
+        MessagesViewModel.Reset();
+        var typingChange = TypingViewModel.CurrentChatChangedAsync(null);
         CurrentChat?.IsSelected = false;
         DraftMessage = string.Empty;
+        DraftAttachments.Clear();
+        NotifyDraftAttachmentsChanged();
         CurrentChat = null;
-        Messages.Clear();
-        _nextBeforeSentAt = null;
-        _nextBeforeMessageId = null;
-        HasOlderMessages = false;
-        IsLoadingMessages = false;
-        NotifyMessagesChanged();
+        await typingChange;
+    }
+
+    private void NotifyDraftAttachmentsChanged()
+    {
+        OnPropertyChanged(nameof(HasDraftAttachments));
+        SendMessageCommand.NotifyCanExecuteChanged();
+    }
+
+    private static async Task<long> GetFileSizeAsync(IStorageFile file)
+    {
+        var properties = await file.GetBasicPropertiesAsync();
+        if (properties.Size is { } size)
+        {
+            return checked((long)size);
+        }
+
+        await using var stream = await file.OpenReadAsync();
+        return stream.Length;
     }
 
     [LoggerMessage(LogLevel.Warning, "Failed to mark chat {ChatId} as read: {ErrorDetail}")]

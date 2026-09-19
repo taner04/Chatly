@@ -17,8 +17,6 @@ public sealed class StringHasValueConverter : IValueConverter
         return string.Equals(parameter as string, "Invert", StringComparison.Ordinal) ? !hasValue : hasValue;
     }
 
-    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture)
-    {
+    public object ConvertBack(object? value, Type targetType, object? parameter, CultureInfo culture) =>
         throw new NotSupportedException();
-    }
 }

@@ -1,4 +1,4 @@
-using FluentValidation;
+using Chatly.Contracts.Common.Pagination;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 
@@ -7,7 +7,7 @@ internal sealed class GetMessagesQueryValidator : AbstractValidator<GetMessagesQ
     public GetMessagesQueryValidator()
     {
         RuleFor(query => query.PageSize)
-            .InclusiveBetween(1, 100);
+            .InclusiveBetween(1, PaginationPolicy.MaxPageSize);
 
         RuleFor(query => query)
             .Must(query => query.BeforeSentAt.HasValue == query.BeforeMessageId.HasValue)

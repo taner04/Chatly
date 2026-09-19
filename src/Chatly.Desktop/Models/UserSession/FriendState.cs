@@ -1,5 +1,5 @@
 using System.Collections.ObjectModel;
-using System.Linq;
+using System.ComponentModel;
 
 namespace Chatly.Desktop.Models.UserSession;
 
@@ -26,54 +26,58 @@ public sealed class FriendState
         SetItems(friends);
     }
 
-    internal void SetOnlineStatus(Guid userId, bool isOnline)
-    {
-        var friend = Items.FirstOrDefault(existing => existing.User.Id == userId);
-        if (friend is null || friend.User.IsOnline == isOnline)
-        {
-            return;
-        }
-
-        friend.User.IsOnline = isOnline;
-        if (isOnline)
-        {
-            _onlineFriends.Add(friend);
-        }
-        else
-        {
-            _onlineFriends.Remove(friend);
-        }
-    }
-
-    internal void UpdateUserProfile(Guid userId, string? username, string? profilePictureUrl)
-    {
-        foreach (var friend in Items.Where(friend => friend.User.Id == userId))
-        {
-            friend.User.Username = username;
-            friend.User.ProfilePictureUrl = profilePictureUrl;
-        }
-    }
-
-    internal bool Remove(Guid userId)
-    {
-        return RemoveItem(userId);
-    }
+    internal bool Remove(Guid userId) => RemoveItem(userId);
 
     protected override void OnItemAdded(Friend item)
     {
+        item.User.PropertyChanged += User_PropertyChanged;
         if (item.User.IsOnline)
         {
             _onlineFriends.Add(item);
         }
     }
 
+    protected override void OnExistingItem(Friend existing, Friend incoming)
+    {
+        existing.ChatId = incoming.ChatId;
+    }
+
     protected override void OnItemRemoving(Friend item)
     {
+        item.User.PropertyChanged -= User_PropertyChanged;
         _onlineFriends.Remove(item);
     }
 
     protected override void OnItemsClearing()
     {
+        foreach (var friend in Items)
+        {
+            friend.User.PropertyChanged -= User_PropertyChanged;
+        }
+
         _onlineFriends.Clear();
+    }
+
+    private void User_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName != nameof(User.IsOnline) || sender is not User user)
+        {
+            return;
+        }
+
+        var friend = Items.FirstOrDefault(existing => ReferenceEquals(existing.User, user));
+        if (friend is null)
+        {
+            return;
+        }
+
+        if (user.IsOnline && !_onlineFriends.Contains(friend))
+        {
+            _onlineFriends.Add(friend);
+        }
+        else if (!user.IsOnline)
+        {
+            _onlineFriends.Remove(friend);
+        }
     }
 }

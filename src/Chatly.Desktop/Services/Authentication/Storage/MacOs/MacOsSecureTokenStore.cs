@@ -125,8 +125,6 @@ internal sealed class MacOsSecureTokenStore : ISecureTokenStore
         return query;
     }
 
-    private static InvalidOperationException CreateKeychainException(string message, int status)
-    {
-        return new InvalidOperationException($"{message}. OSStatus: {status}.");
-    }
+    private static InvalidOperationException CreateKeychainException(string message, int status) =>
+        new($"{message}. OSStatus: {status}.");
 }

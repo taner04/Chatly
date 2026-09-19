@@ -7,6 +7,7 @@
              xmlns:vm="using:Chatly.Desktop.ViewModels.Toasts"
              xmlns:ic="using:FluentIcons.Avalonia"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Toasts.ToastHostOverlay"
              x:DataType="local:ToastHostOverlay">
     <UserControl.Styles>
@@ -45,7 +46,7 @@
             </ItemsPanelTemplate>
         </ItemsControl.ItemsPanel>
         <ItemsControl.ItemTemplate>
-            <DataTemplate x:DataType="vm:ToastNotificationViewModel">
+            <DataTemplate x:DataType="vm:ToastViewModel">
                 <Border Classes="toast-card"
                         Width="400"
                         Margin="0,0,0,10"

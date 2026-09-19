@@ -1,4 +1,4 @@
-using Chatly.Contracts.Endpoints.Chats.Results;
+using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.GetChats;
 

@@ -6,6 +6,7 @@
              xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:DataType="local:UserPage"
+             x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.UserPage">
     <UserControl.Styles>
         <Style Selector="Button.current-user-profile">

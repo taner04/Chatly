@@ -1,10 +1,10 @@
-﻿using Chatly.Contracts.SignalR;
+﻿using Chatly.Contracts.Features.Hubs;
 
 namespace Chatly.Desktop.Services.Api.SignalR.Abstraction;
 
 internal interface IClientNotificationHandler
 {
-    NotificationType Type { get; }
+    Type NotificationType { get; }
 
-    Task HandleNotificationAsync(NotificationMessage message);
+    Task HandleNotificationAsync(Notification notification);
 }

@@ -1,6 +1,4 @@
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.WebApi.Features.Chats.Models;
-using Chatly.WebApi.Features.Messages.Models;
+using Chatly.Contracts.Features.Messages.Endpoints.GetMessages;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 

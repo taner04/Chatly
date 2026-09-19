@@ -1,5 +1,4 @@
-﻿using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Utilities;
+﻿using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.Services.Toasts;
 
@@ -16,12 +15,12 @@ internal sealed class ToastService : IToastService
     public void AddToast(IToastViewModel toastViewModel)
     {
         ArgumentNullException.ThrowIfNull(toastViewModel);
-        UiThreadDispatcher.SafeInvoke(() => AddToastCore(toastViewModel));
+        UIThreadDispatcher.SafeInvoke(() => AddToastCore(toastViewModel));
     }
 
     public void RemoveToast(Guid id)
     {
-        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id));
+        UIThreadDispatcher.SafeInvoke(() => RemoveToastCore(id));
     }
 
     public void SetToastHost(IToastHost toastHost)
@@ -30,12 +29,10 @@ internal sealed class ToastService : IToastService
         _toastHost = toastHost;
     }
 
-    private IToastHost GetToastHost()
-    {
-        return _toastHost ??
-               throw new InvalidOperationException(
-                   "Toast host is not set. Please set the toast host before adding or removing toasts.");
-    }
+    private IToastHost GetToastHost() =>
+        _toastHost ??
+        throw new InvalidOperationException(
+            "Toast host is not set. Please set the toast host before adding or removing toasts.");
 
     private void AddToastCore(IToastViewModel toastViewModel)
     {
@@ -68,7 +65,7 @@ internal sealed class ToastService : IToastService
             return;
         }
 
-        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id, cancellationTokenSource));
+        UIThreadDispatcher.SafeInvoke(() => RemoveToastCore(id, cancellationTokenSource));
     }
 
     private void OnToastDismissed(object? sender, EventArgs e)

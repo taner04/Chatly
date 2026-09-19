@@ -5,11 +5,9 @@ namespace Chatly.Desktop.Services.Settings.DirectoryProviders;
 
 internal sealed class MacOsSettingsDirectoryProvider : ISettingsDirectoryProvider
 {
-    public string GetRootDirectory()
-    {
-        return Path.Combine(
+    public string GetRootDirectory() =>
+        Path.Combine(
             Environment.GetFolderPath(Environment.SpecialFolder.UserProfile),
             "Library",
             "Application Support");
-    }
 }

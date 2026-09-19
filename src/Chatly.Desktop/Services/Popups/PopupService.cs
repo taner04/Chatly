@@ -44,11 +44,9 @@ internal sealed class PopupService(IServiceProvider serviceProvider) : IPopupSer
         }
     }
 
-    private IPopupHost GetPopupHost()
-    {
-        return _popupHost ?? throw new InvalidOperationException(
+    private IPopupHost GetPopupHost() =>
+        _popupHost ?? throw new InvalidOperationException(
             "A popup host must be set before showing a popup.");
-    }
 
     private void ThrowIfPopupIsOpen()
     {

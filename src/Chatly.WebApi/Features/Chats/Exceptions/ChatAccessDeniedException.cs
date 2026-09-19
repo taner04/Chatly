@@ -1,5 +1,4 @@
 using System.Net;
-using Chatly.WebApi.Features.Chats.Models;
 
 namespace Chatly.WebApi.Features.Chats.Exceptions;
 

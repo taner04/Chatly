@@ -1,6 +1,4 @@
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.WebApi.Features.Chats.Models;
-using Chatly.WebApi.Features.Messages.Models;
+using Chatly.Contracts.Features.Messages.Endpoints.GetMessages;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 
@@ -9,20 +7,17 @@ internal sealed class GetMessagesEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                "/api/chats/{chatId:guid}/messages",
+                ApiRoutes.Chats.Messages,
                 async (
-                    Guid chatId,
-                    [FromQuery] DateTimeOffset? beforeSentAt,
-                    [FromQuery] Guid? beforeMessageId,
-                    [FromQuery] int pageSize,
+                    [AsParameters] GetMessagesRequest request,
                     [FromServices] IMediator mediator,
                     CancellationToken cancellationToken) =>
                 {
                     var query = new GetMessagesQuery(
-                        ChatId.From(chatId),
-                        beforeSentAt,
-                        beforeMessageId.HasValue ? MessageId.From(beforeMessageId.Value) : null,
-                        pageSize);
+                        ChatId.From(request.ChatId),
+                        request.BeforeSentAt,
+                        request.BeforeMessageId.HasValue ? MessageId.From(request.BeforeMessageId.Value) : null,
+                        request.PageSize);
 
                     return Results.Ok(await mediator.Send(query, cancellationToken));
                 })

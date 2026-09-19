@@ -1,4 +1,4 @@
-using Chatly.Contracts.SignalR;
+using Chatly.Contracts.Features.Hubs.Notifications;
 
 namespace Chatly.WebApi.Features.Hubs;
 
@@ -53,7 +53,7 @@ public sealed partial class NotificationHub
         CancellationToken cancellationToken)
     {
         var friendUserIds = await GetFriendUserIdsAsync(userId, cancellationToken);
-        var message = new OnlineStatusChangedMessage(userId.Value, isOnline);
+        var message = new OnlineStatusChangedNotification(userId.Value, isOnline);
 
         await Task.WhenAll(friendUserIds.Select(friendUserId =>
             Clients.Group(NotificationHubGroups.User(friendUserId)).Receive(message)));
@@ -65,7 +65,7 @@ public sealed partial class NotificationHub
 
         foreach (var friendUserId in friendUserIds.Where(presenceTracker.IsOnline))
         {
-            await Clients.Caller.Receive(new OnlineStatusChangedMessage(friendUserId.Value, true));
+            await Clients.Caller.Receive(new OnlineStatusChangedNotification(friendUserId.Value, true));
         }
     }
 }

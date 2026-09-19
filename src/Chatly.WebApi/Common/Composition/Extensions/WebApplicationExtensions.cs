@@ -1,6 +1,7 @@
 using Chatly.Shared.Extensions;
 using Chatly.WebApi.Common.Composition.Options;
 using Scalar.AspNetCore;
+using AzureBlobService = Chatly.WebApi.Common.Infrastructure.Persistence.Blob.AzureBlobService;
 
 namespace Chatly.WebApi.Common.Composition.Extensions;
 
@@ -43,7 +44,7 @@ internal static class WebApplicationExtensions
                 .Where(type =>
                     type is { IsClass: true, IsAbstract: false } &&
                     typeof(IEndpoint).IsAssignableFrom(type))
-                .Select(type => (IEndpoint)Activator.CreateInstance(type, nonPublic: true)!);
+                .Select(type => (IEndpoint)Activator.CreateInstance(type, true)!);
 
             foreach (var endpoint in endpoints)
             {

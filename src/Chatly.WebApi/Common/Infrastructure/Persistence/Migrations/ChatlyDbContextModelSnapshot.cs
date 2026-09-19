@@ -193,6 +193,43 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         });
                 });
 
+            modelBuilder.Entity("Chatly.WebApi.Features.MessageAttachments.Models.MessageAttachment", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("StoredFileId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("StoredFileId")
+                        .IsUnique();
+
+                    b.HasIndex("MessageId", "StoredFileId")
+                        .IsUnique();
+
+                    b.ToTable("MessageAttachments", (string)null);
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
                 {
                     b.Property<Guid>("Id")
@@ -214,6 +251,9 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .HasMaxLength(256)
                         .HasColumnType("character varying(256)");
 
+                    b.Property<bool>("IsDeleted")
+                        .HasColumnType("boolean");
+
                     b.Property<Guid>("SenderUserId")
                         .HasColumnType("uuid");
 
@@ -234,6 +274,103 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.HasIndex("ChatId", "SentAt", "Id");
 
                     b.ToTable("Messages", (string)null);
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Reactions.Models.Reaction", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("MessageId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.HasIndex("MessageId", "UserId")
+                        .IsUnique();
+
+                    b.ToTable("Reactions", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Reactions_ValidType", "\"Type\" IN ('Like', 'Love', 'Laugh', 'Surprised', 'Sad', 'Angry', 'Dislike', 'Smile', 'Fire', 'Celebrate', 'Clap', 'Thanks')");
+                        });
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.StoredFiles.Models.StoredFile", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("BlobName")
+                        .IsRequired()
+                        .HasMaxLength(1024)
+                        .HasColumnType("character varying(1024)");
+
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("FileName")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("character varying(255)");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BlobName")
+                        .IsUnique();
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("StoredFiles", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_StoredFiles_NonNegativeSize", "\"Size\" >= 0");
+                        });
                 });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
@@ -262,9 +399,8 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.Property<bool>("OnboardingCompleted")
                         .HasColumnType("boolean");
 
-                    b.Property<string>("ProfilePictureKey")
-                        .HasMaxLength(512)
-                        .HasColumnType("character varying(512)");
+                    b.Property<Guid?>("ProfilePictureFileId")
+                        .HasColumnType("uuid");
 
                     b.Property<DateTimeOffset?>("UpdatedAt")
                         .HasColumnType("timestamp with time zone");
@@ -284,6 +420,10 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 
                     b.HasIndex("Email")
                         .IsUnique();
+
+                    b.HasIndex("ProfilePictureFileId")
+                        .IsUnique()
+                        .HasFilter("\"ProfilePictureFileId\" IS NOT NULL");
 
                     b.HasIndex("Username")
                         .IsUnique()
@@ -356,6 +496,23 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("Chatly.WebApi.Features.MessageAttachments.Models.MessageAttachment", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Messages.Models.Message", null)
+                        .WithMany("Attachments")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.StoredFiles.Models.StoredFile", "StoredFile")
+                        .WithMany()
+                        .HasForeignKey("StoredFileId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("StoredFile");
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
                 {
                     b.HasOne("Chatly.WebApi.Features.Chats.Models.Chat", "Chat")
@@ -375,9 +532,50 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.Navigation("SenderUser");
                 });
 
+            modelBuilder.Entity("Chatly.WebApi.Features.Reactions.Models.Reaction", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Messages.Models.Message", null)
+                        .WithMany("Reactions")
+                        .HasForeignKey("MessageId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.StoredFiles.Models.StoredFile", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.StoredFiles.Models.StoredFile", "ProfilePictureFile")
+                        .WithMany()
+                        .HasForeignKey("ProfilePictureFileId")
+                        .OnDelete(DeleteBehavior.SetNull);
+
+                    b.Navigation("ProfilePictureFile");
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
                 {
                     b.Navigation("Messages");
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Messages.Models.Message", b =>
+                {
+                    b.Navigation("Attachments");
+
+                    b.Navigation("Reactions");
                 });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Users.Models.User", b =>

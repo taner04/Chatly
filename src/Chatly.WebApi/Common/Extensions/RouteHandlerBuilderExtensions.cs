@@ -11,18 +11,34 @@ internal static class RouteHandlerBuilderExtensions
 
     extension(RouteHandlerBuilder builder)
     {
-        public RouteHandlerBuilder ProducesStandardErrors(params int[] additionalStatusCodes)
+        public RouteHandlerBuilder ProducesStandardErrors() => AddStandardErrors(builder, []);
+
+        public RouteHandlerBuilder ProducesStandardErrors(int statusCode) =>
+            AddStandardErrors(builder, [statusCode]);
+
+        public RouteHandlerBuilder ProducesStandardErrors(int firstStatusCode, int secondStatusCode) =>
+            AddStandardErrors(builder, [firstStatusCode, secondStatusCode]);
+
+        public RouteHandlerBuilder ProducesStandardErrors(
+            int firstStatusCode,
+            int secondStatusCode,
+            int thirdStatusCode) =>
+            AddStandardErrors(builder, [firstStatusCode, secondStatusCode, thirdStatusCode]);
+    }
+
+    private static RouteHandlerBuilder AddStandardErrors(
+        RouteHandlerBuilder builder,
+        ReadOnlySpan<int> additionalStatusCodes)
+    {
+        var allCodes = DefaultProblemCodes
+            .Concat(additionalStatusCodes.ToArray())
+            .Distinct();
+
+        foreach (var code in allCodes)
         {
-            var allCodes = DefaultProblemCodes
-                .Concat(additionalStatusCodes)
-                .Distinct();
-
-            foreach (var code in allCodes)
-            {
-                builder.Produces<ApiProblemDetails>(code);
-            }
-
-            return builder;
+            builder.Produces<ApiProblemDetails>(code);
         }
+
+        return builder;
     }
 }

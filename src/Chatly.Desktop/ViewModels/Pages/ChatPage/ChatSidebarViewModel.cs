@@ -1,14 +1,13 @@
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
 using System.ComponentModel;
-using System.Linq;
-using Chatly.Desktop.Models.UserSession;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
 
 [SingletonService]
-public sealed class ChatSidebarViewModel : ViewModelBase
+public sealed class ChatSidebarViewModel : ViewModelBase, IDisposable
 {
+    private readonly DirectChatState _directChatState;
     private readonly INavigationService _navigationService;
 
     public ChatSidebarViewModel(
@@ -16,6 +15,7 @@ public sealed class ChatSidebarViewModel : ViewModelBase
         DirectChatState directChatState)
     {
         _navigationService = navigationService;
+        _directChatState = directChatState;
         Chats = [.. directChatState.Items.Select(CreateChatPreview)];
         UnreadChats = [];
 
@@ -28,9 +28,20 @@ public sealed class ChatSidebarViewModel : ViewModelBase
 
     public ObservableCollection<ChatPreviewViewModel> UnreadChats { get; }
 
+    public void Dispose()
+    {
+        _directChatState.CollectionChanged -= DirectChats_CollectionChanged;
+
+        foreach (var chat in Chats)
+        {
+            chat.PropertyChanged -= Chat_PropertyChanged;
+            chat.Dispose();
+        }
+    }
+
     internal void ReceiveIncomingMessage(Guid chatId)
     {
-        var chat = Chats.FirstOrDefault(preview => preview.DirectChatId == chatId);
+        var chat = _directChatState.Items.FirstOrDefault(directChat => directChat.Id == chatId);
         if (chat is not null)
         {
             chat.UnreadMessageCount++;
@@ -44,17 +55,23 @@ public sealed class ChatSidebarViewModel : ViewModelBase
             return;
         }
 
+        var chatList = chats.ToList();
         var existingPreviews = Chats
             .Where(chat => chat.DirectChatId.HasValue)
             .ToDictionary(chat => chat.DirectChatId!.Value);
+        var currentChatIds = chatList.Select(chat => chat.Id).ToHashSet();
 
         foreach (var chat in Chats)
         {
             chat.PropertyChanged -= Chat_PropertyChanged;
+            if (chat.DirectChatId is not { } chatId || !currentChatIds.Contains(chatId))
+            {
+                chat.Dispose();
+            }
         }
 
         Chats.Clear();
-        foreach (var chat in chats)
+        foreach (var chat in chatList)
         {
             Chats.Add(existingPreviews.GetValueOrDefault(chat.Id) ?? CreateChatPreview(chat));
         }
@@ -63,10 +80,7 @@ public sealed class ChatSidebarViewModel : ViewModelBase
         RefreshUnreadChats();
     }
 
-    private ChatPreviewViewModel CreateChatPreview(DirectChat chat)
-    {
-        return new ChatPreviewViewModel(chat, _navigationService, chat.UnreadMessageCount);
-    }
+    private ChatPreviewViewModel CreateChatPreview(DirectChat chat) => new(chat, _navigationService);
 
     private void SubscribeToChats()
     {

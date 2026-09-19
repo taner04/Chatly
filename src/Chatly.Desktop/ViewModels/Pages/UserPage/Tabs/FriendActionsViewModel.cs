@@ -1,11 +1,6 @@
-using System.Linq;
-using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Extensions;
-using Chatly.Desktop.Models.UserSession;
-using Chatly.Desktop.Services.Api;
+using Chatly.Desktop.Services.Api.Clients;
 using Chatly.Desktop.Services.Chat;
-using Chatly.Desktop.ViewModels.Pages.ChatPage;
-using CommunityToolkit.Mvvm.Input;
+using Chatly.Desktop.Services.Friendships;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
@@ -13,15 +8,10 @@ namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 public sealed partial class FriendActionsViewModel(
     ChatNavigationService chatNavigationService,
     FriendsApiClient friendsApiClient,
-    FriendState friendState,
-    DirectChatState directChatState,
-    ChatPageViewModel chatPageViewModel,
+    FriendshipStateService friendshipStateService,
     IToastService toastService) : ViewModelBase
 {
-    private static bool CanOpenChat(Friend? friend)
-    {
-        return friend?.ChatId is not null;
-    }
+    private static bool CanOpenChat(Friend? friend) => friend?.ChatId is not null;
 
     [RelayCommand(CanExecute = nameof(CanOpenChat))]
     private async Task OpenChat(Friend? friend, CancellationToken cancellationToken)
@@ -33,28 +23,22 @@ public sealed partial class FriendActionsViewModel(
     }
 
     [RelayCommand]
-    private async Task RemoveFriendAsync(Friend? friend)
+    private async Task RemoveFriendAsync(Friend? friend, CancellationToken cancellationToken)
     {
         if (friend is null)
         {
             return;
         }
 
-        var result = await friendsApiClient.RemoveFriendshipAsync(friend.User.Id);
+        var result = await friendsApiClient.RemoveFriendshipAsync(
+            friend.User.Id,
+            cancellationToken);
         if (result.IsFailure)
         {
             toastService.ShowError(result.Error);
             return;
         }
 
-        var chatId = friend.ChatId ?? directChatState.Items
-            .FirstOrDefault(chat => chat.User.Id == friend.User.Id)?.Id;
-        if (chatId is not null)
-        {
-            await chatPageViewModel.CloseChatAsync(chatId.Value);
-        }
-
-        friendState.Remove(friend.User.Id);
-        directChatState.RemoveByUserId(friend.User.Id);
+        await friendshipStateService.ApplyRemovedAsync(friend.User.Id);
     }
 }

@@ -5,7 +5,7 @@ internal sealed class CompleteOnboardingEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPut(
-                "/api/users/me/onboarding",
+                ApiRoutes.Users.Onboarding,
                 async (
                     [FromForm] string newUsername,
                     [FromForm] IFormFile? file,

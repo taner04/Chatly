@@ -1,4 +1,4 @@
-using Chatly.Contracts.Pagination;
+using Chatly.Contracts.Common.Pagination;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 
@@ -7,18 +7,16 @@ internal sealed class SearchUsersEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                "/api/users/search",
+                ApiRoutes.Users.Search,
                 async (
-                    [FromQuery] string searchName,
-                    [FromQuery] int pageIndex,
-                    [FromQuery] int pageSize,
+                    [AsParameters] SearchUsersRequest request,
                     [FromServices] IMediator mediator,
                     CancellationToken cancellationToken) =>
                 {
                     var query = new SearchUsersQuery(
-                        searchName,
-                        pageIndex,
-                        pageSize);
+                        request.SearchName,
+                        request.PageIndex,
+                        request.PageSize);
 
                     return Results.Ok(
                         await mediator.Send(query, cancellationToken));

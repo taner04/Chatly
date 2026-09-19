@@ -1,12 +1,13 @@
-using Chatly.Contracts.Endpoints.Chats.Results;
+using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
 using Chatly.WebApi.Features.Hubs;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.GetChats;
 
 internal sealed class GetChatsQueryHandler(
     CurrentUserService currentUserService,
     ChatlyDbContext context,
-    AzureBlobService blobService,
+    ProfilePictureUrlFactory profilePictureUrlFactory,
     OnlinePresenceTracker presenceTracker) : IQueryHandler<GetChatsQuery, IReadOnlyList<GetChatsResponse>>
 {
     public async ValueTask<IReadOnlyList<GetChatsResponse>> Handle(
@@ -15,8 +16,7 @@ internal sealed class GetChatsQueryHandler(
     {
         var userId = currentUserService.GetCurrentUserId();
         var chats = await (
-                from chat in context.Chats.AsNoTracking()
-                where chat.FirstUserId == userId || chat.SecondUserId == userId
+                from chat in context.Chats.AsNoTracking().ForUser(userId)
                 where context.Friendships.Any(friendship =>
                     friendship.FirstUserId == chat.FirstUserId &&
                     friendship.SecondUserId == chat.SecondUserId)
@@ -37,7 +37,9 @@ internal sealed class GetChatsQueryHandler(
                     ChatId = chat.Id.Value,
                     AssociatedUserId = associatedUser.Id.Value,
                     associatedUser.Username,
-                    associatedUser.ProfilePictureKey,
+                    ProfilePictureKey = associatedUser.ProfilePictureFile == null
+                        ? null
+                        : associatedUser.ProfilePictureFile.BlobName,
                     UnreadMessageCount = unreadMessageCount
                 })
             .ToListAsync(cancellationToken);
@@ -48,7 +50,7 @@ internal sealed class GetChatsQueryHandler(
                 chat.ChatId,
                 chat.AssociatedUserId,
                 chat.Username!,
-                blobService.CreateReadUrl(chat.ProfilePictureKey)?.ToString(),
+                profilePictureUrlFactory.CreateProfilePictureUrl(chat.ProfilePictureKey),
                 presenceTracker.IsOnline(UserId.From(chat.AssociatedUserId)),
                 chat.UnreadMessageCount))
         ];

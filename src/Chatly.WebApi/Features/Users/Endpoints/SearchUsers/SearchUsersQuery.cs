@@ -1,4 +1,4 @@
-using Chatly.Contracts.Pagination;
+using Chatly.Contracts.Common.Pagination;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 

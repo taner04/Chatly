@@ -1,29 +1,23 @@
-using Chatly.Contracts.Endpoints.Messages.Results;
-using Chatly.WebApi.Features.Chats.Models;
-using Chatly.WebApi.Features.Messages.Models;
+using Chatly.Contracts.Features.Messages.Endpoints.GetMessages;
+using Chatly.Contracts.Features.Messages.Models;
+using Chatly.Contracts.Features.Reactions.Models;
+using Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+using Chatly.WebApi.Features.Chats.Services;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;
 
 internal sealed class GetMessagesQueryHandler(
     CurrentUserService currentUserService,
-    ChatlyDbContext context) : IQueryHandler<GetMessagesQuery, GetMessagesResponse>
+    ChatlyDbContext context,
+    ChatAccessService chatAccessService,
+    AzureBlobService blobService) : IQueryHandler<GetMessagesQuery, GetMessagesResponse>
 {
     public async ValueTask<GetMessagesResponse> Handle(
         GetMessagesQuery query,
         CancellationToken cancellationToken)
     {
         var userId = currentUserService.GetCurrentUserId();
-        var hasAccess = await context.Chats
-            .AsNoTracking()
-            .AnyAsync(
-                chat => chat.Id == query.ChatId &&
-                        (chat.FirstUserId == userId || chat.SecondUserId == userId) &&
-                        context.Friendships.Any(friendship =>
-                            friendship.FirstUserId == chat.FirstUserId &&
-                            friendship.SecondUserId == chat.SecondUserId),
-                cancellationToken);
-
-        if (!hasAccess)
+        if (await chatAccessService.GetAsync(query.ChatId, userId, cancellationToken) is null)
         {
             throw new EntityNotFoundException<Chat>(query.ChatId.Value);
         }
@@ -32,38 +26,75 @@ internal sealed class GetMessagesQueryHandler(
             .AsNoTracking()
             .Where(message => message.ChatId == query.ChatId);
 
-        if (query.BeforeMessageId is { } beforeMessageId)
+        if (query is { BeforeSentAt: { } beforeSentAt, BeforeMessageId: { } beforeMessageId })
         {
-            var beforeSentAt = await context.Messages
-                                   .AsNoTracking()
-                                   .Where(message => message.ChatId == query.ChatId && message.Id == beforeMessageId)
-                                   .Select(message => (DateTimeOffset?)message.SentAt)
-                                   .SingleOrDefaultAsync(cancellationToken)
-                               ?? throw new EntityNotFoundException<Message>(beforeMessageId.Value);
-
-            messagesQuery = messagesQuery.Where(message => message.SentAt < beforeSentAt);
+            // Npgsql translates ValueTuple.Create here to a PostgreSQL row-value comparison.
+            // ReSharper disable EntityFramework.UnsupportedServerSideFunctionCall
+            messagesQuery = messagesQuery.Where(message => EF.Functions.LessThan(
+                ValueTuple.Create(message.SentAt, message.Id),
+                ValueTuple.Create(beforeSentAt, beforeMessageId)));
+            // ReSharper restore EntityFramework.UnsupportedServerSideFunctionCall
         }
 
-        var messages = await messagesQuery
+        var messageRows = await messagesQuery
             .OrderByDescending(message => message.SentAt)
             .ThenByDescending(message => message.Id)
             .Take(query.PageSize + 1)
-            .Select(message => new GetMessagesItem(
-                message.Id.Value,
-                message.ChatId.Value,
-                message.SenderUserId.Value,
-                message.Content,
-                message.SentAt))
+            .Select(message => new
+            {
+                MessageId = message.Id.Value,
+                ChatId = message.ChatId.Value,
+                SenderUserId = message.SenderUserId.Value,
+                Content = message.IsDeleted ? string.Empty : message.Content,
+                message.SentAt,
+                message.IsDeleted,
+                Attachments = message.Attachments
+                    .Select(attachment => new
+                    {
+                        AttachmentId = attachment.StoredFile.Id.Value,
+                        attachment.StoredFile.FileName,
+                        attachment.StoredFile.ContentType,
+                        attachment.StoredFile.Size,
+                        attachment.StoredFile.BlobName
+                    })
+                    .ToList(),
+                Reactions = message.Reactions
+                    .Select(reaction => new MessageReactionContract(
+                        reaction.Id.Value,
+                        reaction.UserId.Value,
+                        reaction.Type))
+                    .ToList()
+            })
             .ToListAsync(cancellationToken);
 
-        var hasMore = messages.Count > query.PageSize;
+        var hasMore = messageRows.Count > query.PageSize;
         if (hasMore)
         {
-            messages.RemoveAt(messages.Count - 1);
+            messageRows.RemoveAt(messageRows.Count - 1);
         }
 
-        var oldestMessage = messages.LastOrDefault();
-        messages.Reverse();
+        var oldestMessage = messageRows.LastOrDefault();
+        messageRows.Reverse();
+
+        var messages = messageRows
+            .Select(message => new MessageContract(
+                message.MessageId,
+                message.ChatId,
+                message.SenderUserId,
+                message.Content,
+                message.SentAt,
+                message.IsDeleted,
+                [
+                    .. message.Attachments
+                        .Select(attachment => new MessageAttachmentContract(
+                            attachment.AttachmentId,
+                            attachment.FileName,
+                            attachment.ContentType,
+                            attachment.Size,
+                            blobService.CreateReadUrl(attachment.BlobName)!.ToString()))
+                ],
+                message.Reactions))
+            .ToList();
 
         return new GetMessagesResponse(
             messages,

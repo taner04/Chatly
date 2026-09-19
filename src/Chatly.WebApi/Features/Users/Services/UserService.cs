@@ -1,4 +1,5 @@
 using Chatly.WebApi.Features.Users.Exceptions;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Users.Services;
 
@@ -6,15 +7,17 @@ namespace Chatly.WebApi.Features.Users.Services;
 internal sealed class UserService(
     ChatlyDbContext context,
     CurrentUserService currentUser,
-    AzureBlobService blobService)
+    ProfilePictureUrlFactory profilePictureUrlFactory)
 {
     internal async Task<User> GetCurrentUserAsync(CancellationToken cancellationToken)
     {
         var userId = currentUser.GetCurrentUserId();
 
-        return await context.Users.SingleOrDefaultAsync(
-                   user => user.Id == userId,
-                   cancellationToken)
+        return await context.Users
+                   .Include(user => user.ProfilePictureFile)
+                   .SingleOrDefaultAsync(
+                       user => user.Id == userId,
+                       cancellationToken)
                ?? throw new EntityNotFoundException<User>(userId.Value);
     }
 
@@ -35,31 +38,11 @@ internal sealed class UserService(
         user.Username = username;
     }
 
-    internal async Task<List<UserId>> GetProfileUpdateRecipientIdsAsync(
-        UserId userId,
-        CancellationToken cancellationToken)
-    {
-        var recipientIds = await context.Friendships
-            .AsNoTracking()
-            .Where(friendship =>
-                friendship.FirstUserId == userId ||
-                friendship.SecondUserId == userId)
-            .Select(friendship => friendship.FirstUserId == userId
-                ? friendship.SecondUserId
-                : friendship.FirstUserId)
-            .ToListAsync(cancellationToken);
-
-        recipientIds.Add(userId);
-        return recipientIds;
-    }
-
-    internal CurrentUserResponse CreateResponse(User user)
-    {
-        return new CurrentUserResponse(
+    internal CurrentUserResponse CreateResponse(User user) =>
+        new(
             user.Id.Value,
             user.Email,
             user.Username,
-            blobService.CreateReadUrl(user.ProfilePictureKey)?.ToString(),
+            profilePictureUrlFactory.CreateProfilePictureUrl(user.ProfilePictureFile?.BlobName),
             user.OnboardingCompleted);
-    }
 }

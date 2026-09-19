@@ -1,12 +1,12 @@
-using Chatly.Contracts.SignalR;
 using Chatly.WebApi.Features.Users.Services;
+using Chatly.WebApi.Features.Users.Services.Profiles;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 
 internal sealed class UpdateUsernameCommandHandler(
     UserService userService,
     ChatlyDbContext context,
-    NotificationPublisher notificationPublisher)
+    UserProfileUpdateNotifier profileUpdateNotifier)
     : ICommandHandler<UpdateUsernameCommand, CurrentUserResponse>
 {
     public async ValueTask<CurrentUserResponse> Handle(
@@ -21,12 +21,7 @@ internal sealed class UpdateUsernameCommandHandler(
 
         await context.SaveChangesAsync(cancellationToken);
         var response = userService.CreateResponse(user);
-        var recipientIds = await userService.GetProfileUpdateRecipientIdsAsync(user.Id, cancellationToken);
-
-        await notificationPublisher.PublishAsync(recipientIds, new UserProfileUpdatedMessage(
-            response.UserId,
-            response.Username,
-            response.ProfilePictureUrl));
+        await profileUpdateNotifier.PublishAsync(response, cancellationToken);
 
         return response;
     }

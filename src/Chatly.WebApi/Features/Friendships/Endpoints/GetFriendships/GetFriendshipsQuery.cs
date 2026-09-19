@@ -1,5 +1,5 @@
-using Chatly.Contracts.Endpoints.Friendships.Results;
+using Chatly.Contracts.Features.Friendships.Models;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.GetFriendships;
 
-internal sealed record GetFriendshipsQuery : IQuery<IReadOnlyList<GetFriendshipsResponse>>;
+internal sealed record GetFriendshipsQuery : IQuery<IReadOnlyList<FriendshipContract>>;

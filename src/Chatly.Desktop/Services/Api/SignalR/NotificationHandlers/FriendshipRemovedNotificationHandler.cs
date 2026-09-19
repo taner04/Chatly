@@ -1,42 +1,22 @@
-using System.Linq;
-using Chatly.Contracts.SignalR;
-using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Extensions;
-using Chatly.Desktop.Models.UserSession;
+using Chatly.Contracts.Features.Friendships.Endpoints.RemoveFriendship;
+using Chatly.Desktop.Services.Friendships;
 using Chatly.Desktop.Utilities;
-using Chatly.Desktop.ViewModels.Pages.ChatPage;
-using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
 [SingletonService(typeof(IClientNotificationHandler))]
 internal sealed class FriendshipRemovedNotificationHandler(
-    FriendState friendState,
-    DirectChatState directChatState,
-    ChatPageViewModel chatPageViewModel,
+    FriendshipStateService friendshipStateService,
     IToastService toastService,
-    ILogger<ClientNotificationHandler<FriendshipRemovedMessage>> logger)
-    : ClientNotificationHandler<FriendshipRemovedMessage>(logger)
+    ILogger<ClientNotificationHandler<FriendshipRemovedNotification>> logger)
+    : ClientNotificationHandler<FriendshipRemovedNotification>(logger)
 {
-    public override NotificationType Type => NotificationType.FriendshipRemoved;
-
-    protected override Task HandleNotificationAsync(FriendshipRemovedMessage message)
+    protected override Task HandleNotificationAsync(FriendshipRemovedNotification message)
     {
-        return UiThreadDispatcher.SafeInvokeAsync(async () =>
+        return UIThreadDispatcher.SafeInvokeAsync(async () =>
         {
-            var friend =
-                friendState.Items.FirstOrDefault(existing => existing.User.Id == message.AssociatedUserId);
-            var directChat =
-                directChatState.Items.FirstOrDefault(chat => chat.User.Id == message.AssociatedUserId);
-            var username = friend?.User.Username ?? directChat?.User.Username ?? "Unknown User";
-
-            if (directChat is not null)
-            {
-                await chatPageViewModel.CloseChatAsync(directChat.Id);
-            }
-
-            friendState.Remove(message.AssociatedUserId);
-            directChatState.RemoveByUserId(message.AssociatedUserId);
+            var username = await friendshipStateService.ApplyRemovedAsync(message.AssociatedUserId)
+                           ?? "Unknown User";
             toastService.AddNotification($"{username} removed you as a friend.");
         });
     }

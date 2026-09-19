@@ -1,15 +1,9 @@
-using Chatly.WebApi.Common.Shared.Models;
-using Vogen;
-
 namespace Chatly.WebApi.Features.Chats.Models;
 
 [ValueObject<Guid>]
 public readonly partial struct ChatReadStateId
 {
-    private static Validation Validate(Guid value)
-    {
-        return value.Validate<ChatReadStateId>();
-    }
+    private static Validation Validate(Guid value) => value.Validate<ChatReadStateId>();
 }
 
 public sealed class ChatReadState : Entity<ChatReadStateId>

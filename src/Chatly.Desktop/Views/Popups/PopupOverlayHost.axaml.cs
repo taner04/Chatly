@@ -8,9 +8,10 @@ using Chatly.Desktop.ViewModels.Popups;
 namespace Chatly.Desktop.Views.Popups;
 
 [SingletonService]
-public partial class PopupOverlayHost : UserControl, IPopupHost
+internal partial class PopupOverlayHost : UserControl, IPopupHost
 {
     private IPopupViewModel? _currentPopupViewModel;
+    private bool _isCurrentPopupDismissible;
     private TopLevel? _topLevel;
 
     public PopupOverlayHost(PopupOverlayHostViewModel viewModel)
@@ -29,6 +30,7 @@ public partial class PopupOverlayHost : UserControl, IPopupHost
         ArgumentNullException.ThrowIfNull(overlay);
 
         _currentPopupViewModel = overlay.ViewModel;
+        _isCurrentPopupDismissible = overlay.IsDismissible;
         ViewModel.Title = _currentPopupViewModel.Title;
         ViewModel.Content = overlay;
         ViewModel.IsOpen = true;
@@ -42,6 +44,7 @@ public partial class PopupOverlayHost : UserControl, IPopupHost
         ViewModel.Title = null;
         ViewModel.Content = null;
         _currentPopupViewModel = null;
+        _isCurrentPopupDismissible = false;
     }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
@@ -64,12 +67,22 @@ public partial class PopupOverlayHost : UserControl, IPopupHost
     {
         if (ReferenceEquals(e.Source, sender))
         {
+            if (_isCurrentPopupDismissible)
+            {
+                _currentPopupViewModel?.CloseOverlay();
+            }
+
             PopupEvent?.Invoke(this, new PopupOverlayEventArgs(PopupOverlayHostEventType.MouseEvent, e));
         }
     }
 
     private void OnHostKeyUp(object? sender, KeyEventArgs e)
     {
+        if (_isCurrentPopupDismissible && e.Key == Key.Escape)
+        {
+            _currentPopupViewModel?.CloseOverlay();
+        }
+
         PopupEvent?.Invoke(this, new PopupOverlayEventArgs(PopupOverlayHostEventType.KeyEvent, e));
     }
 }

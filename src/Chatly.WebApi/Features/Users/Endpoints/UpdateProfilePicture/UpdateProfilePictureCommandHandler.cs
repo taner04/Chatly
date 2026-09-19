@@ -1,5 +1,6 @@
-using Chatly.Contracts.SignalR;
 using Chatly.WebApi.Features.Users.Services;
+using Chatly.WebApi.Features.Users.Services.ProfilePictures;
+using Chatly.WebApi.Features.Users.Services.Profiles;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateProfilePicture;
 
@@ -7,7 +8,7 @@ internal sealed class UpdateProfilePictureCommandHandler(
     UserService userService,
     ProfilePictureService profilePictureService,
     ChatlyDbContext context,
-    NotificationPublisher notificationPublisher)
+    UserProfileUpdateNotifier profileUpdateNotifier)
     : ICommandHandler<UpdateProfilePictureCommand, CurrentUserResponse>
 {
     public async ValueTask<CurrentUserResponse> Handle(
@@ -15,7 +16,7 @@ internal sealed class UpdateProfilePictureCommandHandler(
         CancellationToken cancellationToken)
     {
         var user = await userService.GetCurrentUserAsync(cancellationToken);
-        ProfilePictureService.ProfilePictureChange pictureChange;
+        ProfilePictureChange pictureChange;
 
         if (command.File is null)
         {
@@ -27,7 +28,9 @@ internal sealed class UpdateProfilePictureCommandHandler(
             pictureChange = await profilePictureService.PrepareReplacementAsync(
                 user,
                 content,
+                command.File.FileName,
                 command.File.ContentType,
+                command.File.Length,
                 cancellationToken);
         }
 
@@ -43,12 +46,7 @@ internal sealed class UpdateProfilePictureCommandHandler(
 
         await profilePictureService.CompleteAsync(pictureChange, cancellationToken);
         var response = userService.CreateResponse(user);
-        var recipientIds = await userService.GetProfileUpdateRecipientIdsAsync(user.Id, cancellationToken);
-
-        await notificationPublisher.PublishAsync(recipientIds, new UserProfileUpdatedMessage(
-            response.UserId,
-            response.Username,
-            response.ProfilePictureUrl));
+        await profileUpdateNotifier.PublishAsync(response, cancellationToken);
 
         return response;
     }

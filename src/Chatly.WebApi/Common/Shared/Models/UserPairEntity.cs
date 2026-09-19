@@ -1,6 +1,6 @@
 ﻿namespace Chatly.WebApi.Common.Shared.Models;
 
-public abstract class UserPairEntity<TId> : Entity<TId>
+public abstract class UserPairEntity<TId> : Entity<TId>, IUserPairEntity
     where TId : struct
 {
     protected UserPairEntity()

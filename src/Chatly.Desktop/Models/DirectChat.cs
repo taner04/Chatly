@@ -1,10 +1,9 @@
 namespace Chatly.Desktop.Models;
 
-public sealed class DirectChat : IIdentifiable
+public sealed partial class DirectChat : ObservableObject, IIdentifiable
 {
-    public required Guid Id { get; init; }
-
     public required User User { get; init; }
 
-    public int UnreadMessageCount { get; init; }
+    [ObservableProperty] public partial int UnreadMessageCount { get; set; }
+    public required Guid Id { get; init; }
 }

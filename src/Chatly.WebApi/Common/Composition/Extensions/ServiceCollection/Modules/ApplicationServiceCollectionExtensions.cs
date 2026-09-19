@@ -1,0 +1,29 @@
+using Chatly.WebApi.Common.Behaviours;
+
+namespace Chatly.WebApi.Common.Composition.Extensions.ServiceCollection.Modules;
+
+internal static class ApplicationServiceCollectionExtensions
+{
+    extension(IServiceCollection services)
+    {
+        internal IServiceCollection AddChatlyApplicationServices()
+        {
+            services.AddMediator(options =>
+            {
+                options.ServiceLifetime = ServiceLifetime.Scoped;
+                options.GenerateTypesAsInternal = true;
+                options.PipelineBehaviors =
+                [
+                    typeof(LoggingBehaviour<,>),
+                    typeof(UserProvisioningBehaviour<,>),
+                    typeof(FluentValidationBehaviour<,>)
+                ];
+            });
+
+            services.AddSignalR();
+            services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
+
+            return services;
+        }
+    }
+}

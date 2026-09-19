@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
+﻿namespace Chatly.WebApi.Features.Users.Endpoints.SearchUsers;
 
 internal sealed class SearchUsersQueryValidator : AbstractValidator<SearchUsersQuery>
 {

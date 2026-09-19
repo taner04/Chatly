@@ -1,4 +1,4 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
+using Chatly.Contracts.Features.Friendships.Models;
 
 namespace Chatly.WebApi.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 
@@ -7,7 +7,7 @@ internal sealed class AcceptFriendRequestEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPost(
-                "/api/friend-requests/{friendRequestId:guid}/accept",
+                ApiRoutes.FriendRequests.Accept,
                 async (
                     [FromRoute] Guid friendRequestId,
                     [FromServices] IMediator mediator,
@@ -20,7 +20,7 @@ internal sealed class AcceptFriendRequestEndpoint : IEndpoint
             .WithName("AcceptFriendRequest")
             .WithTags("Friend Request")
             .RequireAuthorization()
-            .Produces<AcceptFriendRequestResponse>()
+            .Produces<FriendshipContract>()
             .ProducesStandardErrors(
                 StatusCodes.Status400BadRequest,
                 StatusCodes.Status404NotFound,

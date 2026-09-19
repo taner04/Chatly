@@ -1,15 +1,9 @@
-using Chatly.WebApi.Common.Shared.Models;
-using Vogen;
-
 namespace Chatly.WebApi.Features.Friendships.Models;
 
 [ValueObject<Guid>]
 public readonly partial struct FriendshipId
 {
-    private static Validation Validate(Guid value)
-    {
-        return value.Validate<FriendshipId>();
-    }
+    private static Validation Validate(Guid value) => value.Validate<FriendshipId>();
 }
 
 public sealed class Friendship : UserPairEntity<FriendshipId>

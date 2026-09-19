@@ -1,11 +1,9 @@
-using System.Linq;
-using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.ViewModels.Toasts;
 
 namespace Chatly.Desktop.Views.Toasts;
 
 [SingletonService]
-public partial class ToastHostOverlay : UserControl, IToastHost
+internal partial class ToastHostOverlay : UserControl, IToastHost
 {
     public ToastHostOverlay(ToastHostOverlayViewModel viewModel)
     {

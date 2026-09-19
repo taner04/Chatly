@@ -8,6 +8,7 @@
              mc:Ignorable="d"
              d:DesignWidth="492"
              d:DesignHeight="390"
+             x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Popups.UserInfoPopup"
              x:DataType="local:UserInfoPopup"
              x:Name="Root">
@@ -90,7 +91,6 @@
                         </Border>
                         <Button Classes="avatar-select"
                                 Command="{Binding ViewModel.SelectProfilePictureCommand}"
-                                CommandParameter="{Binding #Root}"
                                 ToolTip.Tip="Choose profile picture" />
                         <Border Width="25"
                                 Height="25"
@@ -150,7 +150,7 @@
                              Height="40"
                              Padding="12,0"
                              Text="{Binding ViewModel.Username, Mode=TwoWay}"
-                             MaxLength="32" />
+                             MaxLength="{Binding ViewModel.UsernameMaxLength}" />
                 </StackPanel>
 
                 <Border Height="1" Background="{DynamicResource ChatlyBorderBrush}" />

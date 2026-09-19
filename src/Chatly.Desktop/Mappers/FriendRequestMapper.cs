@@ -1,26 +1,17 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
+using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
+using Chatly.Contracts.Features.FriendRequests.Models;
 
 namespace Chatly.Desktop.Mappers;
 
 internal static class FriendRequestMapper
 {
-    public static FriendRequest Map(GetFriendRequestsResponse response)
-    {
-        return new FriendRequest
+    public static FriendRequest Map(FriendRequestContract response) =>
+        new()
         {
             Id = response.FriendRequestId,
-            SenderUsername = response.Username,
-            ProfilePictureUrl = response.ProfilePictureUrl
+            SenderUsername = response.SenderUsername,
+            ProfilePictureUrl = response.SenderProfilePictureUrl
         };
-    }
 
-    public static FriendRequest Map(IncomingFriendRequestMessage message)
-    {
-        return new FriendRequest
-        {
-            Id = message.FriendRequestId,
-            SenderUsername = message.SenderUsername,
-            ProfilePictureUrl = message.SenderProfilePictureUrl?.ToString()
-        };
-    }
+    public static FriendRequest Map(IncomingFriendRequestNotification message) => Map(message.Request);
 }

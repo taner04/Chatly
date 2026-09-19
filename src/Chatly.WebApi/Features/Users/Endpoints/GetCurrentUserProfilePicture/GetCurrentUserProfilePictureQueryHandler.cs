@@ -1,9 +1,12 @@
-﻿namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
+﻿using Chatly.WebApi.Features.Users.Services.ProfilePictures;
+using Chatly.WebApi.Features.Users.Services.Profiles;
+
+namespace Chatly.WebApi.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 
 internal sealed class GetCurrentUserProfilePictureQueryHandler(
     ChatlyDbContext context,
     CurrentUserService currentUser,
-    AzureBlobService blobService)
+    ProfilePictureUrlFactory profilePictureUrlFactory)
     : IQueryHandler<GetCurrentUserProfilePictureQuery, GetCurrentUserProfilePictureResponse>
 {
     public async ValueTask<GetCurrentUserProfilePictureResponse> Handle(
@@ -12,19 +15,13 @@ internal sealed class GetCurrentUserProfilePictureQueryHandler(
     {
         var userId = currentUser.GetCurrentUserId();
 
-        var profilePictureKey = await context.Users
+        var profile = await context.Users
             .AsNoTracking()
             .Where(user => user.Id == userId)
-            .Select(user => user.ProfilePictureKey)
+            .SelectProfile()
             .SingleOrDefaultAsync(cancellationToken);
 
-        if (string.IsNullOrWhiteSpace(profilePictureKey))
-        {
-            return new GetCurrentUserProfilePictureResponse(null!);
-        }
-
-        var url = blobService.CreateReadUrl(profilePictureKey);
-
-        return new GetCurrentUserProfilePictureResponse(url?.ToString());
+        return new GetCurrentUserProfilePictureResponse(
+            profilePictureUrlFactory.CreateProfilePictureUrl(profile?.ProfilePictureKey));
     }
 }

@@ -1,4 +1,4 @@
-using Chatly.Contracts.Endpoints.Friendships.Results;
+using Chatly.Contracts.Features.Friendships.Models;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.GetFriendships;
 
@@ -7,7 +7,7 @@ internal sealed class GetFriendshipsEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                "/api/friendships",
+                ApiRoutes.Friendships.Collection,
                 async (IMediator mediator, CancellationToken cancellationToken) =>
                 {
                     return Results.Ok(await mediator.Send(
@@ -17,7 +17,7 @@ internal sealed class GetFriendshipsEndpoint : IEndpoint
             .WithName("GetFriendships")
             .WithTags("Friendships")
             .RequireAuthorization()
-            .Produces<IReadOnlyList<GetFriendshipsResponse>>()
+            .Produces<IReadOnlyList<FriendshipContract>>()
             .ProducesStandardErrors();
     }
 }

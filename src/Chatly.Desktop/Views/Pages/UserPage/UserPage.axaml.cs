@@ -4,7 +4,7 @@ using Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 namespace Chatly.Desktop.Views.Pages.UserPage;
 
 [SingletonService(typeof(INavigableView<UserPageViewModel>))]
-public partial class UserPage
+internal partial class UserPage
     : UserControl, INavigableView<UserPageViewModel>, INavigationView
 {
     private readonly INavigationService _tabNavigationService;
@@ -50,7 +50,7 @@ public partial class UserPage
                 await _tabNavigationService.NavigateToAsync<AllFriendsTabPageViewModel>();
                 break;
             case 2:
-                await _tabNavigationService.NavigateToAsync<PendingFriendRequestTabPageViewModel>();
+                await _tabNavigationService.NavigateToAsync<PendingFriendRequestsTabPageViewModel>();
                 break;
         }
     }

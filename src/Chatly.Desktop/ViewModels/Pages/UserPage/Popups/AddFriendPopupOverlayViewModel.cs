@@ -1,13 +1,7 @@
 using System.Collections.ObjectModel;
-using System.Linq;
-using Chatly.Contracts.Endpoints.FriendRequests.Requests;
-using Chatly.Contracts.Endpoints.Users.Requests;
-using Chatly.Contracts.Endpoints.Users.Results;
-using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Extensions;
-using Chatly.Desktop.Services.Api;
+using Chatly.Contracts.Features.Users.Endpoints.SearchUsers;
+using Chatly.Desktop.Services.Api.Clients;
 using Chatly.Desktop.ViewModels.Popups;
-using CommunityToolkit.Mvvm.Input;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Popups;
 
@@ -17,7 +11,6 @@ public sealed partial class AddFriendPopupOverlayViewModel(
     FriendsApiClient friendsApiClient,
     UserApiClient userApiClient) : PopupOverlayViewModel
 {
-    private const int SearchPageSize = 20;
     private string _activeSearch = string.Empty;
     private int? _nextPageIndex;
 
@@ -31,20 +24,12 @@ public sealed partial class AddFriendPopupOverlayViewModel(
     public bool HasMoreUsers => _nextPageIndex.HasValue;
     public bool HasNoSearchResults => HasSearched && !IsSearching && SearchedUsers.Count == 0;
 
-    [RelayCommand]
-    private async Task SendFriendRequest(UserSearchResultViewModel user)
+    public override void CloseOverlay()
     {
-        var sendFriendRequestResult =
-            await friendsApiClient.SendFriendRequestAsync(new SendFriendRequestRequest(user.UserId));
-        if (sendFriendRequestResult.IsFailure)
-        {
-            toastService.ShowError(sendFriendRequestResult.Error);
-        }
-        else
-        {
-            toastService.ShowSuccess($"Friend request sent to {user.Username}.");
-            user.RelationshipStatus = UserRelationshipStatus.OutgoingFriendRequest;
-        }
+        SearchForUsersCommand.Cancel();
+        LoadMoreUsersCommand.Cancel();
+        ClearSearchResults();
+        base.CloseOverlay();
     }
 
     [RelayCommand]
@@ -59,7 +44,7 @@ public sealed partial class AddFriendPopupOverlayViewModel(
         _activeSearch = search;
         _nextPageIndex = null;
         HasSearched = false;
-        SearchedUsers.Clear();
+        ClearSearchResults();
         NotifySearchResultsChanged();
 
         await LoadUsersPageAsync(search, 1, cancellationToken);
@@ -106,7 +91,10 @@ public sealed partial class AddFriendPopupOverlayViewModel(
             {
                 if (existingUserIds.Add(user.UserId))
                 {
-                    SearchedUsers.Add(new UserSearchResultViewModel(user));
+                    SearchedUsers.Add(new UserSearchResultViewModel(
+                        user,
+                        friendsApiClient,
+                        toastService));
                 }
             }
 
@@ -122,5 +110,15 @@ public sealed partial class AddFriendPopupOverlayViewModel(
     {
         OnPropertyChanged(nameof(HasMoreUsers));
         OnPropertyChanged(nameof(HasNoSearchResults));
+    }
+
+    private void ClearSearchResults()
+    {
+        foreach (var user in SearchedUsers)
+        {
+            user.CancelPendingRequest();
+        }
+
+        SearchedUsers.Clear();
     }
 }

@@ -7,6 +7,7 @@
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              xmlns:users="using:Chatly.Desktop.ViewModels.Pages.UserPage.Popups"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+             x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Popups.AddFriendPopupOverlay"
              x:DataType="local:AddFriendPopupOverlay"
              MinWidth="440"
@@ -90,8 +91,7 @@
                                     <Button Grid.Column="2"
                                             Classes="accent-button opacity-hover add-request-button"
                                             VerticalAlignment="Center"
-                                            Command="{Binding ViewModel.SendFriendRequestCommand, RelativeSource={RelativeSource AncestorType=local:AddFriendPopupOverlay}}"
-                                            CommandParameter="{Binding}"
+                                            Command="{Binding SendFriendRequestCommand}"
                                             IsVisible="{Binding CanSendFriendRequest}"
                                             ToolTip.Tip="Add friend">
                                         <Grid Width="12" Height="12">

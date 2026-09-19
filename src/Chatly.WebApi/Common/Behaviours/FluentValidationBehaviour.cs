@@ -1,6 +1,4 @@
-﻿using FluentValidation;
-
-namespace Chatly.WebApi.Common.Behaviours;
+﻿namespace Chatly.WebApi.Common.Behaviours;
 
 internal sealed class FluentValidationBehaviour<TMessage, TResponse>(IEnumerable<IValidator<TMessage>> validators)
     : IPipelineBehavior<TMessage, TResponse>

@@ -1,8 +1,9 @@
 using Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
-using Chatly.WebApi.Features.Chats.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.Friendships.Models;
-using Chatly.WebApi.Features.Messages.Models;
+using Chatly.WebApi.Features.MessageAttachments.Models;
+using Chatly.WebApi.Features.Reactions.Models;
+using Chatly.WebApi.Features.StoredFiles.Models;
 
 namespace Chatly.WebApi.Common.Infrastructure.Persistence;
 
@@ -14,6 +15,9 @@ public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) :
     public DbSet<Chat> Chats => Set<Chat>();
     public DbSet<ChatReadState> ChatReadStates => Set<ChatReadState>();
     public DbSet<Message> Messages => Set<Message>();
+    public DbSet<Reaction> Reactions => Set<Reaction>();
+    public DbSet<StoredFile> StoredFiles => Set<StoredFile>();
+    public DbSet<MessageAttachment> MessageAttachments => Set<MessageAttachment>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

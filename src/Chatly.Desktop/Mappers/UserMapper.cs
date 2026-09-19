@@ -1,12 +1,11 @@
-using Chatly.Contracts.Endpoints.Users.Results;
+using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUser;
 
 namespace Chatly.Desktop.Mappers;
 
 internal static class UserMapper
 {
-    public static User Map(CurrentUserResponse response)
-    {
-        return new User
+    public static User Map(CurrentUserResponse response) =>
+        new()
         {
             Id = response.UserId,
             Email = response.Email,
@@ -14,5 +13,4 @@ internal static class UserMapper
             ProfilePictureUrl = response.ProfilePictureUrl,
             OnboardingCompleted = response.OnboardingCompleted
         };
-    }
 }

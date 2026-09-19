@@ -7,6 +7,7 @@
         xmlns:ic="using:FluentIcons.Avalonia"
         xmlns:chat="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
         xmlns:controls="using:Chatly.Desktop.Views.Controls"
+        x:ClassModifier="internal"
         x:Class="Chatly.Desktop.Views.Windows.MainWindow"
         x:DataType="windows:MainWindow"
         mc:Ignorable="d"
@@ -58,22 +59,12 @@
                                          DisplayName="{Binding Name}"
                                          ProfilePictureUrl="{Binding User.ProfilePictureUrl}"
                                          IsOnline="{Binding User.IsOnline}" />
-                    <Border Grid.Column="0"
-                            Width="14"
-                            Height="14"
-                            CornerRadius="7"
-                            Background="#E5484D"
-                            HorizontalAlignment="Right"
-                            VerticalAlignment="Center"
-                            Margin="0,0,2,0"
-                            IsVisible="{Binding HasUnreadMessages}">
-                        <TextBlock Text="{Binding UnreadMessageCount}"
-                                   FontSize="8"
-                                   FontWeight="Bold"
-                                   Foreground="White"
-                                   HorizontalAlignment="Center"
-                                   VerticalAlignment="Center" />
-                    </Border>
+                    <controls:UnreadBadge Grid.Column="0"
+                                          Count="{Binding UnreadMessageCount}"
+                                          HorizontalAlignment="Right"
+                                          VerticalAlignment="Center"
+                                          Margin="0,0,2,0"
+                                          IsVisible="{Binding HasUnreadMessages}" />
                     <StackPanel Grid.Column="1"
                                 VerticalAlignment="Center"
                                 Spacing="2"
@@ -148,15 +139,10 @@
                             Background="{DynamicResource ChatlyBorderBrush}" />
 
                     <ItemsControl Grid.Row="2"
+                                  Classes="stretch-items"
                                   Margin="0,4"
                                   ItemsSource="{Binding ViewModel.TopNavigationItems}"
-                                  ItemTemplate="{StaticResource NavigationItemTemplate}">
-                        <ItemsControl.Styles>
-                            <Style Selector="ContentPresenter">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </ItemsControl.Styles>
-                    </ItemsControl>
+                                  ItemTemplate="{StaticResource NavigationItemTemplate}" />
 
                     <Border Grid.Row="3"
                             Height="1"
@@ -167,14 +153,9 @@
                                   Margin="0,4"
                                   HorizontalScrollBarVisibility="Disabled"
                                   VerticalScrollBarVisibility="Auto">
-                        <ItemsControl ItemsSource="{Binding ViewModel.Chats}"
-                                      ItemTemplate="{StaticResource ChatItemTemplate}">
-                            <ItemsControl.Styles>
-                                <Style Selector="ContentPresenter">
-                                    <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                                </Style>
-                            </ItemsControl.Styles>
-                        </ItemsControl>
+                        <ItemsControl Classes="stretch-items"
+                                      ItemsSource="{Binding ViewModel.Chats}"
+                                      ItemTemplate="{StaticResource ChatItemTemplate}" />
                     </ScrollViewer>
 
                     <Border Grid.Row="5"
@@ -183,15 +164,10 @@
                             Background="{DynamicResource ChatlyBorderBrush}" />
 
                     <ItemsControl Grid.Row="6"
+                                  Classes="stretch-items"
                                   Margin="0,4,0,8"
                                   ItemsSource="{Binding ViewModel.FooterNavigationItems}"
-                                  ItemTemplate="{StaticResource NavigationItemTemplate}">
-                        <ItemsControl.Styles>
-                            <Style Selector="ContentPresenter">
-                                <Setter Property="HorizontalContentAlignment" Value="Stretch" />
-                            </Style>
-                        </ItemsControl.Styles>
-                    </ItemsControl>
+                                  ItemTemplate="{StaticResource NavigationItemTemplate}" />
                 </Grid>
             </Border>
 

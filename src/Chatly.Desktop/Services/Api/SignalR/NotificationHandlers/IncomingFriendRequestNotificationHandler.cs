@@ -1,12 +1,7 @@
-using Chatly.Contracts.Endpoints.FriendRequests.Results;
-using Chatly.Contracts.SignalR;
+using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 using Chatly.Desktop.Abstraction.Notification;
-using Chatly.Desktop.Abstraction.Toasts;
-using Chatly.Desktop.Extensions;
 using Chatly.Desktop.Mappers;
-using Chatly.Desktop.Models.UserSession;
 using Chatly.Desktop.Utilities;
-using Microsoft.Extensions.Logging;
 
 namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 
@@ -14,15 +9,13 @@ namespace Chatly.Desktop.Services.Api.SignalR.NotificationHandlers;
 internal sealed class IncomingFriendRequestNotificationHandler(
     FriendRequestState friendRequestState,
     IToastService toastService,
-    INotificationService notificationService,
-    ILogger<ClientNotificationHandler<IncomingFriendRequestMessage>> logger)
-    : ClientNotificationHandler<IncomingFriendRequestMessage>(logger)
+    INotificationSoundPlayer notificationSoundPlayer,
+    ILogger<ClientNotificationHandler<IncomingFriendRequestNotification>> logger)
+    : ClientNotificationHandler<IncomingFriendRequestNotification>(logger)
 {
-    public override NotificationType Type => NotificationType.IncomingFriendRequest;
-
-    protected override Task HandleNotificationAsync(IncomingFriendRequestMessage message)
+    protected override Task HandleNotificationAsync(IncomingFriendRequestNotification message)
     {
-        return UiThreadDispatcher.SafeInvokeAsync(async () =>
+        return UIThreadDispatcher.SafeInvokeAsync(async () =>
         {
             var friendRequest = FriendRequestMapper.Map(message);
             if (!friendRequestState.Add(friendRequest))
@@ -31,8 +24,8 @@ internal sealed class IncomingFriendRequestNotificationHandler(
             }
 
             friendRequestState.IncrementPendingCount();
-            toastService.AddNotification($"Friend request from '{message.SenderUsername}'");
-            await notificationService.PlayNotificationSoundAsync();
+            toastService.AddNotification($"Friend request from '{message.Request.SenderUsername}'");
+            await notificationSoundPlayer.PlayNotificationSoundAsync();
         });
     }
 }

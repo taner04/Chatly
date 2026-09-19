@@ -1,6 +1,3 @@
-using Chatly.WebApi.Features.Users.Validation;
-using FluentValidation;
-
 namespace Chatly.WebApi.Features.Users.Endpoints.UpdateProfilePicture;
 
 internal sealed class UpdateProfilePictureCommandValidator

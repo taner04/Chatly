@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:popups="clr-namespace:Chatly.Desktop.Views.Popups"
+             x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Popups.OnboardingPopup"
              x:DataType="popups:OnboardingPopup"
              x:Name="Root"
@@ -54,8 +55,7 @@
                 <Button Classes="avatar-button"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Command="{Binding ViewModel.SelectProfilePictureCommand}"
-                        CommandParameter="{Binding #Root}">
+                        Command="{Binding ViewModel.SelectProfilePictureCommand}">
                     <Border Width="70"
                             Height="70"
                             CornerRadius="35"
@@ -161,7 +161,7 @@
             <TextBox Classes="chatly-input profile-input"
                      Text="{Binding ViewModel.Username, Mode=TwoWay}"
                      PlaceholderText="Username"
-                     MaxLength="30" />
+                     MaxLength="{Binding ViewModel.UsernameMaxLength}" />
         </StackPanel>
 
         <Button Classes="accent-button continue-button"

@@ -4,8 +4,5 @@ namespace Chatly.Desktop.Services.Settings.DirectoryProviders;
 
 internal sealed class WindowsSettingsDirectoryProvider : ISettingsDirectoryProvider
 {
-    public string GetRootDirectory()
-    {
-        return Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
-    }
+    public string GetRootDirectory() => Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
 }

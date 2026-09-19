@@ -4,6 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="using:Chatly.Desktop.Views.Windows"
         mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        x:ClassModifier="internal"
         x:Class="Chatly.Desktop.Views.Windows.SplashScreenWindow"
         WindowStartupLocation="CenterScreen"
         x:DataType="windows:SplashScreenWindow"

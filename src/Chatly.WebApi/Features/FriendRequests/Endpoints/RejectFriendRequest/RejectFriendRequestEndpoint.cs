@@ -5,7 +5,7 @@ internal sealed class RejectFriendRequestEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapPost(
-                "/api/friend-requests/{friendRequestId:guid}/reject",
+                ApiRoutes.FriendRequests.Reject,
                 async (
                     [FromRoute] Guid friendRequestId,
                     [FromServices] IMediator mediator,

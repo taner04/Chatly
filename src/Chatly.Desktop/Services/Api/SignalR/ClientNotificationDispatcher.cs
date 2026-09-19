@@ -1,27 +1,33 @@
-﻿using System.Linq;
-using Chatly.Contracts.SignalR;
-using Microsoft.Extensions.Logging;
+﻿using Chatly.Contracts.Features.Hubs;
 
 namespace Chatly.Desktop.Services.Api.SignalR;
 
 [SingletonService]
-internal sealed partial class ClientNotificationDispatcher(
-    ILogger<ClientNotificationDispatcher> logger,
-    IEnumerable<IClientNotificationHandler> notificationHandlers)
+internal sealed partial class ClientNotificationDispatcher
 {
-    public async Task DispatchAsync(NotificationMessage message)
-    {
-        var handler = notificationHandlers.FirstOrDefault(candidate => candidate.Type == message.Type);
+    private readonly ILogger<ClientNotificationDispatcher> _logger;
+    private readonly IReadOnlyDictionary<Type, IClientNotificationHandler> _notificationHandlers;
 
-        if (handler is null)
+    public ClientNotificationDispatcher(
+        ILogger<ClientNotificationDispatcher> logger,
+        IEnumerable<IClientNotificationHandler> notificationHandlers)
+    {
+        _logger = logger;
+        _notificationHandlers = notificationHandlers.ToDictionary(handler => handler.NotificationType);
+    }
+
+    public async Task DispatchAsync(Notification notification)
+    {
+        var notificationType = notification.GetType();
+        if (!_notificationHandlers.TryGetValue(notificationType, out var handler))
         {
-            LogStrategyNotFound(message.Type);
+            LogStrategyNotFound(notificationType);
             return;
         }
 
-        await handler.HandleNotificationAsync(message);
+        await handler.HandleNotificationAsync(notification);
     }
 
     [LoggerMessage(LogLevel.Warning, "No strategy found for notification type: {NotificationType}")]
-    private partial void LogStrategyNotFound(NotificationType notificationType);
+    private partial void LogStrategyNotFound(Type notificationType);
 }

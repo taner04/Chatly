@@ -11,4 +11,7 @@
         <Project Path="tools/Chatly.MigrationService/Chatly.MigrationService.csproj"/>
         <Project Path="tools/Chatly.ServiceDefaults/Chatly.ServiceDefaults.csproj"/>
     </Folder>
+    <Folder Name="/tests/">
+        <Project Path="tests/Chatly.SourceGenerator.Tests/Chatly.SourceGenerator.Tests.csproj"/>
+    </Folder>
 </Solution>

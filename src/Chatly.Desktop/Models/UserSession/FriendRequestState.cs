@@ -10,10 +10,7 @@ public sealed partial class FriendRequestState
 
     public bool HasPendingRequests => PendingCount > 0;
 
-    internal bool Add(FriendRequest friendRequest)
-    {
-        return AddItem(friendRequest);
-    }
+    internal bool Add(FriendRequest friendRequest) => AddItem(friendRequest);
 
     internal void Set(IEnumerable<FriendRequest> friendRequests)
     {

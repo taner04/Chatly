@@ -9,6 +9,10 @@ public interface INavigationService
     Task<bool> NavigateToAsync<T>(CancellationToken cancellationToken = default)
         where T : INavigableViewModel;
 
+    Task<bool> NavigateToAsync(
+        Type viewModelType,
+        CancellationToken cancellationToken = default);
+
     Task<bool> NavigateToAsync<T>(object parameter, CancellationToken cancellationToken = default)
         where T : INavigableViewModel;
 

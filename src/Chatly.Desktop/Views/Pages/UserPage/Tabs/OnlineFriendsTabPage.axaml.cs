@@ -3,7 +3,7 @@ using Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 namespace Chatly.Desktop.Views.Pages.UserPage.Tabs;
 
 [SingletonService(typeof(INavigableView<OnlineFriendsTabPageViewModel>))]
-public partial class OnlineFriendsTabPage : UserControl, INavigableView<OnlineFriendsTabPageViewModel>
+internal partial class OnlineFriendsTabPage : UserControl, INavigableView<OnlineFriendsTabPageViewModel>
 {
     public OnlineFriendsTabPage(OnlineFriendsTabPageViewModel viewModel)
     {
