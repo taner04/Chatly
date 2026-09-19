@@ -2,7 +2,7 @@ using Chatly.Contracts.Features.Messages.Endpoints.GetMessages;
 using Chatly.Contracts.Features.Messages.Models;
 using Refit;
 
-namespace Chatly.Desktop.Services.Api.Refit.Abstraction;
+namespace Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 public interface IMessageEndpoint
 {

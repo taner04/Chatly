@@ -1,7 +1,7 @@
 using Chatly.Contracts.Features.Friendships.Models;
 using Refit;
 
-namespace Chatly.Desktop.Services.Api.Refit.Abstraction;
+namespace Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 public interface IFriendshipEndpoint
 {

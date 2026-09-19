@@ -40,7 +40,8 @@ internal partial class ChatPage : UserControl, INavigableView<ChatPageViewModel>
     private void OnDragOver(object? sender, DragEventArgs e)
     {
         var containsFiles = e.DataTransfer.TryGetFiles()?.Any(item => item is IStorageFile) == true;
-        e.DragEffects = ViewModel.HasCurrentChat && containsFiles ? DragDropEffects.Copy
+        e.DragEffects = ViewModel.HasCurrentChat && containsFiles
+            ? DragDropEffects.Copy
             : DragDropEffects.None;
         e.Handled = true;
     }

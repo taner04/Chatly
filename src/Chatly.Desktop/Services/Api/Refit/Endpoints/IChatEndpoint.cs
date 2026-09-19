@@ -1,7 +1,7 @@
 using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
 using Refit;
 
-namespace Chatly.Desktop.Services.Api.Refit.Abstraction;
+namespace Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 public interface IChatEndpoint
 {

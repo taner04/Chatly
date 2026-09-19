@@ -1,3 +1,5 @@
+using Chatly.SourceGenerator.Generators.Services.Enums;
+
 namespace Chatly.SourceGenerator.Generators.Services;
 
 internal static class DependencyInjectionTemplate

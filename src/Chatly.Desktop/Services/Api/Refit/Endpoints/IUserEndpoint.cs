@@ -4,7 +4,7 @@ using Chatly.Contracts.Features.Users.Endpoints.SearchUsers;
 using Chatly.Contracts.Features.Users.Endpoints.UpdateUsername;
 using Refit;
 
-namespace Chatly.Desktop.Services.Api.Refit.Abstraction;
+namespace Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 public interface IUserEndpoint
 {

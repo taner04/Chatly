@@ -1,3 +1,5 @@
+using Chatly.SourceGenerator.Generators.Services.Diagnostics;
+
 namespace Chatly.SourceGenerator.Generators.Services.Models;
 
 internal sealed class ServiceCandidate : IEquatable<ServiceCandidate>

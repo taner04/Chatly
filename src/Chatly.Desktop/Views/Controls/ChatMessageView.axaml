@@ -1,10 +1,10 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-              xmlns:reactions="using:Chatly.Contracts.Features.Reactions.Models"
-              xmlns:asyncImageLoader="using:AsyncImageLoader"
-              xmlns:converters="using:Chatly.Desktop.Converters"
-              xmlns:ic="using:FluentIcons.Avalonia"
-              xmlns:messages="clr-namespace:Chatly.Desktop.ViewModels.Pages.ChatPage.Messages"
+             xmlns:reactions="using:Chatly.Contracts.Features.Reactions.Models"
+             xmlns:asyncImageLoader="using:AsyncImageLoader"
+             xmlns:converters="using:Chatly.Desktop.Converters"
+             xmlns:ic="using:FluentIcons.Avalonia"
+             xmlns:messages="clr-namespace:Chatly.Desktop.ViewModels.Pages.ChatPage.Messages"
              x:Class="Chatly.Desktop.Views.Controls.ChatMessageView"
              x:DataType="messages:ChatMessageViewModel">
     <UserControl.Resources>

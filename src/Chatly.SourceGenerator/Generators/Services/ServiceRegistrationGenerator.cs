@@ -1,3 +1,6 @@
+using Chatly.SourceGenerator.Generators.Services.Diagnostics;
+using Chatly.SourceGenerator.Generators.Services.Enums;
+
 namespace Chatly.SourceGenerator.Generators.Services;
 
 [Generator(LanguageNames.CSharp)]

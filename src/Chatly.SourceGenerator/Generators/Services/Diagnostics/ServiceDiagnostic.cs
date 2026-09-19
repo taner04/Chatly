@@ -1,4 +1,6 @@
-namespace Chatly.SourceGenerator.Generators.Services.Models;
+using Chatly.SourceGenerator.Generators.Services.Enums;
+
+namespace Chatly.SourceGenerator.Generators.Services.Diagnostics;
 
 internal readonly record struct ServiceDiagnostic(
     ServiceDiagnosticKind Kind,

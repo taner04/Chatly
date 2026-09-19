@@ -2,7 +2,7 @@ using Chatly.Contracts.Features.Reactions.Endpoints.SetReaction;
 using Chatly.Contracts.Features.Reactions.Models;
 using Refit;
 
-namespace Chatly.Desktop.Services.Api.Refit.Abstraction;
+namespace Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 public interface IReactionEndpoint
 {

@@ -1,4 +1,4 @@
-using Chatly.Desktop.Services.Api.Refit.Abstraction;
+using Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 namespace Chatly.Desktop.Services.Api.Refit;
 

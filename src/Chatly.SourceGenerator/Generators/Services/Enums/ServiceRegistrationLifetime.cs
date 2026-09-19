@@ -1,4 +1,4 @@
-namespace Chatly.SourceGenerator.Generators.Services.Models;
+namespace Chatly.SourceGenerator.Generators.Services.Enums;
 
 internal enum ServiceRegistrationLifetime
 {
