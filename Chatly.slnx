@@ -1,7 +1,9 @@
 <Solution>
     <Folder Name="/src/">
+        <Project Path="src/Chatly.Audio/Chatly.Audio.csproj"/>
         <Project Path="src/Chatly.Contracts/Chatly.Contracts.csproj"/>
         <Project Path="src/Chatly.Desktop/Chatly.Desktop.csproj"/>
+        <Project Path="src/Chatly.Rtc/Chatly.Rtc.csproj"/>
         <Project Path="src/Chatly.Shared/Chatly.Shared.csproj"/>
         <Project Path="src/Chatly.SourceGenerator/Chatly.SourceGenerator.csproj"/>
         <Project Path="src/Chatly.WebApi/Chatly.WebApi.csproj"/>
@@ -12,6 +14,9 @@
         <Project Path="tools/Chatly.ServiceDefaults/Chatly.ServiceDefaults.csproj"/>
     </Folder>
     <Folder Name="/tests/">
+        <Project Path="tests/Chatly.Audio.Tests/Chatly.Audio.Tests.csproj"/>
+        <Project Path="tests/Chatly.Calls.Tests/Chatly.Calls.Tests.csproj"/>
+        <Project Path="tests/Chatly.Rtc.Tests/Chatly.Rtc.Tests.csproj"/>
         <Project Path="tests/Chatly.SourceGenerator.Tests/Chatly.SourceGenerator.Tests.csproj"/>
     </Folder>
 </Solution>

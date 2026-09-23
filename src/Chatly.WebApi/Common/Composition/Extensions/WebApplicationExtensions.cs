@@ -1,5 +1,7 @@
 using Chatly.Shared.Extensions;
 using Chatly.WebApi.Common.Composition.Options;
+using Hangfire;
+using Hangfire.Dashboard;
 using Scalar.AspNetCore;
 using AzureBlobService = Chatly.WebApi.Common.Infrastructure.Persistence.Blob.AzureBlobService;
 
@@ -60,6 +62,18 @@ internal static class WebApplicationExtensions
             var attachmentService = scope.ServiceProvider.GetRequiredService<AzureBlobService>();
 
             await attachmentService.InitializeAsync();
+
+            return app;
+        }
+
+
+        internal WebApplication AddHangfireDashboard()
+        {
+            app.UseHangfireDashboard(options: new DashboardOptions
+            {
+                DarkModeEnabled = true,
+                Authorization = [new LocalRequestsOnlyAuthorizationFilter()]
+            });
 
             return app;
         }

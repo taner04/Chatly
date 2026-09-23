@@ -1,17 +1,15 @@
 ﻿namespace Chatly.WebApi.Common.Shared.Models;
 
 public abstract class UserPairEntity<TId> : Entity<TId>, IUserPairEntity
-    where TId : struct
+    where TId : struct, IGuidEntityId<TId>
 {
     protected UserPairEntity()
     {
     }
 
     protected UserPairEntity(
-        TId id,
         UserId firstUserId,
         UserId secondUserId)
-        : base(id)
     {
         var participants = UserPair.Create(firstUserId, secondUserId);
 

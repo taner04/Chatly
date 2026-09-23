@@ -10,6 +10,9 @@
         <PackageReference Include="Azure.Storage.Blobs"/>
         <PackageReference Include="FluentValidation"/>
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions"/>
+        <PackageReference Include="Hangfire"/>
+        <PackageReference Include="Hangfire.PostgreSql"/>
+        <PackageReference Include="MailKit"/>
         <PackageReference Include="Mediator.Abstractions"/>
         <PackageReference Include="Mediator.SourceGenerator">
             <PrivateAssets>all</PrivateAssets>
@@ -38,7 +41,18 @@
         <ProjectReference Include="..\Chatly.Shared\Chatly.Shared.csproj"/>
         <ProjectReference Include="..\Chatly.SourceGenerator\Chatly.SourceGenerator.csproj"
                           OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="false"/>
+                           ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Update="Common/Infrastructure/Email/Templates/*.html">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+        </None>
+    </ItemGroup>
+
+    <ItemGroup>
+      <Folder Include="Features\Calls\Endpoints\" />
     </ItemGroup>
 
 </Project>

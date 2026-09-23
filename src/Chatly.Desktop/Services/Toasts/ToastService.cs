@@ -15,12 +15,12 @@ internal sealed class ToastService : IToastService
     public void AddToast(IToastViewModel toastViewModel)
     {
         ArgumentNullException.ThrowIfNull(toastViewModel);
-        UIThreadDispatcher.SafeInvoke(() => AddToastCore(toastViewModel));
+        UiThreadDispatcher.SafeInvoke(() => AddToastCore(toastViewModel));
     }
 
     public void RemoveToast(Guid id)
     {
-        UIThreadDispatcher.SafeInvoke(() => RemoveToastCore(id));
+        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id));
     }
 
     public void SetToastHost(IToastHost toastHost)
@@ -65,7 +65,7 @@ internal sealed class ToastService : IToastService
             return;
         }
 
-        UIThreadDispatcher.SafeInvoke(() => RemoveToastCore(id, cancellationTokenSource));
+        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id, cancellationTokenSource));
     }
 
     private void OnToastDismissed(object? sender, EventArgs e)

@@ -38,7 +38,9 @@
     </ItemGroup>
 
     <ItemGroup>
+        <ProjectReference Include="..\Chatly.Audio\Chatly.Audio.csproj"/>
         <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj"/>
+        <ProjectReference Include="..\Chatly.Rtc\Chatly.Rtc.csproj"/>
         <ProjectReference Include="..\Chatly.Shared\Chatly.Shared.csproj"/>
         <ProjectReference Include="..\Chatly.SourceGenerator\Chatly.SourceGenerator.csproj"
                           OutputItemType="Analyzer"
@@ -106,4 +108,9 @@
             <SubType>Code</SubType>
         </Compile>
     </ItemGroup>
+
+    <ItemGroup>
+        <Folder Include="Services\Api\Hubs\CallHub\CallHandler\"/>
+    </ItemGroup>
+
 </Project>

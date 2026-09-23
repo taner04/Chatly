@@ -23,6 +23,9 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
         builder.Property(user => user.OnboardingCompleted)
             .IsRequired();
 
+        builder.Property(user => user.LastSeenAt);
+        builder.Property(user => user.LastAbsenceEmailAt);
+
         builder.HasOne(user => user.ProfilePictureFile)
             .WithMany()
             .HasForeignKey(user => user.ProfilePictureFileId)
@@ -41,5 +44,12 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
         builder.HasIndex(user => user.ProfilePictureFileId)
             .IsUnique()
             .HasFilter("\"ProfilePictureFileId\" IS NOT NULL");
+
+        builder.HasIndex(user => new
+            {
+                user.LastSeenAt,
+                user.LastAbsenceEmailAt
+            })
+            .HasFilter("\"OnboardingCompleted\" = TRUE AND \"LastSeenAt\" IS NOT NULL");
     }
 }

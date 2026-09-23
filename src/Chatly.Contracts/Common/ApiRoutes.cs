@@ -36,6 +36,7 @@ public static class ApiRoutes
     public static class Hubs
     {
         public const string Notification = "/hubs/notification";
+        public const string Call = "/hubs/call";
     }
 
     public static class Messages

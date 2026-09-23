@@ -1,11 +1,12 @@
 using Avalonia.Controls.ApplicationLifetimes;
-using Chatly.Desktop.Services.Api.SignalR;
+using Chatly.Audio.Abstractions;
+using Chatly.Desktop.Abstraction.Hubs;
 using Chatly.Desktop.Services.Authentication;
+using Chatly.Desktop.Services.Calls;
 using Chatly.Desktop.Services.Settings;
 using Chatly.Desktop.ViewModels.Pages.UserPage;
 using Chatly.Desktop.ViewModels.Popups;
 using Chatly.Desktop.Views.Windows;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.Services.Startup;
 
@@ -18,9 +19,11 @@ internal sealed class ApplicationStartupService(
     UserSessionContext sessionContext,
     INavigationService navigationService,
     IPopupService popupService,
-    NotificationHubConnection notificationHubConnection,
-    ClientNotificationDispatcher clientNotificationDispatcher,
-    ThemeService themeService)
+    IEnumerable<IHubHost> hubHosts,
+    ThemeService themeService,
+    IAudioHost audioHost,
+    CallCoordinator callCoordinator,
+    ILogger<ApplicationStartupService> logger)
 {
     private static readonly TimeSpan ApiRetryInterval = TimeSpan.FromSeconds(10);
 
@@ -43,16 +46,45 @@ internal sealed class ApplicationStartupService(
             return;
         }
 
+        await audioHost.InitializeAsync(splashScreen.ViewModel.CancellationToken);
+
+        foreach (var hub in hubHosts)
+        {
+            await hub.StartAsync(splashScreen.ViewModel.CancellationToken);
+        }
+
+        try
+        {
+            await callCoordinator.ReconcileAsync(splashScreen.ViewModel.CancellationToken);
+        }
+        catch (OperationCanceledException) when (splashScreen.ViewModel.CancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception, "Failed to reconcile the current call during startup.");
+        }
+
         await navigationService.NavigateToAsync<UserPageViewModel>();
 
         desktop.MainWindow = mainWindow;
         mainWindow.Show();
         splashScreen.Close();
-        await notificationHubConnection.StartHubAsync(clientNotificationDispatcher.DispatchAsync);
 
         if (sessionContext.CurrentUser?.OnboardingCompleted == false)
         {
             await popupService.ShowAsync<OnboardingPopupViewModel>();
+        }
+    }
+
+    internal async Task StopAsync(CancellationToken cancellationToken)
+    {
+        await callCoordinator.ShutdownAsync();
+
+        foreach (var hub in hubHosts)
+        {
+            await hub.StopAsync(cancellationToken);
         }
     }
 

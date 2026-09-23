@@ -4,5 +4,6 @@
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Tabs.OnlineFriendsTabPage"
              x:DataType="local:OnlineFriendsTabPage">
-    <local:FriendsTabView ViewModel="{Binding ViewModel}" />
+    <local:FriendsTabView ViewModel="{Binding ViewModel}"
+                          ShowCallButton="True" />
 </UserControl>

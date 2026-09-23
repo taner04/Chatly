@@ -3,7 +3,7 @@
 namespace Chatly.WebApi.Features.FriendRequests.Models;
 
 [ValueObject<Guid>]
-public readonly partial struct FriendRequestId
+public readonly partial struct FriendRequestId : IGuidEntityId<FriendRequestId>
 {
     private static Validation Validate(Guid value) => value.Validate<FriendRequestId>();
 }
@@ -15,7 +15,7 @@ public sealed class FriendRequest : UserPairEntity<FriendRequestId>
     }
 
     public FriendRequest(UserId senderId, UserId receiverId)
-        : base(FriendRequestId.From(Guid.CreateVersion7()), senderId, receiverId)
+        : base(senderId, receiverId)
     {
         SenderUserId = senderId;
         ReceiverUserId = receiverId;

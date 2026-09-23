@@ -1,4 +1,5 @@
 using Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
+using Chatly.WebApi.Features.Calls.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.Friendships.Models;
 using Chatly.WebApi.Features.MessageAttachments.Models;
@@ -10,6 +11,8 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence;
 public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) : DbContext(options)
 {
     public DbSet<User> Users => Set<User>();
+    public DbSet<Call> Calls => Set<Call>();
+    public DbSet<ActiveCallParticipant> ActiveCallParticipants => Set<ActiveCallParticipant>();
     public DbSet<FriendRequest> FriendRequests => Set<FriendRequest>();
     public DbSet<Friendship> Friendships => Set<Friendship>();
     public DbSet<Chat> Chats => Set<Chat>();

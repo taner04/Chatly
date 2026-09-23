@@ -1,6 +1,9 @@
+using Chatly.Audio.Abstractions;
+
 namespace Chatly.Desktop.Abstraction.Notification;
 
-internal interface INotificationSoundPlayer
+public interface INotificationSoundPlayer
 {
-    Task PlayNotificationSoundAsync();
+    Task PlayNotificationAsync();
+    Task<IAudioPlayback> PlayRingtoneAsync();
 }

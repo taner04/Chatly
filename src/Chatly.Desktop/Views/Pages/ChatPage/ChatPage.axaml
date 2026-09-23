@@ -222,18 +222,26 @@
                     BorderThickness="1"
                     CornerRadius="12"
                     IsVisible="{Binding ViewModel.HasCurrentChat}">
-                <StackPanel Orientation="Horizontal" Spacing="10">
+                <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <controls:UserAvatar Width="32"
                                          Height="32"
                                          DisplayName="{Binding ViewModel.CurrentChat.User.Username}"
                                          ProfilePictureUrl="{Binding ViewModel.CurrentChat.User.ProfilePictureUrl}"
                                          IsOnline="{Binding ViewModel.CurrentChat.User.IsOnline}" />
-                    <TextBlock Text="{Binding ViewModel.CurrentChat.Name}"
+                    <TextBlock Grid.Column="1"
+                               Text="{Binding ViewModel.CurrentChat.Name}"
                                VerticalAlignment="Center"
                                FontSize="16"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource ChatlyTextBrush}" />
-                </StackPanel>
+                    <Button Grid.Column="2"
+                            Classes="icon-button friend-action"
+                            ToolTip.Tip="Call"
+                            Command="{Binding ViewModel.Call.CallCommand}"
+                            CommandParameter="{Binding ViewModel.CurrentChat.User}">
+                        <ic:SymbolIcon Symbol="Call" FontSize="18" />
+                    </Button>
+                </Grid>
             </Border>
 
             <ScrollViewer x:Name="MessagesScrollViewer"

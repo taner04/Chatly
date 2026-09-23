@@ -5,7 +5,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 internal abstract class UserPairEntityConfiguration<TEntity, TId>
     : EntityConfiguration<TEntity, TId>
     where TEntity : UserPairEntity<TId>
-    where TId : struct
+    where TId : struct, IGuidEntityId<TId>
 {
     protected abstract string TableName { get; }
     protected abstract string DistinctUsersConstraintName { get; }

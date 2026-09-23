@@ -1,7 +1,7 @@
 namespace Chatly.WebApi.Features.Chats.Models;
 
 [ValueObject<Guid>]
-public readonly partial struct ChatReadStateId
+public readonly partial struct ChatReadStateId : IGuidEntityId<ChatReadStateId>
 {
     private static Validation Validate(Guid value) => value.Validate<ChatReadStateId>();
 }
@@ -13,7 +13,6 @@ public sealed class ChatReadState : Entity<ChatReadStateId>
     }
 
     public ChatReadState(ChatId chatId, UserId userId)
-        : base(ChatReadStateId.From(Guid.CreateVersion7()))
     {
         ChatId = chatId;
         UserId = userId;

@@ -3,7 +3,8 @@ using Chatly.WebApi.Common.Composition.Configs;
 using Chatly.WebApi.Common.Composition.Configs.OpenApi;
 using Chatly.WebApi.Common.Composition.Extensions;
 using Chatly.WebApi.Common.Composition.Extensions.ServiceCollection;
-using Chatly.WebApi.Features.Hubs;
+using Chatly.WebApi.Features.Hubs.CallingHub;
+using Chatly.WebApi.Features.Hubs.NotificationHub;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,9 +31,15 @@ _ = app.UseHttpsRedirection();
 _ = app.UseAuthentication();
 _ = app.UseAuthorization();
 
+if (app.Environment.IsDevelopment())
+{
+    _ = app.AddHangfireDashboard();
+}
+
 _ = app.MapEndpoints();
 
 _ = app.MapHub<NotificationHub>(ApiRoutes.Hubs.Notification);
+_ = app.MapHub<CallingHub>(ApiRoutes.Hubs.Call);
 
 _ = await app.InitializeBlobStorage();
 

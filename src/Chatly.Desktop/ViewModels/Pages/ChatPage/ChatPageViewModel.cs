@@ -5,6 +5,7 @@ using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
 using Chatly.Desktop.Abstraction.Storage;
 using Chatly.Desktop.Services.Api.Clients;
 using Chatly.Desktop.ViewModels.Pages.ChatPage.Messages;
+using Chatly.Desktop.ViewModels;
 using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
@@ -17,6 +18,7 @@ public sealed partial class ChatPageViewModel(
     MessageApiClient messageApiClient,
     ChatMessagesViewModel messagesViewModel,
     ChatTypingViewModel typingViewModel,
+    CallViewModel call,
     UserSessionContext userSessionContext,
     IToastService toastService,
     ILogger<ChatPageViewModel> logger)
@@ -27,6 +29,8 @@ public sealed partial class ChatPageViewModel(
     public ChatMessagesViewModel MessagesViewModel { get; } = messagesViewModel;
 
     public ChatTypingViewModel TypingViewModel { get; } = typingViewModel;
+
+    public CallViewModel Call { get; } = call;
 
     public ObservableCollection<DraftAttachmentViewModel> DraftAttachments { get; } = [];
 

@@ -12,7 +12,7 @@
                 <DataTemplate>
                     <Border Classes="list-row"
                             Margin="0,0,0,8">
-                        <Grid ColumnDefinitions="44,*,Auto,Auto" ColumnSpacing="8">
+                        <Grid ColumnDefinitions="44,*,Auto,Auto,Auto" ColumnSpacing="8">
                             <controls:UserAvatar Width="40"
                                                  Height="40"
                                                  DisplayName="{Binding User.Username}"
@@ -26,12 +26,20 @@
                                        Foreground="{DynamicResource ChatlyTextBrush}" />
                             <Button Grid.Column="2"
                                     Classes="icon-button friend-action"
+                                    ToolTip.Tip="Call"
+                                    IsVisible="{Binding ShowCallButton, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}"
+                                    Command="{Binding ViewModel.Call.CallCommand, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}"
+                                    CommandParameter="{Binding User}">
+                                <ic:SymbolIcon Symbol="Call" FontSize="18" />
+                            </Button>
+                            <Button Grid.Column="3"
+                                    Classes="icon-button friend-action"
                                     ToolTip.Tip="Message"
                                     Command="{Binding ViewModel.Actions.OpenChatCommand, RelativeSource={RelativeSource AncestorType=local:FriendsTabView}}"
                                     CommandParameter="{Binding}">
                                 <ic:SymbolIcon Symbol="Chat" FontSize="18" />
                             </Button>
-                            <Button Grid.Column="3" Classes="icon-button friend-action" ToolTip.Tip="More options">
+                            <Button Grid.Column="4" Classes="icon-button friend-action" ToolTip.Tip="More options">
                                 <Button.Flyout>
                                     <MenuFlyout>
                                         <MenuFlyout.FlyoutPresenterTheme>

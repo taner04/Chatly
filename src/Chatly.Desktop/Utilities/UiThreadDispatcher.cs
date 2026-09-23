@@ -2,7 +2,7 @@ using Avalonia.Threading;
 
 namespace Chatly.Desktop.Utilities;
 
-internal static class UIThreadDispatcher
+internal static class UiThreadDispatcher
 {
     private static Dispatcher Dispatcher => Dispatcher.UIThread;
 

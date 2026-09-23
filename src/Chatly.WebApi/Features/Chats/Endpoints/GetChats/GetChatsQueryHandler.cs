@@ -1,5 +1,4 @@
 using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
-using Chatly.WebApi.Features.Hubs;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Chats.Endpoints.GetChats;

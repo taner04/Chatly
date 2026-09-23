@@ -3,7 +3,7 @@ using Chatly.WebApi.Features.StoredFiles.Models;
 namespace Chatly.WebApi.Features.MessageAttachments.Models;
 
 [ValueObject<Guid>]
-public readonly partial struct MessageAttachmentId
+public readonly partial struct MessageAttachmentId : IGuidEntityId<MessageAttachmentId>
 {
     private static Validation Validate(Guid value) => value.Validate<MessageAttachmentId>();
 }
@@ -15,7 +15,6 @@ public sealed class MessageAttachment : Entity<MessageAttachmentId>
     }
 
     public MessageAttachment(MessageId messageId, StoredFileId storedFileId)
-        : base(MessageAttachmentId.From(Guid.CreateVersion7()))
     {
         MessageId = messageId;
         StoredFileId = storedFileId;

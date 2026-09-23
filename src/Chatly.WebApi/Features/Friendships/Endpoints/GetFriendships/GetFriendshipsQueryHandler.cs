@@ -1,5 +1,4 @@
 using Chatly.Contracts.Features.Friendships.Models;
-using Chatly.WebApi.Features.Hubs;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Friendships.Endpoints.GetFriendships;

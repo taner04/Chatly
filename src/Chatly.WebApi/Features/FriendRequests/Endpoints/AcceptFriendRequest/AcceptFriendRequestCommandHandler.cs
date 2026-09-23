@@ -3,7 +3,6 @@ using Chatly.Contracts.Features.Friendships.Models;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.FriendRequests.Services;
 using Chatly.WebApi.Features.Friendships.Models;
-using Chatly.WebApi.Features.Hubs;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 using Chatly.WebApi.Features.Users.Services.Profiles;
 

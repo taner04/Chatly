@@ -1,9 +1,11 @@
+using Chatly.WebApi.Common.Infrastructure.Email;
 using Chatly.WebApi.Features.Users.Services;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
 internal sealed class CompleteOnboardingCommandHandler(
+    EmailService emailService,
     UserService userService,
     ProfilePictureService profilePictureService,
     ChatlyDbContext context)
@@ -53,6 +55,13 @@ internal sealed class CompleteOnboardingCommandHandler(
         {
             await profilePictureService.CompleteAsync(completedChange, cancellationToken);
         }
+
+        var emailRequest = new EmailRequest(
+                "Welcome to Chatly!",
+                EmailTemplateKeys.Welcome)
+            .AddValue("Username", user.Username!);
+
+        await emailService.SendEmailAsync(user.Email, emailRequest, cancellationToken);
 
         return userService.CreateResponse(user);
     }

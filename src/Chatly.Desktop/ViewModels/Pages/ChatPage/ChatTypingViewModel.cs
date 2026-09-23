@@ -1,4 +1,4 @@
-using Chatly.Contracts.Features.Hubs.Notifications;
+using Chatly.Contracts.Features.Hubs.Notifications.NotificationHubServer;
 using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;
@@ -161,7 +161,7 @@ public sealed partial class ChatTypingViewModel(
         try
         {
             await Task.Delay(TypingStatusExpiry, cancellation.Token);
-            UIThreadDispatcher.SafeInvoke(() =>
+            UiThreadDispatcher.SafeInvoke(() =>
             {
                 if (ReferenceEquals(_typingStatusExpiryCancellation, cancellation))
                 {

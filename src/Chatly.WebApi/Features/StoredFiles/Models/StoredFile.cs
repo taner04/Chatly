@@ -1,7 +1,7 @@
 namespace Chatly.WebApi.Features.StoredFiles.Models;
 
 [ValueObject<Guid>]
-public readonly partial struct StoredFileId
+public readonly partial struct StoredFileId : IGuidEntityId<StoredFileId>
 {
     private static Validation Validate(Guid value) => value.Validate<StoredFileId>();
 }
@@ -22,7 +22,6 @@ public sealed class StoredFile : Entity<StoredFileId>
         string fileName,
         string contentType,
         long size)
-        : base(StoredFileId.From(Guid.CreateVersion7()))
     {
         UserId = userId;
         BlobName = blobName;

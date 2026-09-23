@@ -9,6 +9,7 @@ public sealed class ChatlyDbContextFactory : IDesignTimeDbContextFactory<ChatlyD
     {
         var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                           ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
+        
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true);
@@ -24,15 +25,8 @@ public sealed class ChatlyDbContextFactory : IDesignTimeDbContextFactory<ChatlyD
         var connectionString = configuration.GetConnectionString(
             AppHostConstants.DatabaseConnectionName);
 
-        if (string.IsNullOrWhiteSpace(connectionString))
-        {
-            throw new InvalidOperationException(
-                $"Connection string '{AppHostConstants.DatabaseConnectionName}' was not found. " +
-                $"Set ConnectionStrings__{AppHostConstants.DatabaseConnectionName} or configure it in appsettings.json.");
-        }
-
         var optionsBuilder = new DbContextOptionsBuilder<ChatlyDbContext>();
-        ChatlyDbContextOptionsConfigurator.Configure(optionsBuilder, connectionString);
+        ChatlyDbContextOptionsConfigurator.Configure(optionsBuilder, connectionString!);
 
         return new ChatlyDbContext(optionsBuilder.Options);
     }

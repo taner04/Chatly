@@ -1,3 +1,4 @@
+using Chatly.Audio;
 using Chatly.Desktop.Abstraction.Authentication;
 using Chatly.Desktop.Abstraction.Settings;
 using Chatly.Desktop.Options;
@@ -7,6 +8,7 @@ using Chatly.Desktop.Services.Authentication.Storage;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs;
 using Chatly.Desktop.Services.Settings.DirectoryProviders;
 using Chatly.Generated;
+using Chatly.Rtc;
 using Chatly.Shared.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -35,6 +37,8 @@ internal static class ServiceCollectionExtensions
 
             services.AddGeneratedOptions();
             services.AddGeneratedServices();
+            services.AddChatlyRtc();
+            services.AddChatlyAudio();
 
             return services;
         }

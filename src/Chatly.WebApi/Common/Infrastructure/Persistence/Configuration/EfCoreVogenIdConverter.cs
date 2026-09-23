@@ -1,3 +1,4 @@
+using Chatly.WebApi.Features.Calls.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.Friendships.Models;
 using Chatly.WebApi.Features.MessageAttachments.Models;
@@ -15,4 +16,6 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 [EfCoreConverter<ReactionId>]
 [EfCoreConverter<StoredFileId>]
 [EfCoreConverter<MessageAttachmentId>]
+[EfCoreConverter<CallId>]
+[EfCoreConverter<ActiveCallParticipantId>]
 internal sealed partial class EfCoreVogenIdConverter;

@@ -4,7 +4,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 
 internal abstract class EntityConfiguration<TEntity, TId> : IEntityTypeConfiguration<TEntity>
     where TEntity : Entity<TId>
-    where TId : struct
+    where TId : struct, IGuidEntityId<TId>
 {
     public void Configure(EntityTypeBuilder<TEntity> builder)
     {

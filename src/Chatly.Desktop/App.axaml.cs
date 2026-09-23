@@ -92,7 +92,15 @@ public class App : Application
             {
                 try
                 {
-                    services.GetRequiredService<AppSettings>().Save();
+                    try
+                    {
+                        await services.GetRequiredService<ApplicationStartupService>()
+                            .StopAsync(CancellationToken.None);
+                    }
+                    finally
+                    {
+                        services.GetRequiredService<AppSettings>().Save();
+                    }
                 }
                 finally
                 {

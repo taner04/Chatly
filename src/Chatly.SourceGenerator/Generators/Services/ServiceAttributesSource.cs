@@ -13,9 +13,9 @@ internal static class ServiceAttributesSource
                                      Inherited = false,
                                      AllowMultiple = true)]
                                  [global::System.CodeDom.Compiler.GeneratedCode("Chatly.SourceGenerator", "1.0.0.0")]
-                                 public sealed class SingletonServiceAttribute : global::System.Attribute
-                                 {
-                                     public SingletonServiceAttribute(global::System.Type? serviceType = null, bool asSelf = false)
+                                  internal sealed class SingletonServiceAttribute : global::System.Attribute
+                                  {
+                                      internal SingletonServiceAttribute(global::System.Type? serviceType = null, bool asSelf = false)
                                      {
                                      }
                                  }
@@ -25,9 +25,9 @@ internal static class ServiceAttributesSource
                                      Inherited = false,
                                      AllowMultiple = true)]
                                  [global::System.CodeDom.Compiler.GeneratedCode("Chatly.SourceGenerator", "1.0.0.0")]
-                                 public sealed class ScopedServiceAttribute : global::System.Attribute
-                                 {
-                                     public ScopedServiceAttribute(global::System.Type? serviceType = null, bool asSelf = false)
+                                  internal sealed class ScopedServiceAttribute : global::System.Attribute
+                                  {
+                                      internal ScopedServiceAttribute(global::System.Type? serviceType = null, bool asSelf = false)
                                      {
                                      }
                                  }
@@ -37,9 +37,9 @@ internal static class ServiceAttributesSource
                                      Inherited = false,
                                      AllowMultiple = true)]
                                  [global::System.CodeDom.Compiler.GeneratedCode("Chatly.SourceGenerator", "1.0.0.0")]
-                                 public sealed class TransientServiceAttribute : global::System.Attribute
-                                 {
-                                     public TransientServiceAttribute(global::System.Type? serviceType = null, bool asSelf = false)
+                                  internal sealed class TransientServiceAttribute : global::System.Attribute
+                                  {
+                                      internal TransientServiceAttribute(global::System.Type? serviceType = null, bool asSelf = false)
                                      {
                                      }
                                  }

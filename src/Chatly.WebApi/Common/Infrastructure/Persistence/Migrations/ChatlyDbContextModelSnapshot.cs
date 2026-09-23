@@ -23,6 +23,107 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
             NpgsqlModelBuilderExtensions.HasPostgresExtension(modelBuilder, "citext");
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("Chatly.WebApi.Features.Calls.Models.ActiveCallParticipant", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<Guid>("CallId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CallId", "UserId")
+                        .IsUnique();
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("ActiveCallParticipants", (string)null);
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Calls.Models.Call", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset?>("AcceptedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("CallerUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<string>("EndReason")
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("EndedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset>("InitiatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<Guid>("ReceiverUserId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("CallerUserId", "InitiatedAt");
+
+                    b.HasIndex("ReceiverUserId", "InitiatedAt");
+
+                    b.ToTable("Calls", null, t =>
+                        {
+                            t.HasCheckConstraint("CK_Calls_AcceptedAt", "(\"Status\" = 'Ringing' AND \"AcceptedAt\" IS NULL) OR (\"Status\" IN ('Accepted', 'Offered', 'Active') AND \"AcceptedAt\" IS NOT NULL) OR \"Status\" = 'Ended'");
+
+                            t.HasCheckConstraint("CK_Calls_DistinctUsers", "\"CallerUserId\" <> \"ReceiverUserId\"");
+
+                            t.HasCheckConstraint("CK_Calls_TerminalState", "(\"Status\" = 'Ended' AND \"EndedAt\" IS NOT NULL AND \"EndReason\" IS NOT NULL) OR (\"Status\" <> 'Ended' AND \"EndedAt\" IS NULL AND \"EndReason\" IS NULL)");
+
+                            t.HasCheckConstraint("CK_Calls_TimestampOrder", "(\"AcceptedAt\" IS NULL OR \"AcceptedAt\" >= \"InitiatedAt\") AND (\"EndedAt\" IS NULL OR \"EndedAt\" >= \"InitiatedAt\") AND (\"AcceptedAt\" IS NULL OR \"EndedAt\" IS NULL OR \"EndedAt\" >= \"AcceptedAt\")");
+
+                            t.HasCheckConstraint("CK_Calls_ValidEndReason", "\"EndReason\" IS NULL OR \"EndReason\" IN ('Completed', 'Declined', 'Cancelled', 'Missed', 'Busy', 'Failed')");
+
+                            t.HasCheckConstraint("CK_Calls_ValidStatus", "\"Status\" IN ('Ringing', 'Accepted', 'Offered', 'Active', 'Ended')");
+                        });
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
                 {
                     b.Property<Guid>("Id")
@@ -396,6 +497,12 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .HasMaxLength(320)
                         .HasColumnType("citext");
 
+                    b.Property<DateTimeOffset?>("LastAbsenceEmailAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
                     b.Property<bool>("OnboardingCompleted")
                         .HasColumnType("boolean");
 
@@ -429,7 +536,48 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .IsUnique()
                         .HasFilter("\"Username\" IS NOT NULL");
 
+                    b.HasIndex("LastSeenAt", "LastAbsenceEmailAt")
+                        .HasFilter("\"OnboardingCompleted\" = TRUE AND \"LastSeenAt\" IS NOT NULL");
+
                     b.ToTable("Users", (string)null);
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Calls.Models.ActiveCallParticipant", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Calls.Models.Call", "Call")
+                        .WithMany("ActiveParticipants")
+                        .HasForeignKey("CallId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "User")
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Call");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Calls.Models.Call", b =>
+                {
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "CallerUser")
+                        .WithMany()
+                        .HasForeignKey("CallerUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", "ReceiverUser")
+                        .WithMany()
+                        .HasForeignKey("ReceiverUserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("CallerUser");
+
+                    b.Navigation("ReceiverUser");
                 });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>
@@ -564,6 +712,11 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.SetNull);
 
                     b.Navigation("ProfilePictureFile");
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.Calls.Models.Call", b =>
+                {
+                    b.Navigation("ActiveParticipants");
                 });
 
             modelBuilder.Entity("Chatly.WebApi.Features.Chats.Models.Chat", b =>

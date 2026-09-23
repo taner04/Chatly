@@ -3,6 +3,7 @@
 [ScopedService]
 public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
 {
+    internal const string UserIdItemKey = "Chatly.UserId";
     internal const string SubClaim = "sub";
     internal const string EmailClaim = "email";
     internal const string RoleClaim = "permissions";
@@ -14,7 +15,7 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
 
     internal UserId GetCurrentUserId()
     {
-        if (HttpContext!.Items.TryGetValue("UserId", out var id)
+        if (HttpContext.Items.TryGetValue(UserIdItemKey, out var id)
             && id is UserId userId)
         {
             return userId;

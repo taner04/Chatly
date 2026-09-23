@@ -10,7 +10,7 @@ public abstract class Auth0OptionBase
     [Required(ErrorMessage = "Auth0 audience is required.")]
     [Url(ErrorMessage = "Audience must be a valid URL.")]
     public string Audience { get; init; } = null!;
-    
+
     [Required(ErrorMessage = "Auth0 client id is required.")]
     public string ClientId { get; init; } = null!;
 }

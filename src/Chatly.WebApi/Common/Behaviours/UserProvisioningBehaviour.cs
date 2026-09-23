@@ -37,7 +37,7 @@ internal sealed partial class UserProvisioningBehaviour<TMessage, TResponse>(
             LogUserFound(auth0Id);
         }
 
-        accessor.HttpContext!.Items["UserId"] = user.Id;
+        accessor.HttpContext!.Items[CurrentUserService.UserIdItemKey] = user.Id;
 
         return await next(message, cancellationToken);
     }

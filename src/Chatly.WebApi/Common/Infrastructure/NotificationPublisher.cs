@@ -1,5 +1,6 @@
 ﻿using Chatly.Contracts.Features.Hubs;
 using Chatly.WebApi.Features.Hubs;
+using Chatly.WebApi.Features.Hubs.NotificationHub;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Chatly.WebApi.Common.Infrastructure;
@@ -11,7 +12,7 @@ internal sealed class NotificationPublisher(
     internal async Task PublishAsync(UserId receiverId, Notification notification)
     {
         ArgumentNullException.ThrowIfNull(notification);
-        await hubContext.Clients.Group(NotificationHubGroups.User(receiverId)).Receive(notification);
+        await hubContext.Clients.Group(HubGroups.User(receiverId)).Receive(notification);
     }
 
     internal Task PublishAsync(IEnumerable<UserId> receiverIds, Notification notification)
@@ -22,6 +23,6 @@ internal sealed class NotificationPublisher(
         return Task.WhenAll(receiverIds
             .Distinct()
             .Select(receiverId =>
-                hubContext.Clients.Group(NotificationHubGroups.User(receiverId)).Receive(notification)));
+                hubContext.Clients.Group(HubGroups.User(receiverId)).Receive(notification)));
     }
 }

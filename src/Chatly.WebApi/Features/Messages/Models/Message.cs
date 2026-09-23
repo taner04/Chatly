@@ -4,7 +4,7 @@ using Chatly.WebApi.Features.Reactions.Models;
 namespace Chatly.WebApi.Features.Messages.Models;
 
 [ValueObject<Guid>]
-public readonly partial struct MessageId
+public readonly partial struct MessageId : IGuidEntityId<MessageId>
 {
     private static Validation Validate(Guid value) => value.Validate<MessageId>();
 }
@@ -18,7 +18,6 @@ public sealed class Message : Entity<MessageId>
     }
 
     public Message(ChatId chatId, UserId senderUserId, string content)
-        : base(MessageId.From(Guid.CreateVersion7()))
     {
         ChatId = chatId;
         SenderUserId = senderUserId;
