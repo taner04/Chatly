@@ -9,7 +9,7 @@ public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
     internal const string RoleClaim = "permissions";
 
     private HttpContext HttpContext => httpContextAccessor.HttpContext ??
-                                       throw new InvalidOperationException("HTTP context is not available.");
+                                       throw new UnauthorizedAccessException("No user is associated with the current operation.");
 
     internal string GetAuth0Id() => GetClaimValue<string>(SubClaim);
 

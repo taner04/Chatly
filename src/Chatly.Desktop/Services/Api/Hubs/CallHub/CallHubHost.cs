@@ -6,7 +6,7 @@ namespace Chatly.Desktop.Services.Api.Hubs.CallHub;
 [SingletonService(typeof(IHubHost))]
 internal sealed class CallHubHost(
     CallHubConnection connection,
-    IHubMessageDispatcher<Call> dispatcher,
+    IHubMessageDispatcher dispatcher,
     CallCoordinator coordinator) : IHubHost
 {
     private IDisposable? _messageRegistration;

@@ -20,6 +20,10 @@ internal sealed class SendFriendRequestCommandHandler(
         CancellationToken cancellationToken)
     {
         var userId = currentUser.GetCurrentUserId();
+        if (command.ReceiverId == userId)
+        {
+            throw new FriendRequestToSelfException();
+        }
 
         var receiverExists = await context.Users
             .AnyAsync(user => user.Id == command.ReceiverId, cancellationToken);

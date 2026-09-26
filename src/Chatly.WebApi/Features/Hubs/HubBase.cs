@@ -7,12 +7,9 @@ namespace Chatly.WebApi.Features.Hubs;
 [Authorize]
 public abstract class HubBase<THubClient> : Hub<THubClient> where THubClient : class, IHubClient
 {
-    private readonly CurrentUserService _currentUser;
-
-    protected HubBase(ChatlyDbContext context, CurrentUserService currentUser)
+    protected HubBase(ChatlyDbContext context)
     {
         Database = context;
-        _currentUser = currentUser;
     }
 
     protected ChatlyDbContext Database { get; }
@@ -25,7 +22,8 @@ public abstract class HubBase<THubClient> : Hub<THubClient> where THubClient : c
             return userId;
         }
 
-        var auth0Id = _currentUser.GetAuth0Id();
+        var auth0Id = Context.User?.FindFirst(CurrentUserService.SubClaim)?.Value
+                      ?? throw new HubException("The user is not authenticated.");
         userId = await Database.Users
             .Where(user => user.Auth0Id == auth0Id)
             .Select(user => user.Id)

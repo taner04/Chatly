@@ -37,7 +37,7 @@ internal sealed partial class PresenceCheckerBackgroundService(
 
         await using var scope = scopeFactory.CreateAsyncScope();
         var context = scope.ServiceProvider.GetRequiredService<ChatlyDbContext>();
-        
+
         await context.Users
             .Where(user => userIds.Contains(user.Id))
             .ExecuteUpdateAsync(

@@ -1,5 +1,4 @@
 using Chatly.Contracts.Common.Pagination;
-using Chatly.WebApi.Common.Infrastructure.Pagination;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
@@ -11,18 +10,21 @@ internal sealed class SearchUsersQueryHandler(
     ProfilePictureUrlFactory profilePictureUrlFactory)
     : IQueryHandler<SearchUsersQuery, PaginationResult<UserSearchResponse>>
 {
+    private const string LikeEscapeCharacter = "\\";
+
     public async ValueTask<PaginationResult<UserSearchResponse>> Handle(
         SearchUsersQuery query,
         CancellationToken cancellationToken)
     {
         var currentUserId = currentUser.GetCurrentUserId();
+        var pattern = $"%{EscapeLikePattern(query.SearchName)}%";
 
         var page = await context.Users
             .AsNoTracking()
             .Where(user =>
                 user.Id != currentUserId &&
                 user.Username != null &&
-                EF.Functions.ILike(user.Username, $"%{query.SearchName}%"))
+                EF.Functions.ILike(user.Username, pattern, LikeEscapeCharacter))
             .OrderBy(user => user.Username)
             .ThenBy(user => user.Id)
             .Select(user => new
@@ -54,4 +56,10 @@ internal sealed class SearchUsersQueryHandler(
             profilePictureUrlFactory.CreateProfilePictureUrl(user.ProfilePictureKey),
             user.RelationshipStatus));
     }
+
+    private static string EscapeLikePattern(string value) =>
+        value
+            .Replace(LikeEscapeCharacter, LikeEscapeCharacter + LikeEscapeCharacter, StringComparison.Ordinal)
+            .Replace("%", LikeEscapeCharacter + "%", StringComparison.Ordinal)
+            .Replace("_", LikeEscapeCharacter + "_", StringComparison.Ordinal);
 }

@@ -9,7 +9,7 @@ public sealed class ChatlyDbContextFactory : IDesignTimeDbContextFactory<ChatlyD
     {
         var environment = Environment.GetEnvironmentVariable("DOTNET_ENVIRONMENT")
                           ?? Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT");
-        
+
         var configurationBuilder = new ConfigurationBuilder()
             .SetBasePath(Directory.GetCurrentDirectory())
             .AddJsonFile("appsettings.json", true);

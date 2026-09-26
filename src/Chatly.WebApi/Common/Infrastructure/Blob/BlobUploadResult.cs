@@ -1,4 +1,4 @@
-namespace Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+namespace Chatly.WebApi.Common.Infrastructure.Blob;
 
 internal readonly record struct BlobUploadResult(
     string BlobName,

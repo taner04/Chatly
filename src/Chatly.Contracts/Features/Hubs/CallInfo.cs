@@ -6,4 +6,5 @@ public sealed record CallInfo(
     string? RemoteUsername,
     CallRole Role,
     CallState State,
-    CallEndReason? EndReason);
+    CallEndReason? EndReason,
+    DateTimeOffset? AcceptedAt = null);

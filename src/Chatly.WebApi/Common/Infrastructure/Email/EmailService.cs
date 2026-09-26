@@ -6,11 +6,11 @@ using MimeKit;
 
 namespace Chatly.WebApi.Common.Infrastructure.Email;
 
-[SingletonService]
+[SingletonService(typeof(IEmailService))]
 internal sealed partial class EmailService(
     ILogger<EmailService> logger,
     IOptions<EmailOption> emailOptions,
-    EmailTemplateRenderer renderer)
+    EmailTemplateRenderer renderer) : IEmailService
 {
     private readonly EmailOption _emailOption = emailOptions.Value;
 

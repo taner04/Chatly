@@ -172,53 +172,92 @@
             </Border>
 
             <Border Background="{DynamicResource ChatlyContentBrush}">
-                <ContentControl x:Name="PageHost" Margin="24" />
+                <Grid RowDefinitions="Auto,*">
+                    <Border Classes="call-bar"
+                            Margin="24,24,24,0"
+                            IsVisible="{Binding Call.HasCall}">
+                        <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                            <controls:UserAvatar Width="36"
+                                                 Height="36"
+                                                 VerticalAlignment="Center"
+                                                 DisplayName="{Binding Call.RemoteUsername}"
+                                                 ProfilePictureUrl="{Binding Call.RemoteUser.ProfilePictureUrl}"
+                                                 IsOnline="{Binding Call.RemoteUser.IsOnline}" />
+                            <StackPanel Grid.Column="1" VerticalAlignment="Center" Spacing="2">
+                                <TextBlock Text="{Binding Call.RemoteUsername, FallbackValue=Call}"
+                                           FontSize="14"
+                                           FontWeight="SemiBold"
+                                           Foreground="{DynamicResource ChatlyTextBrush}" />
+                                <StackPanel Orientation="Horizontal" Spacing="6">
+                                    <TextBlock Text="{Binding Call.StatusText}"
+                                               FontSize="12"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+                                    <TextBlock Text="{Binding Call.DurationText}"
+                                               FontSize="12"
+                                               FontFeatures="tnum"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                                               IsVisible="{Binding Call.ShowDuration}" />
+                                </StackPanel>
+                            </StackPanel>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" Spacing="8" VerticalAlignment="Center">
+                                <Button Classes="fluent-button"
+                                        Padding="10,7"
+                                        Command="{Binding Call.ToggleMuteCommand}"
+                                        IsVisible="{Binding Call.CanLeave}"
+                                        ToolTip.Tip="Mute or unmute your microphone">
+                                    <Panel>
+                                        <ic:SymbolIcon Symbol="Mic" FontSize="18" IsVisible="{Binding !Call.IsMuted}" />
+                                        <ic:SymbolIcon Symbol="MicOff" FontSize="18" IsVisible="{Binding Call.IsMuted}" />
+                                    </Panel>
+                                </Button>
+                                <Button Classes="accent-button"
+                                        Padding="14,7"
+                                        Command="{Binding Call.AcceptCommand}"
+                                        IsVisible="{Binding Call.CanAccept}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ic:SymbolIcon Symbol="Call" FontSize="16" />
+                                        <TextBlock Text="Accept" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Classes="fluent-button"
+                                        Padding="14,7"
+                                        Command="{Binding Call.DeclineCommand}"
+                                        IsVisible="{Binding Call.CanDecline}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ic:SymbolIcon Symbol="CallEnd" FontSize="16" />
+                                        <TextBlock Text="Decline" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Classes="fluent-button"
+                                        Padding="14,7"
+                                        Command="{Binding Call.LeaveCallCommand}"
+                                        IsVisible="{Binding Call.CanCancel}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ic:SymbolIcon Symbol="Dismiss" FontSize="16" />
+                                        <TextBlock Text="Cancel" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                                <Button Classes="fluent-button"
+                                        Padding="14,7"
+                                        Command="{Binding Call.LeaveCallCommand}"
+                                        IsVisible="{Binding Call.CanLeave}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ic:SymbolIcon Symbol="CallEnd" FontSize="16" />
+                                        <TextBlock Text="Leave" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                    <ContentControl x:Name="PageHost" Grid.Row="1" Margin="24" />
+                </Grid>
             </Border>
         </DockPanel>
 
+        <ContentControl x:Name="CallMediaContainer" />
         <ContentControl x:Name="PopupHostContainer" />
         <ContentControl x:Name="ToastHostContainer" />
 
-        <Border HorizontalAlignment="Center"
-                VerticalAlignment="Top"
-                Margin="0,18,0,0"
-                Padding="16,10"
-                MinWidth="360"
-                Background="{DynamicResource ChatlySidebarBrush}"
-                BorderBrush="{DynamicResource ChatlyBorderBrush}"
-                BorderThickness="1"
-                CornerRadius="12"
-                BoxShadow="0 6 20 0 #40000000"
-                IsVisible="{Binding Call.HasCall}">
-            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
-                <StackPanel VerticalAlignment="Center" Spacing="2">
-                    <TextBlock Text="{Binding Call.RemoteUsername, FallbackValue=Call}"
-                               FontSize="14"
-                               FontWeight="SemiBold"
-                               Foreground="{DynamicResource ChatlyTextBrush}" />
-                    <TextBlock Text="{Binding Call.StatusText}"
-                               FontSize="12"
-                               Foreground="{DynamicResource ChatlyMutedTextBrush}" />
-                </StackPanel>
-                <StackPanel Grid.Column="1" Orientation="Horizontal" Spacing="8">
-                    <Button Classes="accent-button"
-                            Padding="14,7"
-                            Content="Accept"
-                            Command="{Binding Call.AcceptCommand}"
-                            IsVisible="{Binding Call.CanAccept}" />
-                    <Button Classes="fluent-button"
-                            Padding="14,7"
-                            Content="Decline"
-                            Command="{Binding Call.DeclineCommand}"
-                            IsVisible="{Binding Call.CanDecline}" />
-                    <Button Classes="fluent-button"
-                            Padding="14,7"
-                            Content="Leave / Cancel"
-                            Command="{Binding Call.LeaveCallCommand}"
-                            IsVisible="{Binding Call.CanLeave}" />
-                </StackPanel>
-            </Grid>
-        </Border>
     </Grid>
 
 </Window>

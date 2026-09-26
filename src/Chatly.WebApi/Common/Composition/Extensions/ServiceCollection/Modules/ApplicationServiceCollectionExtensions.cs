@@ -20,9 +20,9 @@ internal static class ApplicationServiceCollectionExtensions
 
                 return new BlobServiceClient(connectionString);
             });
-            
+
             services.AddHostedService<PresenceCheckerBackgroundService>();
-            
+
             services.AddMediator(options =>
             {
                 options.ServiceLifetime = ServiceLifetime.Scoped;

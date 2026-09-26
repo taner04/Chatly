@@ -19,6 +19,7 @@
         <PackageReference Include="Avalonia.Desktop"/>
         <PackageReference Include="Avalonia.Themes.Fluent"/>
         <PackageReference Include="Avalonia.Fonts.Inter"/>
+        <PackageReference Include="Avalonia.Controls.WebView"/>
         <PackageReference Include="AvaloniaUI.DiagnosticsSupport">
             <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
@@ -30,7 +31,7 @@
         <PackageReference Include="Microsoft.Extensions.Configuration.Json"/>
         <PackageReference Include="Microsoft.Extensions.Configuration.EnvironmentVariables"/>
         <PackageReference Include="Microsoft.Extensions.DependencyInjection"/>
-        <PackageReference Include="NAudio"/>
+        <PackageReference Include="Microsoft.Extensions.Logging.Console"/>
         <PackageReference Include="SoundFlow"/>
         <PackageReference Include="System.Security.Cryptography.ProtectedData"/>
         <PackageReference Include="Refit"/>
@@ -38,13 +39,15 @@
     </ItemGroup>
 
     <ItemGroup>
-        <ProjectReference Include="..\Chatly.Audio\Chatly.Audio.csproj"/>
         <ProjectReference Include="..\Chatly.Contracts\Chatly.Contracts.csproj"/>
-        <ProjectReference Include="..\Chatly.Rtc\Chatly.Rtc.csproj"/>
         <ProjectReference Include="..\Chatly.Shared\Chatly.Shared.csproj"/>
         <ProjectReference Include="..\Chatly.SourceGenerator\Chatly.SourceGenerator.csproj"
                           OutputItemType="Analyzer"
                           ReferenceOutputAssembly="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <InternalsVisibleTo Include="Chatly.Desktop.UnitTests"/>
     </ItemGroup>
 
     <ItemGroup>
@@ -107,10 +110,6 @@
             <DependentUpon>UserPage.axaml</DependentUpon>
             <SubType>Code</SubType>
         </Compile>
-    </ItemGroup>
-
-    <ItemGroup>
-        <Folder Include="Services\Api\Hubs\CallHub\CallHandler\"/>
     </ItemGroup>
 
 </Project>

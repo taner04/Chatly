@@ -6,4 +6,5 @@ internal readonly record struct ServiceRegistration(
     string ImplementationTypeName,
     string ServiceTypeName,
     ServiceRegistrationLifetime Lifetime,
-    bool IsOpenGeneric);
+    bool IsOpenGeneric,
+    bool ResolvesImplementation = false);

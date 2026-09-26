@@ -41,6 +41,8 @@ public sealed class UserRegistry
         return user;
     }
 
+    internal User? Find(Guid userId) => _users.GetValueOrDefault(userId);
+
     internal void UpdateProfile(Guid userId, string? username, string? profilePictureUrl)
     {
         if (!_users.TryGetValue(userId, out var user))

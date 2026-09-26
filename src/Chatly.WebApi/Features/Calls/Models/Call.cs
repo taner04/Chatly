@@ -27,9 +27,9 @@ public sealed class Call : Entity<CallId>
         InitiatedAt = DateTimeOffset.UtcNow;
     }
 
-    public UserId CallerUserId { get; private init; }
+    public UserId CallerUserId { get; }
 
-    public UserId ReceiverUserId { get; private init; }
+    public UserId ReceiverUserId { get; }
 
     public CallStatus Status { get; private set; }
 
@@ -57,7 +57,7 @@ public sealed class Call : Entity<CallId>
     {
         EnsureRole(actorUserId, ReceiverUserId, "Only the receiver can accept the call.");
         EnsureStatus(CallStatus.Ringing);
-        Status = CallStatus.Accepted;
+        Status = CallStatus.Active;
         AcceptedAt = timestamp;
     }
 
@@ -68,44 +68,21 @@ public sealed class Call : Entity<CallId>
         Finish(CallEndReason.Declined, timestamp);
     }
 
-    public void Offer(UserId actorUserId)
-    {
-        EnsureRole(actorUserId, CallerUserId, "Only the caller can send the offer.");
-        EnsureStatus(CallStatus.Accepted);
-        Status = CallStatus.Offered;
-    }
-
-    public void Answer(UserId actorUserId)
-    {
-        EnsureRole(actorUserId, ReceiverUserId, "Only the receiver can send the answer.");
-        EnsureStatus(CallStatus.Offered);
-        Status = CallStatus.Active;
-    }
-
-    public void EnsureCanSendIce(UserId actorUserId)
+    public void EnsureCanJoinMedia(UserId actorUserId)
     {
         EnsureParticipant(actorUserId);
-        if (Status is not (CallStatus.Offered or CallStatus.Active))
-        {
-            throw new CallTransitionException("ICE candidates require an offered or active call.");
-        }
+        EnsureStatus(CallStatus.Active);
     }
 
     public void End(UserId actorUserId, DateTimeOffset timestamp)
     {
         EnsureParticipant(actorUserId);
-        if (Status == CallStatus.Ended)
-        {
-            throw new CallTransitionException("The call has already ended.");
-        }
-
         var reason = Status switch
         {
             CallStatus.Ringing when actorUserId == CallerUserId => CallEndReason.Cancelled,
             CallStatus.Ringing => CallEndReason.Declined,
-            CallStatus.Accepted or CallStatus.Offered => CallEndReason.Failed,
             CallStatus.Active => CallEndReason.Completed,
-            _ => throw new CallTransitionException("The call cannot be ended from its current state.")
+            _ => throw new CallTransitionException("The call has already ended.")
         };
         Finish(reason, timestamp);
     }
@@ -118,11 +95,7 @@ public sealed class Call : Entity<CallId>
 
     public void ExpireAbandoned(DateTimeOffset timestamp)
     {
-        if (Status is CallStatus.Ringing or CallStatus.Ended)
-        {
-            throw new CallTransitionException("Only abandoned non-ringing calls can be expired.");
-        }
-
+        EnsureStatus(CallStatus.Active);
         Finish(CallEndReason.Failed, timestamp);
     }
 

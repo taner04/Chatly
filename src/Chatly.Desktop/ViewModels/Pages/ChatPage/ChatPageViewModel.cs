@@ -5,7 +5,6 @@ using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
 using Chatly.Desktop.Abstraction.Storage;
 using Chatly.Desktop.Services.Api.Clients;
 using Chatly.Desktop.ViewModels.Pages.ChatPage.Messages;
-using Chatly.Desktop.ViewModels;
 using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
 
 namespace Chatly.Desktop.ViewModels.Pages.ChatPage;

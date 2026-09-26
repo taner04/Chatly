@@ -1,4 +1,4 @@
-using AzureBlobService = Chatly.WebApi.Common.Infrastructure.Persistence.Blob.AzureBlobService;
+using AzureBlobService = Chatly.WebApi.Common.Infrastructure.Blob.AzureBlobService;
 
 namespace Chatly.WebApi.Features.Health.Endpoints.CheckStatus;
 

@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Abstraction.Hubs;
 
-public interface IHubMessageDispatcher<in TMessage> where TMessage : IHubMessage
+public interface IHubMessageDispatcher
 {
-    Task DispatchAsync(TMessage message);
+    Task DispatchAsync(IHubMessage message);
 }

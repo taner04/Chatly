@@ -1,8 +1,8 @@
 ﻿namespace Chatly.Desktop.Abstraction.Hubs;
 
-internal interface IHubMessageHandler<in TMessage> where TMessage : IHubMessage
+public interface IHubMessageHandler
 {
     Type MessageType { get; }
 
-    Task HandleAsync(TMessage message);
+    Task HandleAsync(IHubMessage message);
 }

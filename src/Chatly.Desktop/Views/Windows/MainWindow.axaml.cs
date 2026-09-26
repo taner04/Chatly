@@ -1,6 +1,7 @@
 using Avalonia.Input;
 using Chatly.Desktop.ViewModels;
 using Chatly.Desktop.ViewModels.Windows;
+using Chatly.Desktop.Views.Calls;
 using Chatly.Desktop.Views.Popups;
 using Chatly.Desktop.Views.Toasts;
 
@@ -18,7 +19,8 @@ internal partial class MainWindow : Window, INavigationView
         PopupOverlayHost popupHost,
         ToastHostOverlay toastHost,
         MainWindowViewModel viewModel,
-        CallViewModel callViewModel)
+        CallViewModel callViewModel,
+        CallMediaView callMediaView)
     {
         ViewModel = viewModel;
         Call = callViewModel;
@@ -28,6 +30,7 @@ internal partial class MainWindow : Window, INavigationView
 
         _navigationService.SetNavigationView(this);
 
+        CallMediaContainer.Content = callMediaView;
         PopupHostContainer.Content = popupHost;
         ToastHostContainer.Content = toastHost;
 

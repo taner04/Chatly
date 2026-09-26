@@ -6,7 +6,11 @@ public sealed record CallSnapshot(
     string? RemoteUsername,
     CallState? State,
     bool IsIncoming,
-    bool IsOnAnotherDevice)
+    bool IsOnAnotherDevice,
+    bool IsMediaConnected = false,
+    DateTimeOffset? AcceptedAt = null,
+    bool IsMuted = false,
+    bool IsReconnecting = false)
 {
     public static CallSnapshot Empty { get; } = new(null, null, null, null, false, false);
 

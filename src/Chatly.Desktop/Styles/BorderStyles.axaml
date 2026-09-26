@@ -26,4 +26,12 @@
     <Style Selector="Border.chat-row:pointerover">
         <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
     </Style>
+    <Style Selector="Border.call-bar">
+        <Setter Property="Padding" Value="18,12" />
+        <Setter Property="Background" Value="{DynamicResource ChatlyElevatedBrush}" />
+        <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+        <Setter Property="BorderThickness" Value="1" />
+        <Setter Property="CornerRadius" Value="12" />
+        <Setter Property="HorizontalAlignment" Value="Stretch" />
+    </Style>
 </Styles>

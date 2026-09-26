@@ -1,5 +1,5 @@
 using Avalonia.Controls.ApplicationLifetimes;
-using Chatly.Audio.Abstractions;
+using Chatly.Desktop.Abstraction.Audio;
 using Chatly.Desktop.Abstraction.Hubs;
 using Chatly.Desktop.Services.Authentication;
 using Chatly.Desktop.Services.Calls;
@@ -53,24 +53,20 @@ internal sealed class ApplicationStartupService(
             await hub.StartAsync(splashScreen.ViewModel.CancellationToken);
         }
 
-        try
-        {
-            await callCoordinator.ReconcileAsync(splashScreen.ViewModel.CancellationToken);
-        }
-        catch (OperationCanceledException) when (splashScreen.ViewModel.CancellationToken.IsCancellationRequested)
-        {
-            throw;
-        }
-        catch (Exception exception)
-        {
-            logger.LogWarning(exception, "Failed to reconcile the current call during startup.");
-        }
-
         await navigationService.NavigateToAsync<UserPageViewModel>();
 
         desktop.MainWindow = mainWindow;
         mainWindow.Show();
         splashScreen.Close();
+
+        try
+        {
+            await callCoordinator.ReconcileAsync(CancellationToken.None);
+        }
+        catch (Exception exception)
+        {
+            logger.LogWarning(exception, "Failed to reconcile the current call during startup.");
+        }
 
         if (sessionContext.CurrentUser?.OnboardingCompleted == false)
         {

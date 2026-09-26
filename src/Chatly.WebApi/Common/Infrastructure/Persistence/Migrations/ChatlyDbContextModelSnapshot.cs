@@ -51,10 +51,10 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("CallId", "UserId")
+                    b.HasIndex("UserId")
                         .IsUnique();
 
-                    b.HasIndex("UserId")
+                    b.HasIndex("CallId", "UserId")
                         .IsUnique();
 
                     b.ToTable("ActiveCallParticipants", (string)null);
@@ -110,7 +110,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 
                     b.ToTable("Calls", null, t =>
                         {
-                            t.HasCheckConstraint("CK_Calls_AcceptedAt", "(\"Status\" = 'Ringing' AND \"AcceptedAt\" IS NULL) OR (\"Status\" IN ('Accepted', 'Offered', 'Active') AND \"AcceptedAt\" IS NOT NULL) OR \"Status\" = 'Ended'");
+                            t.HasCheckConstraint("CK_Calls_AcceptedAt", "(\"Status\" = 'Ringing' AND \"AcceptedAt\" IS NULL) OR (\"Status\" = 'Active' AND \"AcceptedAt\" IS NOT NULL) OR \"Status\" = 'Ended'");
 
                             t.HasCheckConstraint("CK_Calls_DistinctUsers", "\"CallerUserId\" <> \"ReceiverUserId\"");
 
@@ -118,9 +118,9 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 
                             t.HasCheckConstraint("CK_Calls_TimestampOrder", "(\"AcceptedAt\" IS NULL OR \"AcceptedAt\" >= \"InitiatedAt\") AND (\"EndedAt\" IS NULL OR \"EndedAt\" >= \"InitiatedAt\") AND (\"AcceptedAt\" IS NULL OR \"EndedAt\" IS NULL OR \"EndedAt\" >= \"AcceptedAt\")");
 
-                            t.HasCheckConstraint("CK_Calls_ValidEndReason", "\"EndReason\" IS NULL OR \"EndReason\" IN ('Completed', 'Declined', 'Cancelled', 'Missed', 'Busy', 'Failed')");
+                            t.HasCheckConstraint("CK_Calls_ValidEndReason", "\"EndReason\" IS NULL OR \"EndReason\" IN ('Completed', 'Declined', 'Cancelled', 'Missed', 'Failed')");
 
-                            t.HasCheckConstraint("CK_Calls_ValidStatus", "\"Status\" IN ('Ringing', 'Accepted', 'Offered', 'Active', 'Ended')");
+                            t.HasCheckConstraint("CK_Calls_ValidStatus", "\"Status\" IN ('Ringing', 'Active', 'Ended')");
                         });
                 });
 

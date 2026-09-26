@@ -1,7 +1,7 @@
 using Chatly.Contracts.Features.Messages.Endpoints.GetMessages;
 using Chatly.Contracts.Features.Messages.Models;
 using Chatly.Contracts.Features.Reactions.Models;
-using Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+using Chatly.WebApi.Common.Infrastructure.Blob;
 using Chatly.WebApi.Features.Chats.Services;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.GetMessages;

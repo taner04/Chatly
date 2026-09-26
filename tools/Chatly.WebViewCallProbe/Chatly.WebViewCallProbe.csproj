@@ -1,0 +1,21 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <PackageReference Include="Avalonia"/>
+        <PackageReference Include="Avalonia.Desktop"/>
+        <PackageReference Include="Avalonia.Themes.Fluent"/>
+        <PackageReference Include="Avalonia.Controls.WebView"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <EmbeddedResource Include="probe.html" LogicalName="probe.html"/>
+    </ItemGroup>
+
+</Project>

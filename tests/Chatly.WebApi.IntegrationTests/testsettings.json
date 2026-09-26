@@ -1,0 +1,29 @@
+{
+  "TestContainers": {
+    "PostgresImage": "postgres:18.3",
+    "AzuriteImage": "mcr.microsoft.com/azure-storage/azurite:3.37.0"
+  },
+  "WebApi": {
+    "Auth0Option": {
+      "Domain": "chatly-tests.local",
+      "Audience": "https://chatly-api.tests",
+      "ClientId": "chatly-tests",
+      "UsePersistentStorage": "false"
+    },
+    "EmailOption": {
+      "Host": "localhost",
+      "Port": "2525",
+      "SenderName": "Chatly Tests",
+      "SenderEmail": "noreply@chatly.tests",
+      "UseSsl": "false"
+    },
+    "LiveKitOption": {
+      "ServerUrl": "ws://livekit.tests",
+      "ApiKey": "chatly-tests",
+      "ApiSecret": "chatly-integration-tests-livekit-secret"
+    },
+    "Hangfire": {
+      "ServerEnabled": "false"
+    }
+  }
+}

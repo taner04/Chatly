@@ -40,6 +40,17 @@ internal static class DependencyInjectionTemplate
                 continue;
             }
 
+            if (service.ResolvesImplementation)
+            {
+                registrations
+                    .Append('<')
+                    .Append(service.ServiceTypeName)
+                    .Append(">(static provider => provider.GetRequiredService<")
+                    .Append(service.ImplementationTypeName)
+                    .AppendLine(">());");
+                continue;
+            }
+
             registrations.Append('<').Append(service.ServiceTypeName);
 
             if (service.ServiceTypeName != service.ImplementationTypeName)

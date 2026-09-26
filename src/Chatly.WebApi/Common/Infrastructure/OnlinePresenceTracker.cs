@@ -3,40 +3,53 @@ namespace Chatly.WebApi.Common.Infrastructure;
 [SingletonService]
 public sealed class OnlinePresenceTracker
 {
-    private readonly Dictionary<UserId, HashSet<string>> _connections = [];
+    private readonly Dictionary<UserId, UserPresence> _presences = [];
     private readonly Lock _lock = new();
 
     internal bool Connect(UserId userId, string connectionId)
     {
         lock (_lock)
         {
-            if (!_connections.TryGetValue(userId, out var connections))
+            if (_presences.TryGetValue(userId, out var presence))
             {
-                connections = [];
-                _connections[userId] = connections;
+                presence.Connections.Add(connectionId);
+                return false;
             }
 
-            var wasOffline = connections.Count == 0;
-            connections.Add(connectionId);
-            return wasOffline;
+            _presences[userId] = new UserPresence { Connections = { connectionId } };
+            return true;
         }
     }
 
-    internal bool Disconnect(UserId userId, string connectionId)
+    internal bool TryBeginOffline(UserId userId, string connectionId, out long offlineVersion)
     {
         lock (_lock)
         {
-            if (!_connections.TryGetValue(userId, out var connections) || !connections.Remove(connectionId))
+            offlineVersion = 0;
+            if (!_presences.TryGetValue(userId, out var presence)
+                || !presence.Connections.Remove(connectionId)
+                || presence.Connections.Count > 0)
             {
                 return false;
             }
 
-            if (connections.Count > 0)
+            offlineVersion = ++presence.OfflineVersion;
+            return true;
+        }
+    }
+
+    internal bool TryCompleteOffline(UserId userId, long offlineVersion)
+    {
+        lock (_lock)
+        {
+            if (!_presences.TryGetValue(userId, out var presence)
+                || presence.Connections.Count > 0
+                || presence.OfflineVersion != offlineVersion)
             {
                 return false;
             }
 
-            _connections.Remove(userId);
+            _presences.Remove(userId);
             return true;
         }
     }
@@ -45,7 +58,7 @@ public sealed class OnlinePresenceTracker
     {
         lock (_lock)
         {
-            return _connections.ContainsKey(userId);
+            return _presences.ContainsKey(userId);
         }
     }
 
@@ -53,7 +66,14 @@ public sealed class OnlinePresenceTracker
     {
         lock (_lock)
         {
-            return [.. _connections.Keys];
+            return [.. _presences.Keys];
         }
+    }
+
+    private sealed class UserPresence
+    {
+        public HashSet<string> Connections { get; } = [];
+
+        public long OfflineVersion { get; set; }
     }
 }

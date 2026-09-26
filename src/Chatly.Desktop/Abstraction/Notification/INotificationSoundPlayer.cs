@@ -1,4 +1,4 @@
-using Chatly.Audio.Abstractions;
+using Chatly.Desktop.Abstraction.Audio;
 
 namespace Chatly.Desktop.Abstraction.Notification;
 

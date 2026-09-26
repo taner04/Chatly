@@ -7,10 +7,10 @@ namespace Chatly.WebApi.Features.Hubs.NotificationHub;
 
 [Authorize]
 public sealed class NotificationHub(
-    CurrentUserService currentUser,
     ChatlyDbContext context,
     ChatAccessService chatAccessService,
-    OnlinePresenceTracker presenceTracker) : HubBase<INotificationHubClient>(context, currentUser),
+    OnlinePresenceTracker presenceTracker,
+    OnlineStatusPublisher onlineStatusPublisher) : HubBase<INotificationHubClient>(context),
     INotificationHubServer
 {
     public Task StartTyping(Guid chatId) => PublishTypingStatusAsync(chatId, true);
@@ -24,7 +24,7 @@ public sealed class NotificationHub(
         await UpdateLastSeenAsync(userId, Context.ConnectionAborted);
         if (presenceTracker.Connect(userId, Context.ConnectionId))
         {
-            await PublishOnlineStatusAsync(userId, true, Context.ConnectionAborted);
+            await onlineStatusPublisher.PublishAsync(userId, true, Context.ConnectionAborted);
         }
 
         await PublishOnlineFriendsSnapshotAsync(userId);
@@ -35,9 +35,9 @@ public sealed class NotificationHub(
         if (GetConnectedUserId() is { } userId)
         {
             await UpdateLastSeenAsync(userId, CancellationToken.None);
-            if (presenceTracker.Disconnect(userId, Context.ConnectionId))
+            if (presenceTracker.TryBeginOffline(userId, Context.ConnectionId, out var offlineVersion))
             {
-                await PublishOnlineStatusAsync(userId, false, CancellationToken.None);
+                onlineStatusPublisher.PublishOfflineAfterGracePeriod(userId, offlineVersion);
             }
         }
 
@@ -55,18 +55,6 @@ public sealed class NotificationHub(
 
         await Clients.Group(HubGroups.User(chat.OtherParticipantUserId))
             .Receive(new TypingStatusChangedNotification(chatId, isTyping));
-    }
-
-    private async Task PublishOnlineStatusAsync(
-        UserId userId,
-        bool isOnline,
-        CancellationToken cancellationToken)
-    {
-        var friendUserIds = await GetFriendUserIdsAsync(userId, cancellationToken);
-        var message = new OnlineStatusChangedNotification(userId.Value, isOnline);
-
-        await Task.WhenAll(friendUserIds.Select(friendUserId =>
-            Clients.Group(HubGroups.User(friendUserId)).Receive(message)));
     }
 
     private async Task PublishOnlineFriendsSnapshotAsync(UserId userId)

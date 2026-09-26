@@ -1,4 +1,5 @@
 ﻿using System.IO;
+using System.Runtime.Versioning;
 using System.Security.Cryptography;
 using System.Text;
 using Chatly.Desktop.Abstraction.Authentication;
@@ -7,6 +8,7 @@ using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Authentication.Storage;
 
+[SupportedOSPlatform("windows")]
 internal sealed class WindowsSecureTokenStore : ISecureTokenStore
 {
     private readonly string _directoryPath;

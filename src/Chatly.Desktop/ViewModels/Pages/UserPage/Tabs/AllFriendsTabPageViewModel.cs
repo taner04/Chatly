@@ -1,5 +1,3 @@
-using Chatly.Desktop.ViewModels;
-
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 [SingletonService]

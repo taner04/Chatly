@@ -12,7 +12,7 @@ internal sealed class AbsenceRecurringJob(
     public string Queue => EnqueuedState.DefaultQueue;
     public string CronExpression => Cron.Daily();
 
-    [DisableConcurrentExecution(timeoutInSeconds: 3600)]
+    [DisableConcurrentExecution(3600)]
     public async Task ExecuteAsync(
         CancellationToken cancellationToken = default)
     {

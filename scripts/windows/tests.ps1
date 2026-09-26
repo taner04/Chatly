@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$RootDir = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$RootDir = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $Configuration = if ($env:CONFIGURATION) { $env:CONFIGURATION } else { 'Debug' }
 
 $SourceProjects = Get-ChildItem -Path (Join-Path $RootDir 'src') -Filter '*.csproj' -Recurse -File
@@ -15,6 +15,19 @@ foreach ($project in @($SourceProjects) + @($TestProjects)) {
 }
 
 foreach ($project in $TestProjects) {
+    $projectDirectory = $project.DirectoryName
+    $hasSource = Get-ChildItem -Path $projectDirectory -Filter '*.cs' -Recurse -File |
+        Where-Object { $_.FullName -notmatch '[\\/](bin|obj)[\\/]' } |
+        Select-Object -First 1
+
+    if (-not $hasSource) {
+        continue
+    }
+
+    if ($env:UNIT_TESTS_ONLY -eq 'true' -and $project.Name -like '*IntegrationTests.csproj') {
+        continue
+    }
+
     & dotnet test $project.FullName `
         --configuration $Configuration `
         --no-build `

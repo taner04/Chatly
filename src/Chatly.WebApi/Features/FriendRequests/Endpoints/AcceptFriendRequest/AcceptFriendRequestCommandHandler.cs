@@ -47,22 +47,24 @@ internal sealed class AcceptFriendRequestCommandHandler(
             .SelectProfile()
             .ToListAsync(cancellationToken);
 
-        var friend = userProfiles.Single(user => user.UserId == friendRequest.SenderUserId);
+        var sender = userProfiles.Single(user => user.UserId == friendRequest.SenderUserId);
+        var receiver = userProfiles.Single(user => user.UserId == userId);
 
         await context.SaveChangesAsync(cancellationToken);
 
-        var friendshipContract = new FriendshipContract(
+        await notificationPublisher.PublishAsync(
+            friendRequest.SenderUserId,
+            new FriendRequestAcceptedNotification(CreateContract(friendship, chat, receiver)));
+
+        return CreateContract(friendship, chat, sender);
+    }
+
+    private FriendshipContract CreateContract(Friendship friendship, Chat chat, UserProfileRow friend) =>
+        new(
             friendship.Id.Value,
             chat.Id.Value,
             friend.UserId.Value,
             friend.Username!,
             profilePictureUrlFactory.CreateProfilePictureUrl(friend.ProfilePictureKey),
             presenceTracker.IsOnline(friend.UserId));
-
-        await notificationPublisher.PublishAsync(
-            friendRequest.SenderUserId,
-            new FriendRequestAcceptedNotification(friendshipContract));
-
-        return friendshipContract;
-    }
 }

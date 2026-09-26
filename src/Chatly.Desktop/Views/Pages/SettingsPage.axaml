@@ -2,6 +2,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ic="using:FluentIcons.Avalonia"
+             xmlns:calls="using:Chatly.Desktop.Models.Calls"
              xmlns:local="using:Chatly.Desktop.Views.Pages"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -87,6 +88,9 @@
         </Style>
         <Style Selector="Border.settings-card-content.notifications.expanded">
             <Setter Property="MaxHeight" Value="84" />
+        </Style>
+        <Style Selector="Border.settings-card-content.calls.expanded">
+            <Setter Property="MaxHeight" Value="400" />
         </Style>
         <Style Selector="Border.settings-card-content.about.expanded">
             <Setter Property="MaxHeight" Value="130" />
@@ -219,6 +223,125 @@
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding ViewModel.NotificationSettings.PlaySound, Mode=TwoWay}" />
                                 </Grid>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="settings-card">
+                    <StackPanel>
+                        <ToggleButton x:Name="CallsCardToggle"
+                                      Classes="settings-card-header">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Border Classes="settings-card-icon">
+                                    <ic:SymbolIcon Symbol="Call"
+                                                   FontSize="18" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Calls"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    <TextBlock Text="Microphone, speaker and voice processing"
+                                               Classes="settings-description" />
+                                </StackPanel>
+                                <ic:SymbolIcon Grid.Column="2"
+                                               Classes="settings-card-arrow"
+                                               Symbol="ChevronUp"
+                                               FontSize="18"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                                               RenderTransformOrigin="50%,50%">
+                                    <ic:SymbolIcon.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Property="RenderTransform"
+                                                                           Duration="0:0:0.18" />
+                                        </Transitions>
+                                    </ic:SymbolIcon.Transitions>
+                                </ic:SymbolIcon>
+                            </Grid>
+                        </ToggleButton>
+
+                        <Border Padding="18,4,18,18"
+                                Classes="settings-card-content calls"
+                                Classes.expanded="{Binding IsChecked, ElementName=CallsCardToggle}">
+                            <StackPanel Spacing="14">
+                                <Separator Background="{DynamicResource ChatlyBorderBrush}" />
+                                <Grid ColumnDefinitions="*,240" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Microphone" Classes="settings-label" />
+                                        <TextBlock Text="The input device used in calls."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1"
+                                              HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding ViewModel.InputDevices}"
+                                              SelectedItem="{Binding ViewModel.SelectedInputDevice, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="calls:CallAudioDevice">
+                                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,240"
+                                      ColumnSpacing="20"
+                                      IsVisible="{Binding ViewModel.IsOutputDeviceSelectionSupported}">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Speaker" Classes="settings-label" />
+                                        <TextBlock Text="The output device used in calls."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ComboBox Grid.Column="1"
+                                              HorizontalAlignment="Stretch"
+                                              ItemsSource="{Binding ViewModel.OutputDevices}"
+                                              SelectedItem="{Binding ViewModel.SelectedOutputDevice, Mode=TwoWay}">
+                                        <ComboBox.ItemTemplate>
+                                            <DataTemplate x:DataType="calls:CallAudioDevice">
+                                                <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
+                                            </DataTemplate>
+                                        </ComboBox.ItemTemplate>
+                                    </ComboBox>
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Echo cancellation" Classes="settings-label" />
+                                        <TextBlock Text="Stops the other person from hearing themselves through your speakers."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding ViewModel.CallSettings.EchoCancellation, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Noise suppression" Classes="settings-label" />
+                                        <TextBlock Text="Filters background noise from your microphone."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding ViewModel.CallSettings.NoiseSuppression, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Automatic gain control" Classes="settings-label" />
+                                        <TextBlock Text="Keeps your voice at a steady volume."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding ViewModel.CallSettings.AutoGainControl, Mode=TwoWay}" />
+                                </Grid>
+                                <Button Classes="fluent-button"
+                                        HorizontalAlignment="Left"
+                                        Padding="14,7"
+                                        Command="{Binding ViewModel.RefreshDevicesCommand}"
+                                        IsEnabled="{Binding !ViewModel.IsLoadingDevices}">
+                                    <StackPanel Orientation="Horizontal" Spacing="6">
+                                        <ic:SymbolIcon Symbol="ArrowClockwise" FontSize="16" />
+                                        <TextBlock Text="Refresh devices" VerticalAlignment="Center" />
+                                    </StackPanel>
+                                </Button>
                             </StackPanel>
                         </Border>
                     </StackPanel>

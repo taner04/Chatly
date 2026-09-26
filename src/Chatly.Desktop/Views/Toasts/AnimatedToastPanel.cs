@@ -7,6 +7,8 @@ namespace Chatly.Desktop.Views.Toasts;
 
 public sealed class AnimatedToastPanel : Panel
 {
+    private const double PositionTolerance = 0.5;
+
     private readonly Dictionary<Control, Rect> _previousBounds = [];
 
     protected override Size MeasureOverride(Size availableSize)
@@ -36,8 +38,8 @@ public sealed class AnimatedToastPanel : Panel
         foreach (var child in Children)
         {
             var bounds = new Rect(0, y, finalSize.Width, child.DesiredSize.Height);
-            //TODO: Fix possible loss of precision when comparing double values
-            if (_previousBounds.TryGetValue(child, out var previousBounds) && previousBounds.Y != bounds.Y)
+            if (_previousBounds.TryGetValue(child, out var previousBounds)
+                && Math.Abs(previousBounds.Y - bounds.Y) > PositionTolerance)
             {
                 AnimateToNewPosition(child, previousBounds.Y - bounds.Y);
             }

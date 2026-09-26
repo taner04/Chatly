@@ -39,6 +39,11 @@ public static class ApiRoutes
         public const string Call = "/hubs/call";
     }
 
+    public static class LiveKit
+    {
+        public const string Webhook = "/api/livekit/webhook";
+    }
+
     public static class Messages
     {
         public const string Collection = "/api/messages";

@@ -5,7 +5,7 @@ namespace Chatly.Desktop.Services.Api.Hubs.NotificationHub;
 [SingletonService(typeof(IHubHost))]
 internal sealed class NotificationHubHost(
     NotificationHubConnection connection,
-    IHubMessageDispatcher<Notification> dispatcher) : IHubHost
+    IHubMessageDispatcher dispatcher) : IHubHost
 {
     private int _subscribed;
 

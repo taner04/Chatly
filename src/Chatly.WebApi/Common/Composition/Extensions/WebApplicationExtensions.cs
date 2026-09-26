@@ -3,7 +3,7 @@ using Chatly.WebApi.Common.Composition.Options;
 using Hangfire;
 using Hangfire.Dashboard;
 using Scalar.AspNetCore;
-using AzureBlobService = Chatly.WebApi.Common.Infrastructure.Persistence.Blob.AzureBlobService;
+using Chatly.WebApi.Common.Infrastructure.Blob;
 
 namespace Chatly.WebApi.Common.Composition.Extensions;
 

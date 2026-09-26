@@ -5,7 +5,7 @@ namespace Chatly.WebApi.Common.Infrastructure.Hangfire.RecurringJobs.Absence;
 [ScopedService]
 internal sealed class SendAbsenceEmailJob(
     ChatlyDbContext context,
-    EmailService emailService)
+    IEmailService emailService)
 {
     public async Task ExecuteAsync(
         UserId userId,

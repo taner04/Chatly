@@ -1,6 +1,5 @@
 using Chatly.Contracts.Common.Pagination;
 using Chatly.Contracts.Features.FriendRequests.Models;
-using Chatly.WebApi.Common.Infrastructure.Pagination;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 

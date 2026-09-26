@@ -4,9 +4,11 @@ using Chatly.Desktop.Options;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop.DataTypes;
 using Microsoft.Extensions.Options;
+using System.Runtime.Versioning;
 
 namespace Chatly.Desktop.Services.Authentication.Storage.MacOs;
 
+[SupportedOSPlatform("macos")]
 internal sealed class MacOsSecureTokenStore : ISecureTokenStore
 {
     private const string Service = "com.chatly.desktop";

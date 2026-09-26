@@ -1,5 +1,5 @@
 using Chatly.Contracts.Features.Messages.Endpoints.RemoveMessage;
-using Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+using Chatly.WebApi.Common.Infrastructure.Blob;
 
 namespace Chatly.WebApi.Features.Messages.Endpoints.RemoveMessage;
 

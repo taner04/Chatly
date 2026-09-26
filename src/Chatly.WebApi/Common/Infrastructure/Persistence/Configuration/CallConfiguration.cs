@@ -71,7 +71,7 @@ internal sealed class CallConfiguration : EntityConfiguration<Call, CallId>
             table.HasCheckConstraint(
                 "CK_Calls_AcceptedAt",
                 "(\"Status\" = 'Ringing' AND \"AcceptedAt\" IS NULL) OR " +
-                "(\"Status\" IN ('Accepted', 'Offered', 'Active') AND \"AcceptedAt\" IS NOT NULL) OR " +
+                "(\"Status\" = 'Active' AND \"AcceptedAt\" IS NOT NULL) OR " +
                 "\"Status\" = 'Ended'");
             table.HasCheckConstraint(
                 "CK_Calls_TimestampOrder",

@@ -9,7 +9,7 @@ public interface IMessageEndpoint
     [Get(ApiRoutes.Chats.Messages)]
     Task<ApiResponse<GetMessagesResponse>> GetMessagesAsync(
         Guid chatId,
-        DateTimeOffset? beforeSentAt,
+        [Query(Format = "O")] DateTimeOffset? beforeSentAt,
         Guid? beforeMessageId,
         int pageSize,
         CancellationToken cancellationToken);

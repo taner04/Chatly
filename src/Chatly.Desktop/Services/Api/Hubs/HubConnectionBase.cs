@@ -128,7 +128,7 @@ internal abstract class HubConnectionBase(
         lock (_connectionLock)
         {
             connection = _hubConnection
-                ?? throw new InvalidOperationException("The hub is not connected.");
+                         ?? throw new InvalidOperationException("The hub is not connected.");
             if (connection.State != HubConnectionState.Connected)
             {
                 throw new InvalidOperationException("The hub is not connected.");
@@ -144,7 +144,7 @@ internal abstract class HubConnectionBase(
         lock (_connectionLock)
         {
             connection = _hubConnection
-                ?? throw new InvalidOperationException("The hub is not connected.");
+                         ?? throw new InvalidOperationException("The hub is not connected.");
             if (connection.State != HubConnectionState.Connected)
             {
                 throw new InvalidOperationException("The hub is not connected.");
@@ -160,7 +160,7 @@ internal abstract class HubConnectionBase(
         lock (_connectionLock)
         {
             connection = _hubConnection
-                ?? throw new InvalidOperationException("The hub is not connected.");
+                         ?? throw new InvalidOperationException("The hub is not connected.");
             if (connection.State != HubConnectionState.Connected)
             {
                 throw new InvalidOperationException("The hub is not connected.");

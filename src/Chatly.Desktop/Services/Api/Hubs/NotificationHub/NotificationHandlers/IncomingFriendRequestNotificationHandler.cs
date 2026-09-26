@@ -2,19 +2,19 @@ using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 using Chatly.Desktop.Abstraction.Hubs;
 using Chatly.Desktop.Abstraction.Notification;
 using Chatly.Desktop.Mappers;
+using Chatly.Desktop.Services.Api.Hubs;
 using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.Services.Api.Hubs.NotificationHub.NotificationHandlers;
 
-[SingletonService(typeof(IHubMessageHandler<Notification>))]
+[SingletonService(typeof(IHubMessageHandler))]
 internal sealed class IncomingFriendRequestNotificationHandler(
     FriendRequestState friendRequestState,
     IToastService toastService,
-    INotificationSoundPlayer notificationSoundPlayer,
-    ILogger<NotificationHandler<IncomingFriendRequestNotification>> logger)
-    : NotificationHandler<IncomingFriendRequestNotification>(logger)
+    INotificationSoundPlayer notificationSoundPlayer)
+    : HubMessageHandler<IncomingFriendRequestNotification>
 {
-    protected override Task HandleNotificationAsync(IncomingFriendRequestNotification message)
+    protected override Task HandleMessageAsync(IncomingFriendRequestNotification message)
     {
         return UiThreadDispatcher.SafeInvokeAsync(async () =>
         {

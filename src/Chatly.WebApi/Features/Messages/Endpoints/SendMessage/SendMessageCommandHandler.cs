@@ -1,6 +1,6 @@
 using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
 using Chatly.Contracts.Features.Messages.Models;
-using Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+using Chatly.WebApi.Common.Infrastructure.Blob;
 using Chatly.WebApi.Features.Chats.Services;
 using Chatly.WebApi.Features.MessageAttachments.Models;
 using Chatly.WebApi.Features.StoredFiles.Models;

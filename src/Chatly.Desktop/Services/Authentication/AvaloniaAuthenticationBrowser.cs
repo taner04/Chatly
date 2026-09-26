@@ -5,6 +5,7 @@ using System.Net.Sockets;
 using System.Text;
 using Avalonia.Platform;
 using Duende.IdentityModel.OidcClient.Browser;
+using BrowserOptions = Duende.IdentityModel.OidcClient.Browser.BrowserOptions;
 
 namespace Chatly.Desktop.Services.Authentication;
 

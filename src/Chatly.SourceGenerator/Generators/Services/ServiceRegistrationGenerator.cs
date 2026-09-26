@@ -162,7 +162,8 @@ public sealed class ServiceRegistrationGenerator : IIncrementalGenerator
                     implementationTypeName,
                     serviceTypeName,
                     lifetime,
-                    isOpenGeneric),
+                    isOpenGeneric,
+                    asSelf && !isOpenGeneric),
                 location));
 
             if (asSelf)

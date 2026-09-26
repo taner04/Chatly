@@ -4,7 +4,7 @@ using Azure.Storage.Sas;
 using Chatly.Contracts.Common.Policies;
 using Chatly.ServiceDefaults;
 
-namespace Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+namespace Chatly.WebApi.Common.Infrastructure.Blob;
 
 [SingletonService]
 internal sealed partial class AzureBlobService(

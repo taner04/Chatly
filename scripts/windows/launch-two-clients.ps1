@@ -1,6 +1,6 @@
 $ErrorActionPreference = 'Stop'
 
-$RootDir = (Resolve-Path (Join-Path $PSScriptRoot '..')).Path
+$RootDir = (Resolve-Path (Join-Path $PSScriptRoot '../..')).Path
 $Project = Join-Path $RootDir 'src/Chatly.Desktop/Chatly.Desktop.csproj'
 $Configuration = if ($env:CONFIGURATION) { $env:CONFIGURATION } else { 'Debug' }
 $Framework = 'net10.0'

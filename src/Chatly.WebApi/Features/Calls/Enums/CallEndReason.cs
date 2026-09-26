@@ -6,6 +6,5 @@ public enum CallEndReason
     Declined,
     Cancelled,
     Missed,
-    Busy,
     Failed
 }

@@ -1,6 +1,5 @@
 using Chatly.ServiceDefaults;
 using Chatly.WebApi.Common.Infrastructure.BackgroundServices;
-using Chatly.WebApi.Common.Infrastructure.Hangfire;
 using Hangfire;
 using Hangfire.PostgreSql;
 using Hangfire.States;
@@ -25,7 +24,6 @@ internal static class HangfireServiceCollectionExtension
             });
 
             services.AddHostedService<HangfireFireBackgroundService>();
-            services.AddHostedService<PresenceCheckerBackgroundService>();
 
             if (builder.Configuration.GetValue("Hangfire:ServerEnabled", true))
             {

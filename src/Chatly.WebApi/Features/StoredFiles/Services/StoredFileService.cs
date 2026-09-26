@@ -1,4 +1,4 @@
-using Chatly.WebApi.Common.Infrastructure.Persistence.Blob;
+using Chatly.WebApi.Common.Infrastructure.Blob;
 using Chatly.WebApi.Features.StoredFiles.Models;
 
 namespace Chatly.WebApi.Features.StoredFiles.Services;

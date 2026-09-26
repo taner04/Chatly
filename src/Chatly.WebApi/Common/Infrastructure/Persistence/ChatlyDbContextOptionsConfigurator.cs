@@ -9,9 +9,9 @@ internal static class ChatlyDbContextOptionsConfigurator
         optionsBuilder.UseNpgsql(connectionString, options =>
         {
             options.EnableRetryOnFailure(
-                maxRetryCount: 5,
-                maxRetryDelay: TimeSpan.FromSeconds(10),
-                errorCodesToAdd: null);
+                5,
+                TimeSpan.FromSeconds(10),
+                null);
         });
     }
 }

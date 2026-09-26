@@ -12,11 +12,14 @@
         <ProjectReference Include="..\..\src\Chatly.WebApi\Chatly.WebApi.csproj"/>
         <ProjectReference Include="..\Chatly.MigrationService\Chatly.MigrationService.csproj"/>
         <ProjectReference Include="..\Chatly.ServiceDefaults\Chatly.ServiceDefaults.csproj" IsAspireProjectResource="false"/>
+        <ProjectReference Include="..\..\src\Chatly.Shared\Chatly.Shared.csproj" IsAspireProjectResource="false"/>
+        <ProjectReference Include="..\..\src\Chatly.Contracts\Chatly.Contracts.csproj" IsAspireProjectResource="false"/>
     </ItemGroup>
 
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.Azure.Storage"/>
         <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
+        <PackageReference Include="CommunityToolkit.Aspire.Hosting.PapercutSmtp" />
     </ItemGroup>
 
 </Project>

@@ -1,0 +1,115 @@
+<!doctype html>
+<html>
+<body>
+<script src="livekit-client.umd.js"></script>
+<script>
+const { Room, RoomEvent, Track, DisconnectReason } = LivekitClient;
+const send = (message) => { try { invokeCSharpAction(JSON.stringify(message)); } catch { } };
+
+let room = null;
+let leaving = false;
+
+function captureOptions(options) {
+    return {
+        deviceId: options.inputDeviceId ?? undefined,
+        echoCancellation: options.echoCancellation,
+        noiseSuppression: options.noiseSuppression,
+        autoGainControl: options.autoGainControl
+    };
+}
+
+function createRoom(options) {
+    const created = new Room({
+        audioCaptureDefaults: captureOptions(options),
+        audioOutput: options.outputDeviceId ? { deviceId: options.outputDeviceId } : undefined
+    });
+
+    created.on(RoomEvent.TrackSubscribed, (track) => {
+        if (track.kind === Track.Kind.Audio) {
+            document.body.appendChild(track.attach());
+        }
+    });
+    created.on(RoomEvent.TrackUnsubscribed, (track) => track.detach().forEach((element) => element.remove()));
+    created.on(RoomEvent.ParticipantConnected, () => send({ ev: 'participantConnected' }));
+    created.on(RoomEvent.ParticipantDisconnected, () => {
+        if (!leaving) {
+            send({ ev: 'participantDisconnected' });
+        }
+    });
+    created.on(RoomEvent.Reconnecting, () => send({ ev: 'reconnecting' }));
+    created.on(RoomEvent.Reconnected, () => send({ ev: 'reconnected' }));
+    created.on(RoomEvent.Disconnected, (reason) => {
+        if (!leaving) {
+            send({ ev: 'disconnected', reason: DisconnectReason[reason] ?? String(reason) });
+        }
+    });
+
+    return created;
+}
+
+const commands = {
+    async join(serverUrl, token, options) {
+        if (room) {
+            leaving = true;
+            await room.disconnect();
+        }
+
+        leaving = false;
+        room = createRoom(options);
+        await room.connect(serverUrl, token);
+        await room.localParticipant.setMicrophoneEnabled(true);
+        if (room.remoteParticipants.size > 0) {
+            send({ ev: 'participantConnected' });
+        }
+    },
+    async listDevices() {
+        const inputs = await Room.getLocalDevices('audioinput', true);
+        const outputs = await Room.getLocalDevices('audiooutput', false);
+        return [
+            ...inputs.map((device) => ({ id: device.deviceId, label: device.label, kind: 'input' })),
+            ...outputs.map((device) => ({ id: device.deviceId, label: device.label, kind: 'output' }))
+        ];
+    },
+    async applyAudio(options) {
+        if (!room) {
+            return;
+        }
+
+        const microphone = room.localParticipant.getTrackPublication(Track.Source.Microphone);
+        if (microphone?.track) {
+            await microphone.track.restartTrack(captureOptions(options));
+        }
+
+        if (options.outputDeviceId) {
+            await room.switchActiveDevice('audiooutput', options.outputDeviceId);
+        }
+    },
+    async setMicrophone(enabled) {
+        if (room) {
+            await room.localParticipant.setMicrophoneEnabled(enabled);
+        }
+    },
+    async leave() {
+        if (!room) {
+            return;
+        }
+
+        leaving = true;
+        const current = room;
+        room = null;
+        await current.disconnect();
+    }
+};
+
+window.chatlyMedia = {
+    run(id, command, args) {
+        Promise.resolve()
+            .then(() => commands[command](...args))
+            .then((value) => send({ ev: 'result', id, ok: true, value: value ?? null }))
+            .catch((error) => send({ ev: 'result', id, ok: false, error: `${error.name}: ${error.message}` }));
+    }
+};
+
+</script>
+</body>
+</html>

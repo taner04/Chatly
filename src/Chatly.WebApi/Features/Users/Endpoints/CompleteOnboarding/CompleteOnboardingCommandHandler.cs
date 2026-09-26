@@ -5,7 +5,7 @@ using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
 internal sealed class CompleteOnboardingCommandHandler(
-    EmailService emailService,
+    IEmailService emailService,
     UserService userService,
     ProfilePictureService profilePictureService,
     ChatlyDbContext context)
