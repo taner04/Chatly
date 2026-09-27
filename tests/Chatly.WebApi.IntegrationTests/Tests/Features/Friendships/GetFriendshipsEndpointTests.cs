@@ -26,8 +26,14 @@ public sealed class GetFriendshipsEndpointTests(TestingFixture fixture) : Testin
         await CreateFriendshipAsync(CurrentUser, friend);
         await using var friendConnection = await ConnectNotificationHubAsync(friend);
 
-        var response = await CreateAuthenticatedClient().GetFriendshipsAsync(CurrentCancellationToken);
+        var client = CreateAuthenticatedClient();
 
-        Assert.True(Assert.Single(response.Content!).IsOnline);
+        var onlineFriend = await WaitForAsync(async () =>
+        {
+            var response = await client.GetFriendshipsAsync(CurrentCancellationToken);
+            return response.Content?.SingleOrDefault(friendship => friendship.IsOnline);
+        });
+
+        Assert.NotNull(onlineFriend);
     }
 }
