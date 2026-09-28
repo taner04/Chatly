@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chatly.WebApi.IntegrationTests.Infrastructure.Api;
 
-public sealed class CallHubTestClient(HubConnection connection) : HubTestClient<Call>(connection)
+public sealed class CallHubTestClient(HubConnection connection) : HubTestClient<CallMessage>(connection)
 {
     public Task<CallInfo> StartCallAsync(Guid calleeUserId) =>
         Connection.InvokeAsync<CallInfo>(nameof(ICallingHubServer.StartCallAsync), calleeUserId);

@@ -16,7 +16,7 @@ internal sealed class CallHubHost(
     {
         if (Interlocked.Exchange(ref _subscribed, 1) == 0)
         {
-            _messageRegistration = connection.On<Call>(nameof(ICallingHubClient.Receive), dispatcher.DispatchAsync);
+            _messageRegistration = connection.On<CallMessage>(nameof(ICallingHubClient.Receive), dispatcher.DispatchAsync);
             connection.Reconnected += OnReconnectedAsync;
         }
 

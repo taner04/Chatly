@@ -9,7 +9,7 @@ namespace Chatly.Contracts.Features.Hubs;
 [JsonDerivedType(typeof(CallRejectedNotification), "CallRejected")]
 [JsonDerivedType(typeof(CallEndedNotification), "CallEnded")]
 [JsonDerivedType(typeof(CallStateChangedNotification), "CallStateChanged")]
-public abstract record Call(
+public abstract record CallMessage(
     Guid CallId,
     Guid RemoteUserId,
     string? RemoteUsername,

@@ -1,4 +1,4 @@
-using Chatly.WebApi.Features.Calls.Enums;
+using Chatly.Contracts.Features.Hubs;
 
 namespace Chatly.WebApi.Features.Calls.Models;
 
@@ -23,7 +23,7 @@ public sealed class Call : Entity<CallId>
 
         CallerUserId = callerUserId;
         ReceiverUserId = receiverUserId;
-        Status = CallStatus.Ringing;
+        Status = CallState.Ringing;
         InitiatedAt = DateTimeOffset.UtcNow;
     }
 
@@ -31,102 +31,19 @@ public sealed class Call : Entity<CallId>
 
     public UserId ReceiverUserId { get; }
 
-    public CallStatus Status { get; private set; }
+    public CallState Status { get; internal set; }
 
-    public CallEndReason? EndReason { get; private set; }
+    public CallEndReason? EndReason { get; internal set; }
 
     public DateTimeOffset InitiatedAt { get; private init; }
 
-    public DateTimeOffset? AcceptedAt { get; private set; }
+    public DateTimeOffset? AcceptedAt { get; internal set; }
 
-    public DateTimeOffset? EndedAt { get; private set; }
+    public DateTimeOffset? EndedAt { get; internal set; }
 
     public User CallerUser { get; private init; } = null!;
 
     public User ReceiverUser { get; private init; } = null!;
 
     public ICollection<ActiveCallParticipant> ActiveParticipants { get; private init; } = [];
-
-    public UserId GetCounterpart(UserId actorUserId)
-    {
-        EnsureParticipant(actorUserId);
-        return actorUserId == CallerUserId ? ReceiverUserId : CallerUserId;
-    }
-
-    public void Accept(UserId actorUserId, DateTimeOffset timestamp)
-    {
-        EnsureRole(actorUserId, ReceiverUserId, "Only the receiver can accept the call.");
-        EnsureStatus(CallStatus.Ringing);
-        Status = CallStatus.Active;
-        AcceptedAt = timestamp;
-    }
-
-    public void Reject(UserId actorUserId, DateTimeOffset timestamp)
-    {
-        EnsureRole(actorUserId, ReceiverUserId, "Only the receiver can reject the call.");
-        EnsureStatus(CallStatus.Ringing);
-        Finish(CallEndReason.Declined, timestamp);
-    }
-
-    public void EnsureCanJoinMedia(UserId actorUserId)
-    {
-        EnsureParticipant(actorUserId);
-        EnsureStatus(CallStatus.Active);
-    }
-
-    public void End(UserId actorUserId, DateTimeOffset timestamp)
-    {
-        EnsureParticipant(actorUserId);
-        var reason = Status switch
-        {
-            CallStatus.Ringing when actorUserId == CallerUserId => CallEndReason.Cancelled,
-            CallStatus.Ringing => CallEndReason.Declined,
-            CallStatus.Active => CallEndReason.Completed,
-            _ => throw new CallTransitionException("The call has already ended.")
-        };
-        Finish(reason, timestamp);
-    }
-
-    public void Expire(DateTimeOffset timestamp)
-    {
-        EnsureStatus(CallStatus.Ringing);
-        Finish(CallEndReason.Missed, timestamp);
-    }
-
-    public void ExpireAbandoned(DateTimeOffset timestamp)
-    {
-        EnsureStatus(CallStatus.Active);
-        Finish(CallEndReason.Failed, timestamp);
-    }
-
-    private void Finish(CallEndReason reason, DateTimeOffset timestamp)
-    {
-        Status = CallStatus.Ended;
-        EndReason = reason;
-        EndedAt = timestamp;
-    }
-
-    private void EnsureParticipant(UserId actorUserId)
-    {
-        if (actorUserId != CallerUserId && actorUserId != ReceiverUserId)
-        {
-            throw new UnauthorizedAccessException("The user is not a participant in this call.");
-        }
-    }
-
-    private static void EnsureRole(UserId actorUserId, UserId expectedUserId, string message)
-    {
-        if (actorUserId != expectedUserId)
-        {
-            throw new UnauthorizedAccessException(message);
-        }
-    }
-
-    private void EnsureStatus(CallStatus expectedStatus)
-    {
-        if (Status != expectedStatus)
-        {
-            throw new CallTransitionException($"The call must be {expectedStatus}.");
-        }
-    }
 }

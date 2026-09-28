@@ -5,4 +5,4 @@ public sealed record IncomingCallNotification(
     Guid RemoteUserId,
     string? RemoteUsername,
     CallRole Role,
-    CallState State) : Call(CallId, RemoteUserId, RemoteUsername, Role, State);
+    CallState State) : CallMessage(CallId, RemoteUserId, RemoteUsername, Role, State);

@@ -13,7 +13,7 @@ internal sealed class NotificationHubHost(
     {
         if (Interlocked.Exchange(ref _subscribed, 1) == 0)
         {
-            connection.On<Notification>(nameof(INotificationHubClient.Receive), dispatcher.DispatchAsync);
+            connection.On<NotificationMessage>(nameof(INotificationHubClient.Receive), dispatcher.DispatchAsync);
         }
 
         return connection.StartAsync(cancellationToken);

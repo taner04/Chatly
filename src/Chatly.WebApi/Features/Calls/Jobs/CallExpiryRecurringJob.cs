@@ -1,4 +1,4 @@
-using Chatly.WebApi.Features.Calls.Enums;
+using Chatly.Contracts.Features.Hubs;
 using Hangfire;
 using Hangfire.States;
 
@@ -20,10 +20,10 @@ internal sealed class CallExpiryRecurringJob(
         var maximumThreshold = now - CallExpiryJob.MaximumCallLifetime;
         var staleCallIds = await context.Calls
             .AsNoTracking()
-            .Where(call => call.Status != CallStatus.Ended)
+            .Where(call => call.Status != CallState.Ended)
             .Where(call =>
-                (call.Status == CallStatus.Ringing && call.InitiatedAt <= ringingThreshold) ||
-                (call.Status != CallStatus.Ringing && call.InitiatedAt <= maximumThreshold))
+                (call.Status == CallState.Ringing && call.InitiatedAt <= ringingThreshold) ||
+                (call.Status != CallState.Ringing && call.InitiatedAt <= maximumThreshold))
             .Select(call => call.Id)
             .ToListAsync(cancellationToken);
 

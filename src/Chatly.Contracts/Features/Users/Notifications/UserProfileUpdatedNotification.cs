@@ -4,7 +4,7 @@ public sealed class UserProfileUpdatedNotification(
     Guid userId,
     string? username,
     string? profilePictureUrl)
-    : Notification
+    : NotificationMessage
 {
     public Guid UserId { get; } = userId;
     public string? Username { get; } = username;

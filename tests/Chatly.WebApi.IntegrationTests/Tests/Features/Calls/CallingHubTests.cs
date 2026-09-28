@@ -1,10 +1,8 @@
 using Chatly.Contracts.Features.Hubs;
 using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
-using Chatly.WebApi.Features.Calls.Enums;
 using Chatly.WebApi.Features.Calls.Models;
 using Microsoft.AspNetCore.SignalR;
 using CallEndReason = Chatly.Contracts.Features.Hubs.CallEndReason;
-using StoredCallEndReason = Chatly.WebApi.Features.Calls.Enums.CallEndReason;
 
 namespace Chatly.WebApi.IntegrationTests.Tests.Features.Calls;
 
@@ -48,7 +46,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
 
         await using var dbContext = GetDbContext();
         var call = await dbContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallStatus.Ended, call.Status);
+        Assert.Equal(CallState.Ended, call.Status);
         Assert.False(await dbContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken));
     }
 
@@ -169,7 +167,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
 
         await Assert.ThrowsAsync<HubException>(() => caller.AcceptCallAsync(started.CallId));
 
-        await AssertStoredCallAsync(CallStatus.Ringing, null);
+        await AssertStoredCallAsync(CallState.Ringing, null);
     }
 
     [Fact]
@@ -182,7 +180,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
 
         await Assert.ThrowsAsync<HubException>(() => caller.RejectCallAsync(started.CallId));
 
-        await AssertStoredCallAsync(CallStatus.Ringing, null);
+        await AssertStoredCallAsync(CallState.Ringing, null);
     }
 
     [Fact]
@@ -199,7 +197,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         var ended = await caller.ReceiveAsync<CallEndedNotification>();
 
         Assert.Equal(CallEndReason.Completed, ended.Reason);
-        await AssertStoredCallAsync(CallStatus.Ended, StoredCallEndReason.Completed);
+        await AssertStoredCallAsync(CallState.Ended, CallEndReason.Completed);
     }
 
     [Fact]
@@ -216,7 +214,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
 
         await Assert.ThrowsAsync<HubException>(() => receiver.EndCallAsync(started.CallId));
 
-        await AssertStoredCallAsync(CallStatus.Ended, StoredCallEndReason.Completed);
+        await AssertStoredCallAsync(CallState.Ended, CallEndReason.Completed);
         Assert.Equal(endedAt, await GetStoredEndedAtAsync());
     }
 
@@ -235,7 +233,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await Assert.ThrowsAsync<HubException>(() => intruder.EndCallAsync(started.CallId));
         await Assert.ThrowsAsync<HubException>(() => intruder.JoinMediaAsync(started.CallId));
 
-        await AssertStoredCallAsync(CallStatus.Active, null);
+        await AssertStoredCallAsync(CallState.Active, null);
     }
 
     [Fact]
@@ -252,7 +250,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await Assert.ThrowsAsync<HubException>(() => receiver.JoinMediaAsync(started.CallId));
     }
 
-    private async Task AssertStoredCallAsync(CallStatus status, StoredCallEndReason? reason)
+    private async Task AssertStoredCallAsync(CallState status, CallEndReason? reason)
     {
         await using var dbContext = GetDbContext();
         var call = await dbContext.Calls.SingleAsync(CurrentCancellationToken);

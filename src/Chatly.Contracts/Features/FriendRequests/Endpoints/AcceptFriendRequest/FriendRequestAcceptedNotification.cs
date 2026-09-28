@@ -3,7 +3,7 @@ using Chatly.Contracts.Features.Friendships.Models;
 namespace Chatly.Contracts.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 
 public sealed class FriendRequestAcceptedNotification(FriendshipContract friendship)
-    : Notification
+    : NotificationMessage
 {
     public FriendshipContract Friendship { get; } = friendship;
 }

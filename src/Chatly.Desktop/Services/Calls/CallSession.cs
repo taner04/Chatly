@@ -56,7 +56,7 @@ public sealed partial class CallSession
         _snapshot.HasCall && _snapshot.CallId != callId;
 
     internal bool TryApplyCurrentNotification(
-        Call notification,
+        CallMessage notification,
         out bool isOnAnotherDevice)
     {
         isOnAnotherDevice = false;
@@ -73,7 +73,7 @@ public sealed partial class CallSession
     internal void SetCall(CallInfo call) =>
         SetCall(call.CallId, call.RemoteUserId, call.RemoteUsername, call.State, call.Role, false, call.AcceptedAt);
 
-    internal void SetCall(Call call, bool isOnAnotherDevice) =>
+    internal void SetCall(CallMessage call, bool isOnAnotherDevice) =>
         SetCall(
             call.CallId,
             call.RemoteUserId,

@@ -20,4 +20,4 @@ namespace Chatly.Contracts.Features.Hubs;
 [JsonDerivedType(typeof(OnlineStatusChangedNotification), "OnlineStatusChanged")]
 [JsonDerivedType(typeof(FriendshipRemovedNotification), "FriendshipRemoved")]
 [JsonDerivedType(typeof(UserProfileUpdatedNotification), "UserProfileUpdated")]
-public abstract class Notification : IHubMessage;
+public abstract class NotificationMessage : IHubMessage;

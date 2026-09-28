@@ -6,4 +6,4 @@ public sealed record CallEndedNotification(
     string? RemoteUsername,
     CallRole Role,
     CallState State,
-    CallEndReason Reason) : Call(CallId, RemoteUserId, RemoteUsername, Role, State);
+    CallEndReason Reason) : CallMessage(CallId, RemoteUserId, RemoteUsername, Role, State);

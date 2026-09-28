@@ -3,4 +3,4 @@ using Chatly.Contracts.Features.Hubs;
 namespace Chatly.Desktop.UnitTests.Tests.Services.Hubs.TestDoubles;
 
 internal sealed record TestCall(Guid Id)
-    : Call(Id, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Ringing);
+    : CallMessage(Id, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Ringing);

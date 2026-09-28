@@ -6,4 +6,4 @@ public sealed record CallStateChangedNotification(
     string? RemoteUsername,
     CallRole Role,
     CallState State,
-    DateTimeOffset? AcceptedAt = null) : Call(CallId, RemoteUserId, RemoteUsername, Role, State);
+    DateTimeOffset? AcceptedAt = null) : CallMessage(CallId, RemoteUserId, RemoteUsername, Role, State);

@@ -9,13 +9,13 @@ namespace Chatly.WebApi.Common.Infrastructure;
 internal sealed class NotificationPublisher(
     IHubContext<NotificationHub, INotificationHubClient> hubContext)
 {
-    internal async Task PublishAsync(UserId receiverId, Notification notification)
+    internal async Task PublishAsync(UserId receiverId, NotificationMessage notification)
     {
         ArgumentNullException.ThrowIfNull(notification);
         await hubContext.Clients.Group(HubGroups.User(receiverId)).Receive(notification);
     }
 
-    internal Task PublishAsync(IEnumerable<UserId> receiverIds, Notification notification)
+    internal Task PublishAsync(IEnumerable<UserId> receiverIds, NotificationMessage notification)
     {
         ArgumentNullException.ThrowIfNull(receiverIds);
         ArgumentNullException.ThrowIfNull(notification);

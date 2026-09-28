@@ -4,7 +4,7 @@ using Microsoft.AspNetCore.SignalR.Client;
 
 namespace Chatly.WebApi.IntegrationTests.Infrastructure.Api;
 
-public sealed class NotificationHubTestClient(HubConnection connection) : HubTestClient<Notification>(connection)
+public sealed class NotificationHubTestClient(HubConnection connection) : HubTestClient<NotificationMessage>(connection)
 {
     public Task StartTypingAsync(Guid chatId) =>
         Connection.InvokeAsync(nameof(INotificationHubServer.StartTyping), chatId);

@@ -1,4 +1,4 @@
-using Chatly.WebApi.Features.Calls.Enums;
+using Chatly.Contracts.Features.Hubs;
 using Chatly.WebApi.Features.Calls.Jobs;
 
 namespace Chatly.WebApi.IntegrationTests.Tests.Features.Calls;
@@ -27,7 +27,7 @@ public sealed class CallExpiryJobTests(TestingFixture fixture) : TestingBase(fix
 
         await using var assertContext = GetDbContext();
         var call = await assertContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallStatus.Ended, call.Status);
+        Assert.Equal(CallState.Ended, call.Status);
         Assert.Equal(CallEndReason.Missed, call.EndReason);
         Assert.False(await assertContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken));
     }
@@ -47,7 +47,7 @@ public sealed class CallExpiryJobTests(TestingFixture fixture) : TestingBase(fix
         }
 
         await using var dbContext = GetDbContext();
-        Assert.Equal(CallStatus.Ringing, (await dbContext.Calls.SingleAsync(CurrentCancellationToken)).Status);
+        Assert.Equal(CallState.Ringing, (await dbContext.Calls.SingleAsync(CurrentCancellationToken)).Status);
     }
 
     [Fact]
@@ -74,7 +74,7 @@ public sealed class CallExpiryJobTests(TestingFixture fixture) : TestingBase(fix
 
         await using var assertContext = GetDbContext();
         var call = await assertContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallStatus.Ended, call.Status);
+        Assert.Equal(CallState.Ended, call.Status);
         Assert.Equal(CallEndReason.Failed, call.EndReason);
         Assert.False(await assertContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken));
     }

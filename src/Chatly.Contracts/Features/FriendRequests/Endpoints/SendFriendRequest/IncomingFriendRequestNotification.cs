@@ -2,7 +2,7 @@ using Chatly.Contracts.Features.FriendRequests.Models;
 
 namespace Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 
-public sealed class IncomingFriendRequestNotification(FriendRequestContract request) : Notification
+public sealed class IncomingFriendRequestNotification(FriendRequestContract request) : NotificationMessage
 {
     public FriendRequestContract Request { get; } = request;
 }

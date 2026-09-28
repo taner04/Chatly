@@ -6,7 +6,7 @@ public sealed class ReactionChangedNotification(
     Guid reactionId,
     Guid userId,
     ReactionType reactionType,
-    bool isRemoved) : Notification
+    bool isRemoved) : NotificationMessage
 {
     public Guid ChatId { get; } = chatId;
 

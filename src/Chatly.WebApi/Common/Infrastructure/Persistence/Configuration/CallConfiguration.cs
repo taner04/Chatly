@@ -1,4 +1,4 @@
-using Chatly.WebApi.Features.Calls.Enums;
+using Chatly.Contracts.Features.Hubs;
 using Chatly.WebApi.Features.Calls.Models;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
@@ -9,7 +9,7 @@ internal sealed class CallConfiguration : EntityConfiguration<Call, CallId>
 {
     protected override void PostConfigure(EntityTypeBuilder<Call> builder)
     {
-        var statuses = GetEnumValues<CallStatus>();
+        var statuses = GetEnumValues<CallState>();
         var endReasons = GetEnumValues<CallEndReason>();
 
         builder.Property(call => call.CallerUserId)
@@ -19,7 +19,7 @@ internal sealed class CallConfiguration : EntityConfiguration<Call, CallId>
             .IsRequired();
 
         builder.Property(call => call.Status)
-            .HasConversion<EnumToStringConverter<CallStatus>>()
+            .HasConversion<EnumToStringConverter<CallState>>()
             .IsRequired();
 
         builder.Property(call => call.EndReason)

@@ -1,5 +1,5 @@
 using Chatly.WebApi.Common.Abstraction;
-using Chatly.WebApi.Features.Calls.Enums;
+using Chatly.Contracts.Features.Hubs;
 using Chatly.WebApi.Features.Calls.Jobs;
 
 namespace Chatly.WebApi.IntegrationTests.Tests.Features.Calls;
@@ -33,8 +33,8 @@ public sealed class CallExpiryRecurringJobTests(TestingFixture fixture) : Testin
 
         await using var assertContext = GetDbContext();
         var calls = await assertContext.Calls.ToDictionaryAsync(call => call.Id.Value, CurrentCancellationToken);
-        Assert.Equal(CallStatus.Ended, calls[stale.CallId].Status);
+        Assert.Equal(CallState.Ended, calls[stale.CallId].Status);
         Assert.Equal(CallEndReason.Missed, calls[stale.CallId].EndReason);
-        Assert.Equal(CallStatus.Ringing, calls[fresh.CallId].Status);
+        Assert.Equal(CallState.Ringing, calls[fresh.CallId].Status);
     }
 }

@@ -4,7 +4,6 @@ using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
 using Chatly.WebApi.Features.Calls.Models;
 using Chatly.WebApi.Features.Calls.Services;
 using Microsoft.AspNetCore.SignalR;
-using DomainCall = Chatly.WebApi.Features.Calls.Models.Call;
 
 namespace Chatly.WebApi.Features.Hubs.CallingHub;
 
@@ -30,7 +29,7 @@ internal sealed class CallingHub(
 
         try
         {
-            var result = await callService.ExecuteSerializableAsync(async () =>
+            var result = await Database.ExecuteSerializableAsync(async () =>
             {
                 var receiver = await Database.Users.SingleOrDefaultAsync(
                                    user => user.Id == receiverUserId,
@@ -48,7 +47,7 @@ internal sealed class CallingHub(
                     throw new HubException("Calls can only be started with friends.");
                 }
 
-                var call = new DomainCall(callerUserId, receiverUserId);
+                var call = new Call(callerUserId, receiverUserId);
                 Database.Calls.Add(call);
                 Database.ActiveCallParticipants.AddRange(
                     new ActiveCallParticipant(callerUserId, call.Id),
@@ -108,10 +107,7 @@ internal sealed class CallingHub(
 
     public async Task<CallInfo> AcceptCallAsync(Guid callId)
     {
-        var (call, actorUserId) = await TransitionAsync(
-            callId,
-            (call, actor) => call.Accept(actor, DateTimeOffset.UtcNow),
-            false);
+        var (call, actorUserId) = await TransitionAsync(callId, callService.AcceptAsync);
         var acceptedAt = call.AcceptedAt!.Value;
         await callService.PublishAsync(call.CallerUserId, new CallAcceptedNotification(
             call.Id.Value,
@@ -132,20 +128,14 @@ internal sealed class CallingHub(
 
     public async Task RejectCallAsync(Guid callId)
     {
-        var (call, _) = await TransitionAsync(
-            callId,
-            (call, actor) => call.Reject(actor, DateTimeOffset.UtcNow),
-            true);
+        var (call, _) = await TransitionAsync(callId, callService.RejectAsync);
         await callService.PublishEndedAsync(call, static (callId, remoteId, remoteName, role, state, reason) =>
             new CallRejectedNotification(callId, remoteId, remoteName, role, state, reason));
     }
 
     public async Task EndCallAsync(Guid callId)
     {
-        var (call, _) = await TransitionAsync(
-            callId,
-            (call, actor) => call.End(actor, DateTimeOffset.UtcNow),
-            true);
+        var (call, _) = await TransitionAsync(callId, callService.EndAsync);
         await callService.PublishEndedAsync(call, static (callId, remoteId, remoteName, role, state, reason) =>
             new CallEndedNotification(callId, remoteId, remoteName, role, state, reason));
     }
@@ -168,7 +158,7 @@ internal sealed class CallingHub(
 
         try
         {
-            call.EnsureCanJoinMedia(actorUserId);
+            CallService.EnsureCanJoinMedia(call, actorUserId);
         }
         catch (Exception exception) when (exception is UnauthorizedAccessException or CallTransitionException)
         {
@@ -181,10 +171,9 @@ internal sealed class CallingHub(
             liveKitTokenFactory.CreateJoinToken(call.Id, actorUserId, actor.Username));
     }
 
-    private async Task<(DomainCall Call, UserId ActorUserId)> TransitionAsync(
+    private async Task<(Call Call, UserId ActorUserId)> TransitionAsync(
         Guid callId,
-        Action<DomainCall, UserId> transition,
-        bool releaseReservations)
+        Func<CallId, UserId, CancellationToken, Task<Call?>> transition)
     {
         if (callId == Guid.Empty)
         {
@@ -196,16 +185,7 @@ internal sealed class CallingHub(
 
         try
         {
-            var call = await callService.TryTransitionAsync(
-                CallId.From(callId),
-                call =>
-                {
-                    transition(call, actorUserId);
-                    call.GetCounterpart(actorUserId);
-                    return true;
-                },
-                releaseReservations,
-                cancellationToken);
+            var call = await transition(CallId.From(callId), actorUserId, cancellationToken);
             return (call ?? throw new HubException("The call was not found."), actorUserId);
         }
         catch (Exception exception) when (exception is UnauthorizedAccessException or CallTransitionException)

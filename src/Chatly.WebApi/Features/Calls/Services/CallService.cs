@@ -1,4 +1,3 @@
-using System.Data;
 using Chatly.Contracts.Features.Hubs;
 using Chatly.WebApi.Features.Calls.Jobs;
 using Chatly.WebApi.Features.Calls.Models;
@@ -6,9 +5,6 @@ using Chatly.WebApi.Features.Hubs;
 using Chatly.WebApi.Features.Hubs.CallingHub;
 using Hangfire;
 using Microsoft.AspNetCore.SignalR;
-using ContractCall = Chatly.Contracts.Features.Hubs.Call;
-using ContractCallEndReason = Chatly.Contracts.Features.Hubs.CallEndReason;
-using DomainCall = Chatly.WebApi.Features.Calls.Models.Call;
 
 namespace Chatly.WebApi.Features.Calls.Services;
 
@@ -19,36 +15,95 @@ internal sealed partial class CallService(
     IBackgroundJobClient backgroundJobClient,
     ILogger<CallService> logger)
 {
-    internal async Task<T> ExecuteSerializableAsync<T>(
-        Func<Task<T>> operation,
-        CancellationToken cancellationToken)
-    {
-        var strategy = context.Database.CreateExecutionStrategy();
-        return await strategy.ExecuteAsync(async () =>
+    internal Task<Call?> AcceptAsync(CallId callId, UserId actorUserId, CancellationToken cancellationToken) =>
+        TryTransitionAsync(callId, call =>
         {
-            context.ChangeTracker.Clear();
-            await using var transaction = await context.Database.BeginTransactionAsync(
-                IsolationLevel.Serializable,
-                cancellationToken);
-            var result = await operation();
-            await context.SaveChangesAsync(cancellationToken);
-            await transaction.CommitAsync(cancellationToken);
-            return result;
-        });
+            EnsureParticipant(call, actorUserId);
+            EnsureRole(actorUserId, call.ReceiverUserId, "Only the receiver can accept the call.");
+            EnsureStatus(call, CallState.Ringing);
+            call.Status = CallState.Active;
+            call.AcceptedAt = DateTimeOffset.UtcNow;
+            return true;
+        }, false, cancellationToken);
+
+    internal Task<Call?> RejectAsync(CallId callId, UserId actorUserId, CancellationToken cancellationToken) =>
+        TryTransitionAsync(callId, call =>
+        {
+            EnsureParticipant(call, actorUserId);
+            EnsureRole(actorUserId, call.ReceiverUserId, "Only the receiver can reject the call.");
+            EnsureStatus(call, CallState.Ringing);
+            Finish(call, CallEndReason.Declined, DateTimeOffset.UtcNow);
+            return true;
+        }, true, cancellationToken);
+
+    internal Task<Call?> EndAsync(CallId callId, UserId actorUserId, CancellationToken cancellationToken) =>
+        TryTransitionAsync(callId, call =>
+        {
+            EnsureParticipant(call, actorUserId);
+            var reason = call.Status switch
+            {
+                CallState.Ringing when actorUserId == call.CallerUserId => CallEndReason.Cancelled,
+                CallState.Ringing => CallEndReason.Declined,
+                CallState.Active => CallEndReason.Completed,
+                _ => throw new CallTransitionException("The call has already ended.")
+            };
+            Finish(call, reason, DateTimeOffset.UtcNow);
+            return true;
+        }, true, cancellationToken);
+
+    internal Task<Call?> ExpireAsync(CallId callId, CancellationToken cancellationToken) =>
+        TryTransitionAsync(callId, call =>
+        {
+            var now = DateTimeOffset.UtcNow;
+            CallEndReason? reason = call switch
+            {
+                { Status: CallState.Ringing } when call.InitiatedAt <= now - CallExpiryJob.RingingTimeout =>
+                    CallEndReason.Missed,
+                { Status: CallState.Active } when call.InitiatedAt <= now - CallExpiryJob.MaximumCallLifetime =>
+                    CallEndReason.Failed,
+                _ => null
+            };
+
+            if (reason is not { } endReason)
+            {
+                return false;
+            }
+
+            Finish(call, endReason, now);
+            return true;
+        }, true, cancellationToken);
+
+    internal Task<Call?> AbandonAsync(CallId callId, CancellationToken cancellationToken) =>
+        TryTransitionAsync(callId, call =>
+        {
+            if (call.Status is not CallState.Active)
+            {
+                return false;
+            }
+
+            Finish(call, CallEndReason.Failed, DateTimeOffset.UtcNow);
+            return true;
+        }, true, cancellationToken);
+
+    internal static void EnsureCanJoinMedia(Call call, UserId actorUserId)
+    {
+        EnsureParticipant(call, actorUserId);
+        EnsureStatus(call, CallState.Active);
     }
 
-    internal Task<DomainCall?> TryTransitionAsync(
+    private Task<Call?> TryTransitionAsync(
         CallId callId,
-        Func<DomainCall, bool> transition,
+        Func<Call, bool> transition,
         bool releaseReservations,
         CancellationToken cancellationToken) =>
-        ExecuteSerializableAsync(async () =>
+        context.ExecuteSerializableAsync(async () =>
         {
             var call = await context.Calls
                 .Include(candidate => candidate.CallerUser)
                 .Include(candidate => candidate.ReceiverUser)
                 .Include(candidate => candidate.ActiveParticipants)
                 .SingleOrDefaultAsync(candidate => candidate.Id == callId, cancellationToken);
+
             if (call is null || !transition(call))
             {
                 return null;
@@ -63,10 +118,10 @@ internal sealed partial class CallService(
         }, cancellationToken);
 
     internal Task PublishEndedAsync(
-        DomainCall call,
-        Func<Guid, Guid, string?, CallRole, CallState, ContractCallEndReason, ContractCall> notification)
+        Call call,
+        Func<Guid, Guid, string?, CallRole, CallState, CallEndReason, CallMessage> notification)
     {
-        var reason = CallContractMapper.ToContract(call.EndReason!.Value);
+        var reason = call.EndReason!.Value;
         return Task.WhenAll(
             PublishAsync(call.CallerUserId, notification(
                 call.Id.Value,
@@ -84,7 +139,7 @@ internal sealed partial class CallService(
                 reason)));
     }
 
-    internal async Task PublishAsync(UserId userId, ContractCall notification)
+    internal async Task PublishAsync(UserId userId, CallMessage notification)
     {
         try
         {
@@ -96,7 +151,7 @@ internal sealed partial class CallService(
         }
     }
 
-    internal async Task PublishToOtherDevicesAsync(UserId userId, string connectionId, ContractCall notification)
+    internal async Task PublishToOtherDevicesAsync(UserId userId, string connectionId, CallMessage notification)
     {
         try
         {
@@ -119,6 +174,37 @@ internal sealed partial class CallService(
         catch (Exception exception)
         {
             LogExpiryScheduleFailed(exception, callId.Value);
+        }
+    }
+
+    private static void Finish(Call call, CallEndReason reason, DateTimeOffset timestamp)
+    {
+        call.Status = CallState.Ended;
+        call.EndReason = reason;
+        call.EndedAt = timestamp;
+    }
+
+    private static void EnsureParticipant(Call call, UserId actorUserId)
+    {
+        if (actorUserId != call.CallerUserId && actorUserId != call.ReceiverUserId)
+        {
+            throw new UnauthorizedAccessException("The user is not a participant in this call.");
+        }
+    }
+
+    private static void EnsureRole(UserId actorUserId, UserId expectedUserId, string message)
+    {
+        if (actorUserId != expectedUserId)
+        {
+            throw new UnauthorizedAccessException(message);
+        }
+    }
+
+    private static void EnsureStatus(Call call, CallState expectedStatus)
+    {
+        if (call.Status != expectedStatus)
+        {
+            throw new CallTransitionException($"The call must be {expectedStatus}.");
         }
     }
 

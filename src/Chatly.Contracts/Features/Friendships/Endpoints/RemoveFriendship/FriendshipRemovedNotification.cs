@@ -1,7 +1,7 @@
 namespace Chatly.Contracts.Features.Friendships.Endpoints.RemoveFriendship;
 
 public sealed class FriendshipRemovedNotification(Guid associatedUserId)
-    : Notification
+    : NotificationMessage
 {
     public Guid AssociatedUserId { get; } = associatedUserId;
 }

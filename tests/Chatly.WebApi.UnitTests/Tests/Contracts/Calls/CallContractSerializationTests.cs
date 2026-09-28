@@ -10,7 +10,7 @@ public sealed class CallContractSerializationTests
     private static readonly Guid RemoteUserId = Guid.Parse("bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb");
     private static readonly DateTimeOffset AcceptedAt = new(2026, 9, 25, 12, 0, 0, TimeSpan.Zero);
 
-    public static TheoryData<Call> Notifications =>
+    public static TheoryData<CallMessage> Notifications =>
     [
         new IncomingCallNotification(CallId, RemoteUserId, "remote-user", CallRole.Receiver, CallState.Ringing),
         new CallAcceptedNotification(CallId, RemoteUserId, "remote-user", CallRole.Caller, CallState.Active, AcceptedAt),
@@ -35,11 +35,11 @@ public sealed class CallContractSerializationTests
 
     [Theory]
     [MemberData(nameof(Notifications))]
-    public void Notification_Should_RoundTripPolymorphically_When_SerializedAsCall(Call expected)
+    public void Notification_Should_RoundTripPolymorphically_When_SerializedAsCall(CallMessage expected)
     {
-        var json = JsonSerializer.Serialize<Call>(expected);
+        var json = JsonSerializer.Serialize<CallMessage>(expected);
 
-        var actual = JsonSerializer.Deserialize<Call>(json);
+        var actual = JsonSerializer.Deserialize<CallMessage>(json);
 
         json.Should().Contain("\"$callType\":");
         actual.Should().NotBeNull();
@@ -73,8 +73,8 @@ public sealed class CallContractSerializationTests
     [Fact]
     public void Every_Call_Type_Should_BeRegisteredForPolymorphism_When_ContractsChange()
     {
-        var registered = typeof(Call).Assembly.GetTypes()
-            .Where(type => type is { IsAbstract: false } && type.IsSubclassOf(typeof(Call)))
+        var registered = typeof(CallMessage).Assembly.GetTypes()
+            .Where(type => type is { IsAbstract: false } && type.IsSubclassOf(typeof(CallMessage)))
             .ToList();
 
         Notifications.Select(row => row.Data.GetType()).Should().BeEquivalentTo(registered);

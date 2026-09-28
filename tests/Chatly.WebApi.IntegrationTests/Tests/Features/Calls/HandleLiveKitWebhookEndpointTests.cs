@@ -2,7 +2,7 @@ using System.Net.Http.Headers;
 using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
-using Chatly.WebApi.Features.Calls.Enums;
+using Chatly.Contracts.Features.Hubs;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 
@@ -42,7 +42,7 @@ public sealed class HandleLiveKitWebhookEndpointTests(TestingFixture fixture) : 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         await using var dbContext = GetDbContext();
         var call = await dbContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallStatus.Ended, call.Status);
+        Assert.Equal(CallState.Ended, call.Status);
         Assert.Equal(CallEndReason.Failed, call.EndReason);
     }
 

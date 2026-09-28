@@ -20,7 +20,7 @@ public sealed class NotificationContractSerializationTests
     private static readonly Guid Id = Guid.Parse("cccccccc-cccc-cccc-cccc-cccccccccccc");
     private static readonly DateTimeOffset SentAt = new(2026, 9, 25, 12, 0, 0, TimeSpan.Zero);
 
-    public static TheoryData<Notification> Notifications =>
+    public static TheoryData<NotificationMessage> Notifications =>
     [
         new IncomingFriendRequestNotification(new FriendRequestContract(Id, Id, "sender", null)),
         new FriendRequestAcceptedNotification(new FriendshipContract(Id, Id, Id, "friend", "https://pic", true)),
@@ -43,11 +43,11 @@ public sealed class NotificationContractSerializationTests
 
     [Theory]
     [MemberData(nameof(Notifications))]
-    public void Notification_Should_RoundTripPolymorphically_When_SerializedAsBaseType(Notification expected)
+    public void Notification_Should_RoundTripPolymorphically_When_SerializedAsBaseType(NotificationMessage expected)
     {
         var json = JsonSerializer.Serialize(expected);
 
-        var actual = JsonSerializer.Deserialize<Notification>(json);
+        var actual = JsonSerializer.Deserialize<NotificationMessage>(json);
 
         json.Should().Contain("\"$notificationType\":");
         actual.Should().BeOfType(expected.GetType());
@@ -57,8 +57,8 @@ public sealed class NotificationContractSerializationTests
     [Fact]
     public void Every_Notification_Type_Should_BeRegisteredForPolymorphism_When_ContractsChange()
     {
-        var registered = typeof(Notification).Assembly.GetTypes()
-            .Where(type => type is { IsAbstract: false } && type.IsSubclassOf(typeof(Notification)))
+        var registered = typeof(NotificationMessage).Assembly.GetTypes()
+            .Where(type => type is { IsAbstract: false } && type.IsSubclassOf(typeof(NotificationMessage)))
             .ToList();
 
         Notifications.Select(row => row.Data.GetType()).Should().BeEquivalentTo(registered);
