@@ -8,12 +8,14 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
         var friend = await CreateUserAsync("friend");
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
 
-        var response = await CreateAuthenticatedClient().SendMessageAsync(chatId.Value, "  hello  ", CurrentCancellationToken);
+        var response = await CreateAuthenticatedClient()
+            .SendMessageAsync(chatId.Value, "  hello  ", CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("hello", response.Content!.Content);
         Assert.Equal(CurrentUser.Id.Value, response.Content.SenderUserId);
-        var messages = await CreateAuthenticatedClient(friend).GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
+        var messages = await CreateAuthenticatedClient(friend)
+            .GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
         Assert.Equal(response.Content.MessageId, Assert.Single(messages.Content!.Items).MessageId);
     }
 
@@ -24,7 +26,8 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
         var second = await CreateUserAsync("second");
         var chatId = await CreateFriendshipAsync(first, second);
 
-        var response = await CreateAuthenticatedClient().SendMessageAsync(chatId.Value, "intruder", CurrentCancellationToken);
+        var response = await CreateAuthenticatedClient()
+            .SendMessageAsync(chatId.Value, "intruder", CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
     }
@@ -35,7 +38,8 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
         var friend = await CreateUserAsync("friend");
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
 
-        var response = await CreateAuthenticatedClient().SendMessageAsync(chatId.Value, "   ", CurrentCancellationToken);
+        var response = await CreateAuthenticatedClient()
+            .SendMessageAsync(chatId.Value, "   ", CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }

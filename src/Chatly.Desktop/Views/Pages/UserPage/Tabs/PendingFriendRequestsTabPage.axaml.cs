@@ -2,16 +2,15 @@ using Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 namespace Chatly.Desktop.Views.Pages.UserPage.Tabs;
 
-[SingletonService(typeof(INavigableView<PendingFriendRequestsTabPageViewModel>))]
 internal partial class PendingFriendRequestsTabPage
-    : UserControl, INavigableView<PendingFriendRequestsTabPageViewModel>
+    : UserControl, IViewFor<PendingFriendRequestsTabPageViewModel>
 {
     private bool _isLoadingMoreFriendRequests;
 
     public PendingFriendRequestsTabPage(PendingFriendRequestsTabPageViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
+        DataContext = viewModel;
         InitializeComponent();
     }
 

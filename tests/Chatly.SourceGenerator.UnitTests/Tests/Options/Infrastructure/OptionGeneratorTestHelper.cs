@@ -37,7 +37,8 @@ internal static class OptionGeneratorTestHelper
             References,
             new CSharpCompilationOptions(OutputKind.DynamicallyLinkedLibrary));
 
-        var driver = CSharpGeneratorDriver.Create([new OptionGenerator().AsSourceGenerator()], parseOptions: ParseOptions)
+        var driver = CSharpGeneratorDriver
+            .Create([new OptionGenerator().AsSourceGenerator()], parseOptions: ParseOptions)
             .RunGeneratorsAndUpdateCompilation(compilation, out var outputCompilation, out _);
 
         outputCompilation.GetDiagnostics()

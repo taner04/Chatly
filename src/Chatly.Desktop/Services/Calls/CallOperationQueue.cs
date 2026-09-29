@@ -3,8 +3,8 @@ namespace Chatly.Desktop.Services.Calls;
 internal sealed class CallOperationQueue
 {
     private readonly Lock _syncLock = new();
-    private int _stopping;
     private Task? _stopTask;
+    private int _stopping;
     private Task _tail = Task.CompletedTask;
 
     internal Task RunAsync(Func<Task> operation, CancellationToken cancellationToken = default)
@@ -61,8 +61,8 @@ internal sealed class CallOperationQueue
         CancellationToken cancellationToken,
         TaskCompletionSource completion)
     {
-        await using var cancellationRegistration = cancellationToken.Register(
-            () => completion.TrySetCanceled(cancellationToken));
+        await using var cancellationRegistration =
+            cancellationToken.Register(() => completion.TrySetCanceled(cancellationToken));
 
         try
         {

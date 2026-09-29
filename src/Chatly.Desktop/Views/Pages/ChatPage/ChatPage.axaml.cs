@@ -7,8 +7,7 @@ using Chatly.Desktop.ViewModels.Pages.ChatPage;
 
 namespace Chatly.Desktop.Views.Pages.ChatPage;
 
-[SingletonService(typeof(INavigableView<ChatPageViewModel>))]
-internal partial class ChatPage : UserControl, INavigableView<ChatPageViewModel>
+internal partial class ChatPage : UserControl, IViewFor<ChatPageViewModel>
 {
     private bool _canLoadOlderMessages;
     private bool _isLoadingOlderMessages;
@@ -17,7 +16,7 @@ internal partial class ChatPage : UserControl, INavigableView<ChatPageViewModel>
     public ChatPage(ChatPageViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
+        DataContext = viewModel;
 
         InitializeComponent();
 

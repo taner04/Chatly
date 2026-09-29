@@ -11,6 +11,8 @@ public sealed partial class CallCoordinator(
 {
     public CallSnapshot Snapshot => session.Snapshot;
 
+    public async ValueTask DisposeAsync() => await ShutdownAsync();
+
     public event Action<CallSnapshot>? SnapshotChanged
     {
         add => session.SnapshotChanged += value;
@@ -87,8 +89,6 @@ public sealed partial class CallCoordinator(
         session.RunAsync(() => ReconcileCoreAsync(cancellationToken), cancellationToken);
 
     public Task ShutdownAsync() => session.StopAsync(ShutdownCoreAsync);
-
-    public async ValueTask DisposeAsync() => await ShutdownAsync();
 
     private async Task ReconcileCoreAsync(CancellationToken cancellationToken)
     {

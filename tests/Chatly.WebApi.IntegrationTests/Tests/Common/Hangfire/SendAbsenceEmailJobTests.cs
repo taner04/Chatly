@@ -61,6 +61,7 @@ public sealed class SendAbsenceEmailJobTests(TestingFixture fixture) : TestingBa
     private async Task RunJobAsync(TestUser user)
     {
         using var scope = CreateScope();
-        await scope.ServiceProvider.GetRequiredService<SendAbsenceEmailJob>().ExecuteAsync(user.Id, CurrentCancellationToken);
+        await scope.ServiceProvider.GetRequiredService<SendAbsenceEmailJob>()
+            .ExecuteAsync(user.Id, CurrentCancellationToken);
     }
 }

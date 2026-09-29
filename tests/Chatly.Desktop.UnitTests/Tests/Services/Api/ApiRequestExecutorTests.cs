@@ -1,5 +1,4 @@
 using System.Net;
-using System.Net.Http;
 using System.Text;
 using Chatly.Desktop.Services.Api;
 using Refit;
@@ -51,7 +50,7 @@ public sealed class ApiRequestExecutorTests
     [Fact]
     public async Task ExecuteAsync_Should_ReturnNetworkError_When_ServerIsUnreachable()
     {
-        var result = await ApiRequestExecutor.ExecuteAsync<string>(
+        var result = await ApiRequestExecutor.ExecuteAsync(
             () => Task.FromException<ApiResponse<string>>(new HttpRequestException("connection refused")),
             TestContext.Current.CancellationToken);
 
@@ -65,7 +64,7 @@ public sealed class ApiRequestExecutorTests
         using var cancellation = new CancellationTokenSource();
         await cancellation.CancelAsync();
 
-        var act = () => ApiRequestExecutor.ExecuteAsync<string>(
+        var act = () => ApiRequestExecutor.ExecuteAsync(
             () => Task.FromException<ApiResponse<string>>(new OperationCanceledException(cancellation.Token)),
             cancellation.Token);
 

@@ -35,7 +35,8 @@ public sealed class ChatMessagesViewModelTests
     {
         var viewModel = CreateOpenConversation();
 
-        var added = viewModel.ReceiveIncomingMessage(new IncomingMessageNotification(Message(Guid.NewGuid(), _friendId)));
+        var added = viewModel.ReceiveIncomingMessage(
+            new IncomingMessageNotification(Message(Guid.NewGuid(), _friendId)));
 
         added.Should().BeFalse();
         viewModel.Messages.Should().BeEmpty();
@@ -49,9 +50,11 @@ public sealed class ChatMessagesViewModelTests
         viewModel.ReceiveIncomingMessage(new IncomingMessageNotification(message));
         var reactionId = Guid.NewGuid();
 
-        viewModel.ReceiveReactionChanged(new ReactionChangedNotification(_chatId, message.MessageId, reactionId, _friendId, ReactionType.Fire, false));
+        viewModel.ReceiveReactionChanged(new ReactionChangedNotification(_chatId, message.MessageId, reactionId,
+            _friendId, ReactionType.Fire, false));
         var afterAdd = viewModel.Messages.Single().Reactions.Count;
-        viewModel.ReceiveReactionChanged(new ReactionChangedNotification(_chatId, message.MessageId, reactionId, _friendId, ReactionType.Fire, true));
+        viewModel.ReceiveReactionChanged(new ReactionChangedNotification(_chatId, message.MessageId, reactionId,
+            _friendId, ReactionType.Fire, true));
 
         afterAdd.Should().Be(1);
         viewModel.Messages.Single().Reactions.Should().BeEmpty();

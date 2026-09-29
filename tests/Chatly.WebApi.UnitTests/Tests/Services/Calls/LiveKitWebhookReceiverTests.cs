@@ -10,7 +10,8 @@ namespace Chatly.WebApi.UnitTests.Tests.Services.Calls;
 
 public sealed class LiveKitWebhookReceiverTests
 {
-    private const string Body = """{"event":"room_finished","room":{"sid":"RM_1","name":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"}}""";
+    private const string Body =
+        """{"event":"room_finished","room":{"sid":"RM_1","name":"aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"}}""";
 
     private static readonly LiveKitOption Option = new()
     {
@@ -60,10 +61,8 @@ public sealed class LiveKitWebhookReceiverTests
     }
 
     [Fact]
-    public async Task ReceiveAsync_Should_Reject_When_AuthorizationIsMissing()
-    {
+    public async Task ReceiveAsync_Should_Reject_When_AuthorizationIsMissing() =>
         (await _receiver.ReceiveAsync(Body, null)).Should().BeNull();
-    }
 
     private static string CreateToken(string body, string secret) =>
         new JsonWebTokenHandler().CreateToken(new SecurityTokenDescriptor

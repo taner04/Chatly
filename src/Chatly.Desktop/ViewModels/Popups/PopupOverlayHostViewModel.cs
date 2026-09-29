@@ -3,9 +3,9 @@ namespace Chatly.Desktop.ViewModels.Popups;
 [SingletonService]
 public sealed partial class PopupOverlayHostViewModel : ViewModelBase
 {
-    [ObservableProperty] public partial bool IsOpen { get; set; }
+    [ObservableProperty]
+    [NotifyPropertyChangedFor(nameof(IsOpen))]
+    public partial IPopupViewModel? Current { get; set; }
 
-    [ObservableProperty] public partial string? Title { get; set; }
-
-    [ObservableProperty] public partial object? Content { get; set; }
+    public bool IsOpen => Current is not null;
 }

@@ -1,10 +1,10 @@
+using System.Runtime.Versioning;
 using System.Text;
 using Chatly.Desktop.Abstraction.Authentication;
 using Chatly.Desktop.Options;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop;
 using Chatly.Desktop.Services.Authentication.Storage.MacOs.Interop.DataTypes;
 using Microsoft.Extensions.Options;
-using System.Runtime.Versioning;
 
 namespace Chatly.Desktop.Services.Authentication.Storage.MacOs;
 

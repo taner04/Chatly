@@ -9,7 +9,8 @@ public sealed class UpdateUsernameEndpointTests(TestingFixture fixture) : Testin
     {
         var client = CreateAuthenticatedClient();
 
-        var response = await client.UpdateUsernameAsync(new UpdateUsernameRequest("new_name"), CurrentCancellationToken);
+        var response =
+            await client.UpdateUsernameAsync(new UpdateUsernameRequest("new_name"), CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.Equal("new_name", response.Content!.Username);
@@ -25,7 +26,8 @@ public sealed class UpdateUsernameEndpointTests(TestingFixture fixture) : Testin
         var other = await CreateUserAsync("taken_name");
         var client = CreateAuthenticatedClient();
 
-        var response = await client.UpdateUsernameAsync(new UpdateUsernameRequest(other.Username), CurrentCancellationToken);
+        var response =
+            await client.UpdateUsernameAsync(new UpdateUsernameRequest(other.Username), CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.Conflict, response.StatusCode);
     }
@@ -35,7 +37,8 @@ public sealed class UpdateUsernameEndpointTests(TestingFixture fixture) : Testin
     {
         var client = CreateAuthenticatedClient();
 
-        var response = await client.UpdateUsernameAsync(new UpdateUsernameRequest("not valid!"), CurrentCancellationToken);
+        var response =
+            await client.UpdateUsernameAsync(new UpdateUsernameRequest("not valid!"), CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }

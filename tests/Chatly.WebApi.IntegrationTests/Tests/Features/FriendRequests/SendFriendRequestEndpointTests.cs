@@ -89,9 +89,11 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var receiverClient = CreateAuthenticatedClient(receiver);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await receiverClient.RejectFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId, CurrentCancellationToken);
+        await receiverClient.RejectFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
+            CurrentCancellationToken);
 
-        var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
+        var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value),
+            CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
         var again = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
@@ -106,10 +108,12 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var receiverClient = CreateAuthenticatedClient(receiver);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await receiverClient.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId, CurrentCancellationToken);
+        await receiverClient.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
+            CurrentCancellationToken);
         await client.RemoveFriendshipAsync(receiver.Id.Value, CurrentCancellationToken);
 
-        var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
+        var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value),
+            CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
     }
@@ -122,9 +126,11 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var receiverClient = CreateAuthenticatedClient(receiver);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await receiverClient.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId, CurrentCancellationToken);
+        await receiverClient.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
+            CurrentCancellationToken);
 
-        var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
+        var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value),
+            CurrentCancellationToken);
 
         AssertError(response, HttpStatusCode.Conflict, "FriendRequest.AlreadyAccepted");
     }
@@ -137,7 +143,8 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var otherClient = CreateAuthenticatedClient(other);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(other.Id.Value), CurrentCancellationToken);
         var pending = await otherClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await otherClient.RejectFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId, CurrentCancellationToken);
+        await otherClient.RejectFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
+            CurrentCancellationToken);
 
         var response = await otherClient.SendFriendRequestAsync(
             new SendFriendRequestRequest(CurrentUser.Id.Value),

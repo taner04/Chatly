@@ -6,7 +6,6 @@ using Chatly.WebApi.IntegrationTests.Infrastructure.TestContainers.Azurite;
 using Chatly.WebApi.IntegrationTests.Infrastructure.TestContainers.Postgres;
 using Microsoft.AspNetCore.Http.Connections;
 using Microsoft.AspNetCore.SignalR.Client;
-using NSubstitute;
 using NSubstitute.ClearExtensions;
 using Refit;
 
@@ -46,7 +45,7 @@ public sealed class TestingFixture : IAsyncLifetime
     internal async Task ResetAsync()
     {
         await _database.ResetAsync();
-        EmailService.ClearSubstitute(ClearOptions.All);
+        EmailService.ClearSubstitute();
     }
 
     internal ChatlyDbContext CreateDbContext() => _database.CreateDbContext();

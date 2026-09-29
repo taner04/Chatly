@@ -1,6 +1,5 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
-using Avalonia.Controls;
 using Chatly.Desktop.Abstraction.Calls;
 using Chatly.Desktop.Models.Calls;
 using Chatly.Desktop.Utilities;
@@ -230,7 +229,8 @@ internal sealed partial class WebViewCallMediaHost : ICallMediaHost, IDisposable
                     break;
             }
         }
-        catch (Exception exception) when (exception is JsonException or KeyNotFoundException or InvalidOperationException)
+        catch (Exception exception) when (exception is JsonException or KeyNotFoundException
+                                              or InvalidOperationException)
         {
             LogInvalidMessage(exception);
         }

@@ -1,6 +1,5 @@
 using Chatly.Contracts.Features.Hubs;
 using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
-using Chatly.WebApi.Features.Calls.Models;
 using Microsoft.AspNetCore.SignalR;
 using CallEndReason = Chatly.Contracts.Features.Hubs.CallEndReason;
 
@@ -120,8 +119,9 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await receiverLaptop.ReceiveAsync<IncomingCallNotification>();
 
         await receiverPhone.AcceptCallAsync(started.CallId);
-        var changed = await receiverLaptop.ReceiveAsync<CallStateChangedNotification>(
-            notification => notification.State == CallState.Active);
+        var changed =
+            await receiverLaptop.ReceiveAsync<CallStateChangedNotification>(notification =>
+                notification.State == CallState.Active);
 
         Assert.Equal(started.CallId, changed.CallId);
         Assert.NotNull(changed.AcceptedAt);

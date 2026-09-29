@@ -8,14 +8,12 @@ using Chatly.Desktop.Views.Toasts;
 namespace Chatly.Desktop.Views.Windows;
 
 [SingletonService]
-internal partial class MainWindow : Window, INavigationView
+internal partial class MainWindow : Window
 {
     private readonly INavigationService _navigationService;
 
     public MainWindow(
         INavigationService navigationService,
-        IPopupService popupService,
-        IToastService toastService,
         PopupOverlayHost popupHost,
         ToastHostOverlay toastHost,
         MainWindowViewModel viewModel,
@@ -28,25 +26,14 @@ internal partial class MainWindow : Window, INavigationView
         _navigationService = navigationService;
         InitializeComponent();
 
-        _navigationService.SetNavigationView(this);
-
         CallMediaContainer.Content = callMediaView;
         PopupHostContainer.Content = popupHost;
         ToastHostContainer.Content = toastHost;
-
-        popupService.SetPopupHost(popupHost);
-        toastService.SetToastHost(toastHost);
     }
 
     public MainWindowViewModel ViewModel { get; }
 
     public CallViewModel Call { get; }
-
-    public void SetPage<T>(INavigableView<T> view) where T : INavigableViewModel
-    {
-        ArgumentNullException.ThrowIfNull(view);
-        PageHost.Content = view;
-    }
 
     protected override async void OnPointerReleased(PointerReleasedEventArgs e)
     {

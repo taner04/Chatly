@@ -27,6 +27,13 @@ internal sealed class CallMediaPageServer : IDisposable
 
     internal Uri Address { get; }
 
+    public void Dispose()
+    {
+        _cancellation.Cancel();
+        _listener.Stop();
+        _cancellation.Dispose();
+    }
+
     internal static CallMediaPageServer Start()
     {
         var responses = new Dictionary<string, byte[]>(StringComparer.Ordinal)
@@ -40,13 +47,6 @@ internal sealed class CallMediaPageServer : IDisposable
         var server = new CallMediaPageServer(listener, responses);
         _ = server.ServeAsync();
         return server;
-    }
-
-    public void Dispose()
-    {
-        _cancellation.Cancel();
-        _listener.Stop();
-        _cancellation.Dispose();
     }
 
     private static byte[] CreateResponse(Uri asset, string contentType)

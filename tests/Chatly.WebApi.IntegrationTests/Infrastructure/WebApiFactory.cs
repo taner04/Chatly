@@ -21,8 +21,10 @@ internal sealed class WebApiFactory(string databaseConnectionString, string blob
         builder.UseEnvironment("Testing");
 
         var settings = TestSettings.WebApiSettings()
-            .Append(new($"ConnectionStrings:{AppHostConstants.DatabaseConnectionName}", databaseConnectionString))
-            .Append(new($"ConnectionStrings:{AppHostConstants.BlobServiceConnectionName}", blobConnectionString))
+            .Append(new KeyValuePair<string, string>($"ConnectionStrings:{AppHostConstants.DatabaseConnectionName}",
+                databaseConnectionString))
+            .Append(new KeyValuePair<string, string>($"ConnectionStrings:{AppHostConstants.BlobServiceConnectionName}",
+                blobConnectionString))
             .ToList();
 
         foreach (var (key, value) in settings)

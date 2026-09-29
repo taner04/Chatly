@@ -1,5 +1,6 @@
 using Chatly.Desktop.Abstraction.Calls;
 using Chatly.Desktop.Models.Calls;
+using Chatly.Desktop.Models.Settings;
 using Chatly.Desktop.UnitTests.Tests.Services.Calls.TestDoubles;
 using Chatly.Desktop.ViewModels.Pages;
 using Microsoft.Extensions.Logging.Abstractions;
@@ -64,7 +65,7 @@ public sealed class SettingsPageViewModelTests
         callSettings.InputDeviceId.Should().Be("usb-headset");
     }
 
-    private static SettingsPageViewModel CreateViewModel(out Chatly.Desktop.Models.Settings.CallSettings callSettings)
+    private static SettingsPageViewModel CreateViewModel(out CallSettings callSettings)
     {
         var appSettings = CallSessionFactory.CreateAppSettings();
         callSettings = appSettings.CallSettings;

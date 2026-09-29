@@ -10,7 +10,8 @@ public sealed class RemoveReactionEndpointTests(TestingFixture fixture) : Testin
     {
         var friend = await CreateUserAsync("friend");
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
-        var sent = await CreateAuthenticatedClient(friend).SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
+        var sent = await CreateAuthenticatedClient(friend)
+            .SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
         var client = CreateAuthenticatedClient();
         var reaction = await client.SetReactionAsync(
             sent.Content!.MessageId,
@@ -29,7 +30,8 @@ public sealed class RemoveReactionEndpointTests(TestingFixture fixture) : Testin
     {
         var friend = await CreateUserAsync("friend");
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
-        var sent = await CreateAuthenticatedClient(friend).SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
+        var sent = await CreateAuthenticatedClient(friend)
+            .SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
         var reaction = await CreateAuthenticatedClient().SetReactionAsync(
             sent.Content!.MessageId,
             new SetReactionRequest(ReactionType.Clap),

@@ -1,17 +1,15 @@
+using System.ComponentModel;
 using Avalonia;
 using Avalonia.Input;
 using Avalonia.Interactivity;
 using Avalonia.Threading;
-using Chatly.Desktop.Services.Popups;
 using Chatly.Desktop.ViewModels.Popups;
 
 namespace Chatly.Desktop.Views.Popups;
 
 [SingletonService]
-internal partial class PopupOverlayHost : UserControl, IPopupHost
+internal partial class PopupOverlayHost : UserControl
 {
-    private IPopupViewModel? _currentPopupViewModel;
-    private bool _isCurrentPopupDismissible;
     private TopLevel? _topLevel;
 
     public PopupOverlayHost(PopupOverlayHostViewModel viewModel)
@@ -20,32 +18,11 @@ internal partial class PopupOverlayHost : UserControl, IPopupHost
         DataContext = this;
 
         InitializeComponent();
+
+        ViewModel.PropertyChanged += ViewModel_OnPropertyChanged;
     }
 
     public PopupOverlayHostViewModel ViewModel { get; }
-    public event EventHandler<PopupOverlayEventArgs>? PopupEvent;
-
-    public void Show<TViewModel>(IPopupOverlay<TViewModel> overlay) where TViewModel : IPopupViewModel
-    {
-        ArgumentNullException.ThrowIfNull(overlay);
-
-        _currentPopupViewModel = overlay.ViewModel;
-        _isCurrentPopupDismissible = overlay.IsDismissible;
-        ViewModel.Title = _currentPopupViewModel.Title;
-        ViewModel.Content = overlay;
-        ViewModel.IsOpen = true;
-
-        Dispatcher.UIThread.Post(() => Focus());
-    }
-
-    public void Close()
-    {
-        ViewModel.IsOpen = false;
-        ViewModel.Title = null;
-        ViewModel.Content = null;
-        _currentPopupViewModel = null;
-        _isCurrentPopupDismissible = false;
-    }
 
     protected override void OnAttachedToVisualTree(VisualTreeAttachmentEventArgs e)
     {
@@ -63,26 +40,35 @@ internal partial class PopupOverlayHost : UserControl, IPopupHost
         base.OnDetachedFromVisualTree(e);
     }
 
+    private void ViewModel_OnPropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (e.PropertyName == nameof(PopupOverlayHostViewModel.Current) && ViewModel.IsOpen)
+        {
+            Dispatcher.UIThread.Post(() => Focus());
+        }
+    }
+
     private void OnBackdropPointerPressed(object? sender, PointerPressedEventArgs e)
     {
         if (ReferenceEquals(e.Source, sender))
         {
-            if (_isCurrentPopupDismissible)
-            {
-                _currentPopupViewModel?.CloseOverlay();
-            }
-
-            PopupEvent?.Invoke(this, new PopupOverlayEventArgs(PopupOverlayHostEventType.MouseEvent, e));
+            CloseIfDismissible();
         }
     }
 
     private void OnHostKeyUp(object? sender, KeyEventArgs e)
     {
-        if (_isCurrentPopupDismissible && e.Key == Key.Escape)
+        if (e.Key == Key.Escape)
         {
-            _currentPopupViewModel?.CloseOverlay();
+            CloseIfDismissible();
         }
+    }
 
-        PopupEvent?.Invoke(this, new PopupOverlayEventArgs(PopupOverlayHostEventType.KeyEvent, e));
+    private void CloseIfDismissible()
+    {
+        if (ViewModel.Current is { IsDismissible: true } popup)
+        {
+            popup.CloseOverlay();
+        }
     }
 }

@@ -1,3 +1,4 @@
+using System.Runtime.InteropServices;
 using System.Text.Json;
 using Avalonia;
 using Avalonia.Controls;
@@ -47,12 +48,13 @@ internal sealed class ProbeApplication(Uri pageAddress, string? reportPath) : Ap
         Window window,
         NativeWebView webView)
     {
-        Log($"OS: {System.Runtime.InteropServices.RuntimeInformation.OSDescription}");
+        Log($"OS: {RuntimeInformation.OSDescription}");
         Log($"Page: {pageAddress}");
         webView.Source = pageAddress;
 
         var connected = await Task.WhenAny(_connected.Task, Task.Delay(ConnectTimeout)) == _connected.Task;
-        _report.Add("WebRTC loopback connects", connected, connected ? "connected" : $"no connection within {ConnectTimeout.TotalSeconds:F0}s");
+        _report.Add("WebRTC loopback connects", connected,
+            connected ? "connected" : $"no connection within {ConnectTimeout.TotalSeconds:F0}s");
 
         if (connected)
         {
@@ -60,7 +62,8 @@ internal sealed class ProbeApplication(Uri pageAddress, string? reportPath) : Ap
             await MeasureFlowAsync("Audio flows while WebView is hidden", () => webView.IsVisible = false);
             webView.IsVisible = true;
             await Task.Delay(SettleDuration);
-            await MeasureFlowAsync("Audio flows while window is minimized", () => window.WindowState = WindowState.Minimized);
+            await MeasureFlowAsync("Audio flows while window is minimized",
+                () => window.WindowState = WindowState.Minimized);
             window.WindowState = WindowState.Normal;
             await Task.Delay(SettleDuration);
         }
@@ -122,7 +125,8 @@ internal sealed class ProbeApplication(Uri pageAddress, string? reportPath) : Ap
 
         var settings = result.GetProperty("settings");
         _report.Add("Microphone access", true, result.GetProperty("label").GetString() ?? "granted");
-        var echoCancellation = settings.TryGetProperty("echoCancellation", out var value) && value.ValueKind == JsonValueKind.True;
+        var echoCancellation = settings.TryGetProperty("echoCancellation", out var value) &&
+                               value.ValueKind == JsonValueKind.True;
         _report.Add("Echo cancellation enabled", echoCancellation, settings.ToString());
     }
 

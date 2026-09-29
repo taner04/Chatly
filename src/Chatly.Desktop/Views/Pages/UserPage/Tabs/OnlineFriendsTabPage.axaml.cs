@@ -2,14 +2,12 @@ using Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 namespace Chatly.Desktop.Views.Pages.UserPage.Tabs;
 
-[SingletonService(typeof(INavigableView<OnlineFriendsTabPageViewModel>))]
-internal partial class OnlineFriendsTabPage : UserControl, INavigableView<OnlineFriendsTabPageViewModel>
+internal partial class OnlineFriendsTabPage : UserControl, IViewFor<OnlineFriendsTabPageViewModel>
 {
     public OnlineFriendsTabPage(OnlineFriendsTabPageViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
-
+        DataContext = viewModel;
         InitializeComponent();
     }
 

@@ -1,8 +1,9 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage.Tabs"
+             xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages.UserPage.Tabs"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Tabs.AllFriendsTabPage"
-             x:DataType="local:AllFriendsTabPage">
-    <local:FriendsTabView ViewModel="{Binding ViewModel}" />
+             x:DataType="viewModels:AllFriendsTabPageViewModel">
+    <local:FriendsTabView ViewModel="{Binding}" />
 </UserControl>

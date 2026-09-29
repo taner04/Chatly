@@ -2,14 +2,12 @@ using Chatly.Desktop.ViewModels.Pages;
 
 namespace Chatly.Desktop.Views.Pages;
 
-[SingletonService(typeof(INavigableView<SettingsPageViewModel>))]
-internal partial class SettingsPage : UserControl, INavigableView<SettingsPageViewModel>
+internal partial class SettingsPage : UserControl, IViewFor<SettingsPageViewModel>
 {
     public SettingsPage(SettingsPageViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
-
+        DataContext = viewModel;
         InitializeComponent();
     }
 

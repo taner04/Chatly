@@ -7,7 +7,7 @@ using FluentIcons.Common;
 namespace Chatly.Desktop.ViewModels.Windows;
 
 [SingletonService]
-public sealed class MainWindowViewModel : ViewModelBase, IDisposable
+public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
     private readonly INavigationService _navigationService;
 
@@ -36,6 +36,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     public List<NavigationItemViewModel> FooterNavigationItems { get; }
 
+    [ObservableProperty] public partial INavigableViewModel? CurrentPage { get; private set; }
+
     public void Dispose()
     {
         _navigationService.Navigated -= NavigationService_OnNavigated;
@@ -43,7 +45,8 @@ public sealed class MainWindowViewModel : ViewModelBase, IDisposable
 
     private void NavigationService_OnNavigated(object? sender, NavigatedEventArgs e)
     {
-        var currentViewModelType = e.ViewModelType;
+        CurrentPage = e.Page;
+        var currentViewModelType = e.Page.GetType();
 
         foreach (var item in TopNavigationItems.Concat(FooterNavigationItems))
         {

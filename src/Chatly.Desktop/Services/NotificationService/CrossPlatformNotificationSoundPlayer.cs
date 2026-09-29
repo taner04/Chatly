@@ -1,7 +1,7 @@
 using Avalonia.Platform;
 using Chatly.Desktop.Abstraction.Audio;
-using Chatly.Desktop.Models.Audio;
 using Chatly.Desktop.Abstraction.Notification;
+using Chatly.Desktop.Models.Audio;
 using Chatly.Desktop.Models.Settings;
 
 namespace Chatly.Desktop.Services.NotificationService;

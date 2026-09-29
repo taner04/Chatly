@@ -8,8 +8,8 @@ using Chatly.Contracts.Features.Messages.Models;
 using Chatly.Contracts.Features.Reactions.Endpoints.SetReaction;
 using Chatly.Contracts.Features.Reactions.Models;
 using Chatly.Contracts.Features.StoredFiles.Endpoints.UploadAttachment;
-using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUser;
+using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 using Chatly.Contracts.Features.Users.Endpoints.SearchUsers;
 using Chatly.Contracts.Features.Users.Endpoints.UpdateUsername;
 using Refit;
@@ -109,7 +109,8 @@ public interface IChatlyApiClient
     [Get(ApiRoutes.Chats.Messages)]
     Task<IApiResponse<GetMessagesResponse>> GetMessagesBeforeAsync(
         Guid chatId,
-        [AliasAs("beforeSentAt")] [Query(Format = "O")] DateTimeOffset beforeSentAt,
+        [AliasAs("beforeSentAt")] [Query(Format = "O")]
+        DateTimeOffset beforeSentAt,
         [AliasAs("beforeMessageId")] Guid beforeMessageId,
         [AliasAs("pageSize")] int pageSize,
         CancellationToken cancellationToken);

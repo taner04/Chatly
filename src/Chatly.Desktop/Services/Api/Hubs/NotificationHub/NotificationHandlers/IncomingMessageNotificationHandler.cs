@@ -1,7 +1,6 @@
 using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
 using Chatly.Desktop.Abstraction.Hubs;
 using Chatly.Desktop.Abstraction.Notification;
-using Chatly.Desktop.Services.Api.Hubs;
 using Chatly.Desktop.Utilities;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using ChatMessagesViewModel = Chatly.Desktop.ViewModels.Pages.ChatPage.Messages.ChatMessagesViewModel;

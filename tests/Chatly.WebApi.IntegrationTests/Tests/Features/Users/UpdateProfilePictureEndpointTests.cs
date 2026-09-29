@@ -7,7 +7,8 @@ public sealed class UpdateProfilePictureEndpointTests(TestingFixture fixture) : 
     {
         var client = CreateAuthenticatedClient();
 
-        var response = await client.UpdateProfilePictureAsync(CreateFile("me.png", "image/png"), CurrentCancellationToken);
+        var response =
+            await client.UpdateProfilePictureAsync(CreateFile("me.png", "image/png"), CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.False(string.IsNullOrWhiteSpace(response.Content!.ProfilePictureUrl));
@@ -30,10 +31,12 @@ public sealed class UpdateProfilePictureEndpointTests(TestingFixture fixture) : 
     public async Task UpdateProfilePicture_Should_DeletePreviousPicture_When_PictureIsReplaced()
     {
         var client = CreateAuthenticatedClient();
-        var first = await client.UpdateProfilePictureAsync(CreateFile("first.png", "image/png"), CurrentCancellationToken);
+        var first = await client.UpdateProfilePictureAsync(CreateFile("first.png", "image/png"),
+            CurrentCancellationToken);
         var previousUrl = first.Content!.ProfilePictureUrl!;
 
-        var response = await client.UpdateProfilePictureAsync(CreateFile("second.png", "image/png"), CurrentCancellationToken);
+        var response =
+            await client.UpdateProfilePictureAsync(CreateFile("second.png", "image/png"), CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.OK, response.StatusCode);
         Assert.NotEqual(previousUrl, response.Content!.ProfilePictureUrl);

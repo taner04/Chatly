@@ -4,7 +4,8 @@ namespace Chatly.WebViewCallProbe;
 
 internal sealed class ProbeReport
 {
-    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web) { WriteIndented = true };
+    private static readonly JsonSerializerOptions JsonOptions = new(JsonSerializerDefaults.Web)
+        { WriteIndented = true };
 
     private readonly List<ProbeCheck> _results = [];
 

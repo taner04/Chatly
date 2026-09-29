@@ -1,58 +1,30 @@
+using Chatly.Desktop.ViewModels.Popups;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Chatly.Desktop.Services.Popups;
 
 [SingletonService(typeof(IPopupService))]
-internal sealed class PopupService(IServiceProvider serviceProvider) : IPopupService
+internal sealed class PopupService(
+    IServiceProvider serviceProvider,
+    PopupOverlayHostViewModel popupHost) : IPopupService
 {
-    private bool _isOpen;
-    private IPopupHost? _popupHost;
-
-    public void SetPopupHost(IPopupHost popupHost)
-    {
-        _popupHost = popupHost ?? throw new ArgumentNullException(nameof(popupHost));
-    }
-
     public async Task ShowAsync<TViewModel>() where TViewModel : IPopupViewModel
     {
-        ThrowIfPopupIsOpen();
+        if (popupHost.Current is not null)
+        {
+            return;
+        }
 
-        var popupHost = GetPopupHost();
-        var popupOverlay = serviceProvider.GetRequiredService<IPopupOverlay<TViewModel>>();
-
-        popupHost.PopupEvent += popupOverlay.HandlePopupEvent;
-
-        _isOpen = true;
+        var popup = serviceProvider.GetRequiredService<TViewModel>();
+        popupHost.Current = popup;
 
         try
         {
-            popupHost.Show(popupOverlay);
-            await popupOverlay.ViewModel.Completion;
+            await popup.Completion;
         }
         finally
         {
-            try
-            {
-                popupHost.Close();
-            }
-            finally
-            {
-                _isOpen = false;
-            }
-
-            popupHost.PopupEvent -= popupOverlay.HandlePopupEvent;
-        }
-    }
-
-    private IPopupHost GetPopupHost() =>
-        _popupHost ?? throw new InvalidOperationException(
-            "A popup host must be set before showing a popup.");
-
-    private void ThrowIfPopupIsOpen()
-    {
-        if (_isOpen)
-        {
-            throw new InvalidOperationException("A popup is already open.");
+            popupHost.Current = null;
         }
     }
 }

@@ -49,7 +49,8 @@ public sealed class GetMessagesEndpointTests(TestingFixture fixture) : TestingBa
         var sent = await client.SendMessageAsync(chatId.Value, "secret", CurrentCancellationToken);
         await client.RemoveMessageAsync(sent.Content!.MessageId, CurrentCancellationToken);
 
-        var response = await CreateAuthenticatedClient(friend).GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
+        var response = await CreateAuthenticatedClient(friend)
+            .GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
 
         var message = Assert.Single(response.Content!.Items);
         Assert.True(message.IsDeleted);

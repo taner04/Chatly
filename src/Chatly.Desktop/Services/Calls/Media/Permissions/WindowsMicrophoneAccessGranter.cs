@@ -1,3 +1,4 @@
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Runtime.Versioning;
 using Avalonia.Platform;
@@ -42,7 +43,8 @@ internal sealed unsafe class WindowsMicrophoneAccessGranter : IMicrophoneAccessG
 
             long token;
             var addPermissionRequested =
-                (delegate* unmanaged[Stdcall]<IntPtr, IntPtr, long*, int>)VirtualMethod(coreWebView, AddPermissionRequestedSlot);
+                (delegate* unmanaged[Stdcall]<IntPtr, IntPtr, long*, int>)VirtualMethod(coreWebView,
+                    AddPermissionRequestedSlot);
             Marshal.ThrowExceptionForHR(addPermissionRequested(coreWebView, GetOrCreateHandler(), &token));
         }
     }
@@ -68,20 +70,20 @@ internal sealed unsafe class WindowsMicrophoneAccessGranter : IMicrophoneAccessG
 
     private static IntPtr VirtualMethod(IntPtr comObject, int slot) => (*(IntPtr**)comObject)[slot];
 
-    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int QueryInterface(IntPtr self, Guid* interfaceId, IntPtr* result)
     {
         *result = self;
         return Ok;
     }
 
-    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static uint AddRef(IntPtr self) => 1;
 
-    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static uint Release(IntPtr self) => 1;
 
-    [UnmanagedCallersOnly(CallConvs = [typeof(System.Runtime.CompilerServices.CallConvStdcall)])]
+    [UnmanagedCallersOnly(CallConvs = [typeof(CallConvStdcall)])]
     private static int Invoke(IntPtr self, IntPtr sender, IntPtr arguments)
     {
         try

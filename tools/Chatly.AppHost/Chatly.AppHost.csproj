@@ -19,7 +19,7 @@
     <ItemGroup>
         <PackageReference Include="Aspire.Hosting.Azure.Storage"/>
         <PackageReference Include="Aspire.Hosting.PostgreSQL"/>
-        <PackageReference Include="CommunityToolkit.Aspire.Hosting.PapercutSmtp" />
+        <PackageReference Include="CommunityToolkit.Aspire.Hosting.PapercutSmtp"/>
     </ItemGroup>
 
 </Project>

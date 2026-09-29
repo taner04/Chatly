@@ -1,4 +1,4 @@
-using Avalonia.Controls.Primitives;
+using Avalonia.Layout;
 
 namespace Chatly.Desktop.Views.Calls;
 
@@ -10,8 +10,8 @@ internal sealed class CallMediaView : Decorator
         Width = 1;
         Height = 1;
         IsHitTestVisible = false;
-        HorizontalAlignment = Avalonia.Layout.HorizontalAlignment.Left;
-        VerticalAlignment = Avalonia.Layout.VerticalAlignment.Bottom;
+        HorizontalAlignment = HorizontalAlignment.Left;
+        VerticalAlignment = VerticalAlignment.Bottom;
         Child = WebView;
     }
 

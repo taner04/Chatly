@@ -249,7 +249,7 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <ContentControl x:Name="PageHost" Grid.Row="1" Margin="24" />
+                    <ContentControl Content="{Binding ViewModel.CurrentPage}" Grid.Row="1" Margin="24" />
                 </Grid>
             </Border>
         </DockPanel>

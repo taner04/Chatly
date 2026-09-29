@@ -19,6 +19,12 @@ public abstract class HubTestClient<TMessage> : IAsyncDisposable where TMessage 
 
     public HubConnection Connection { get; }
 
+    public async ValueTask DisposeAsync()
+    {
+        await Connection.DisposeAsync();
+        GC.SuppressFinalize(this);
+    }
+
     public async Task<T> ReceiveAsync<T>(Func<T, bool>? predicate = null) where T : TMessage
     {
         using var timeout = new CancellationTokenSource(ReceiveTimeout);
@@ -44,11 +50,5 @@ public abstract class HubTestClient<TMessage> : IAsyncDisposable where TMessage 
         }
 
         return messages;
-    }
-
-    public async ValueTask DisposeAsync()
-    {
-        await Connection.DisposeAsync();
-        GC.SuppressFinalize(this);
     }
 }

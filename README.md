@@ -242,10 +242,14 @@ The AppHost starts Papercut and the LiveKit media server with these values. It p
 
 Chatly is a work in progress. These tasks are still open:
 
-- [ ] Test the desktop client end to end on Windows (sign-in, chats, file transfer, notifications)
-- [ ] Verify voice calls on Windows, including the WebView call checks (`scripts/windows/webview-call-probe.ps1`)
+- [ ] Test the desktop client end to end on Windows, including voice calls (`scripts/windows/webview-call-probe.ps1`)
 - [ ] Show active sessions in the settings and let users sign out of other devices
 - [ ] Add a setting to turn the ringtone on or off
+- [ ] Let users withdraw a friend request they have sent
+- [ ] Let users block other users
+- [ ] Add rate limiting to the API
+- [ ] Let users edit and reply to messages
+- [ ] Show system notifications while the app is in the background
 
 ## Project Structure
 

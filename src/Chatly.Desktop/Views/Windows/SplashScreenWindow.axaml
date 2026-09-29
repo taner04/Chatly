@@ -3,16 +3,23 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:windows="using:Chatly.Desktop.Views.Windows"
-        mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
+        mc:Ignorable="d" d:DesignWidth="340" d:DesignHeight="350"
         x:ClassModifier="internal"
         x:Class="Chatly.Desktop.Views.Windows.SplashScreenWindow"
         WindowStartupLocation="CenterScreen"
+        Width="340"
+        Height="350"
+        CanResize="False"
         x:DataType="windows:SplashScreenWindow"
         WindowDecorations="None"
-        Background="{DynamicResource ChatlyWindowBrush}"
+        Background="Transparent"
+        TransparencyLevelHint="Transparent"
         Icon="/Assets/chatly-logo.ico"
         Title="SplashScreen">
     <Border Background="{DynamicResource ChatlyWindowBrush}"
+            BorderBrush="{DynamicResource ChatlyBorderBrush}"
+            BorderThickness="1"
+            CornerRadius="16"
             PointerPressed="SplashSurface_OnPointerPressed">
         <StackPanel Spacing="14"
                     HorizontalAlignment="Center"
@@ -31,6 +38,9 @@
 
             <TextBlock Text="{Binding ViewModel.StartupMessage}"
                        HorizontalAlignment="Center"
+                       MaxWidth="300"
+                       TextAlignment="Center"
+                       TextWrapping="Wrap"
                        FontSize="13"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}" />
 

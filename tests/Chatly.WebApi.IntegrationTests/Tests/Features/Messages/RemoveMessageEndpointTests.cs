@@ -25,7 +25,8 @@ public sealed class RemoveMessageEndpointTests(TestingFixture fixture) : Testing
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
         var sent = await CreateAuthenticatedClient().SendMessageAsync(chatId.Value, "mine", CurrentCancellationToken);
 
-        var response = await CreateAuthenticatedClient(friend).RemoveMessageAsync(sent.Content!.MessageId, CurrentCancellationToken);
+        var response = await CreateAuthenticatedClient(friend)
+            .RemoveMessageAsync(sent.Content!.MessageId, CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
         await using var dbContext = GetDbContext();

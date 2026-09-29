@@ -1,5 +1,5 @@
-using Chatly.WebApi.Common.Abstraction;
 using Chatly.Contracts.Features.Hubs;
+using Chatly.WebApi.Common.Abstraction;
 using Chatly.WebApi.Features.Calls.Jobs;
 
 namespace Chatly.WebApi.IntegrationTests.Tests.Features.Calls;

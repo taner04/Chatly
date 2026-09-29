@@ -2,18 +2,14 @@ using Chatly.Desktop.ViewModels.Popups;
 
 namespace Chatly.Desktop.Views.Popups;
 
-[TransientService(typeof(IPopupOverlay<UserInfoPopupViewModel>))]
-internal partial class UserInfoPopup : UserControl, IPopupOverlay<UserInfoPopupViewModel>
+internal partial class UserInfoPopup : UserControl, IViewFor<UserInfoPopupViewModel>
 {
     public UserInfoPopup(UserInfoPopupViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
-
+        DataContext = viewModel;
         InitializeComponent();
     }
 
     public UserInfoPopupViewModel ViewModel { get; }
-
-    public bool IsDismissible => true;
 }

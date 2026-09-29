@@ -6,7 +6,8 @@ public sealed class RemoveAttachmentEndpointTests(TestingFixture fixture) : Test
     public async Task RemoveAttachment_Should_Return204AndDeleteFile_When_OwnerRemovesUnusedFile()
     {
         var client = CreateAuthenticatedClient();
-        var uploaded = await client.UploadAttachmentAsync(CreateFile("draft.txt", "text/plain"), CurrentCancellationToken);
+        var uploaded =
+            await client.UploadAttachmentAsync(CreateFile("draft.txt", "text/plain"), CurrentCancellationToken);
 
         var response = await client.RemoveAttachmentAsync(uploaded.Content!.AttachmentId, CurrentCancellationToken);
 

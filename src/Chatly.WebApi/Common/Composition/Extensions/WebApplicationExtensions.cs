@@ -1,9 +1,9 @@
 using Chatly.Shared.Extensions;
 using Chatly.WebApi.Common.Composition.Options;
+using Chatly.WebApi.Common.Infrastructure.Blob;
 using Hangfire;
 using Hangfire.Dashboard;
 using Scalar.AspNetCore;
-using Chatly.WebApi.Common.Infrastructure.Blob;
 
 namespace Chatly.WebApi.Common.Composition.Extensions;
 

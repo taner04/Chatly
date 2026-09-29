@@ -3,10 +3,10 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ic="using:FluentIcons.Avalonia"
              xmlns:calls="using:Chatly.Desktop.Models.Calls"
-             xmlns:local="using:Chatly.Desktop.Views.Pages"
+             xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:DataType="local:SettingsPage"
+             x:DataType="viewModels:SettingsPageViewModel"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.SettingsPage">
     <UserControl.Styles>
@@ -157,8 +157,8 @@
                                                    Classes="settings-description" />
                                     </StackPanel>
                                     <ComboBox Grid.Column="1"
-                                              ItemsSource="{Binding ViewModel.ThemeModes}"
-                                              SelectedItem="{Binding ViewModel.ThemeSettings.Mode, Mode=TwoWay}" />
+                                              ItemsSource="{Binding ThemeModes}"
+                                              SelectedItem="{Binding ThemeSettings.Mode, Mode=TwoWay}" />
                                 </Grid>
                                 <Grid ColumnDefinitions="*,180" ColumnSpacing="20">
                                     <StackPanel VerticalAlignment="Center">
@@ -167,8 +167,8 @@
                                                    Classes="settings-description" />
                                     </StackPanel>
                                     <ComboBox Grid.Column="1"
-                                              ItemsSource="{Binding ViewModel.AccentColors}"
-                                              SelectedItem="{Binding ViewModel.ThemeSettings.AccentColor, Mode=TwoWay}" />
+                                              ItemsSource="{Binding AccentColors}"
+                                              SelectedItem="{Binding ThemeSettings.AccentColor, Mode=TwoWay}" />
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -221,7 +221,7 @@
                                     </StackPanel>
                                     <ToggleSwitch Grid.Column="1"
                                                   VerticalAlignment="Center"
-                                                  IsChecked="{Binding ViewModel.NotificationSettings.PlaySound, Mode=TwoWay}" />
+                                                  IsChecked="{Binding NotificationSettings.PlaySound, Mode=TwoWay}" />
                                 </Grid>
                             </StackPanel>
                         </Border>
@@ -274,8 +274,8 @@
                                     </StackPanel>
                                     <ComboBox Grid.Column="1"
                                               HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding ViewModel.InputDevices}"
-                                              SelectedItem="{Binding ViewModel.SelectedInputDevice, Mode=TwoWay}">
+                                              ItemsSource="{Binding InputDevices}"
+                                              SelectedItem="{Binding SelectedInputDevice, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate x:DataType="calls:CallAudioDevice">
                                                 <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
@@ -285,7 +285,7 @@
                                 </Grid>
                                 <Grid ColumnDefinitions="*,240"
                                       ColumnSpacing="20"
-                                      IsVisible="{Binding ViewModel.IsOutputDeviceSelectionSupported}">
+                                      IsVisible="{Binding IsOutputDeviceSelectionSupported}">
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="Speaker" Classes="settings-label" />
                                         <TextBlock Text="The output device used in calls."
@@ -293,8 +293,8 @@
                                     </StackPanel>
                                     <ComboBox Grid.Column="1"
                                               HorizontalAlignment="Stretch"
-                                              ItemsSource="{Binding ViewModel.OutputDevices}"
-                                              SelectedItem="{Binding ViewModel.SelectedOutputDevice, Mode=TwoWay}">
+                                              ItemsSource="{Binding OutputDevices}"
+                                              SelectedItem="{Binding SelectedOutputDevice, Mode=TwoWay}">
                                         <ComboBox.ItemTemplate>
                                             <DataTemplate x:DataType="calls:CallAudioDevice">
                                                 <TextBlock Text="{Binding Label}" TextTrimming="CharacterEllipsis" />
@@ -305,12 +305,13 @@
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
                                     <StackPanel VerticalAlignment="Center">
                                         <TextBlock Text="Echo cancellation" Classes="settings-label" />
-                                        <TextBlock Text="Stops the other person from hearing themselves through your speakers."
-                                                   Classes="settings-description" />
+                                        <TextBlock
+                                            Text="Stops the other person from hearing themselves through your speakers."
+                                            Classes="settings-description" />
                                     </StackPanel>
                                     <ToggleSwitch Grid.Column="1"
                                                   VerticalAlignment="Center"
-                                                  IsChecked="{Binding ViewModel.CallSettings.EchoCancellation, Mode=TwoWay}" />
+                                                  IsChecked="{Binding CallSettings.EchoCancellation, Mode=TwoWay}" />
                                 </Grid>
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
                                     <StackPanel VerticalAlignment="Center">
@@ -320,7 +321,7 @@
                                     </StackPanel>
                                     <ToggleSwitch Grid.Column="1"
                                                   VerticalAlignment="Center"
-                                                  IsChecked="{Binding ViewModel.CallSettings.NoiseSuppression, Mode=TwoWay}" />
+                                                  IsChecked="{Binding CallSettings.NoiseSuppression, Mode=TwoWay}" />
                                 </Grid>
                                 <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
                                     <StackPanel VerticalAlignment="Center">
@@ -330,13 +331,13 @@
                                     </StackPanel>
                                     <ToggleSwitch Grid.Column="1"
                                                   VerticalAlignment="Center"
-                                                  IsChecked="{Binding ViewModel.CallSettings.AutoGainControl, Mode=TwoWay}" />
+                                                  IsChecked="{Binding CallSettings.AutoGainControl, Mode=TwoWay}" />
                                 </Grid>
                                 <Button Classes="fluent-button"
                                         HorizontalAlignment="Left"
                                         Padding="14,7"
-                                        Command="{Binding ViewModel.RefreshDevicesCommand}"
-                                        IsEnabled="{Binding !ViewModel.IsLoadingDevices}">
+                                        Command="{Binding RefreshDevicesCommand}"
+                                        IsEnabled="{Binding !IsLoadingDevices}">
                                     <StackPanel Orientation="Horizontal" Spacing="6">
                                         <ic:SymbolIcon Symbol="ArrowClockwise" FontSize="16" />
                                         <TextBlock Text="Refresh devices" VerticalAlignment="Center" />
@@ -394,9 +395,9 @@
                                                 Spacing="3"
                                                 VerticalAlignment="Center">
                                         <TextBlock
-                                            Text="{Binding ViewModel.ApplicationVersion, StringFormat='Version {0}'}"
+                                            Text="{Binding ApplicationVersion, StringFormat='Version {0}'}"
                                             Classes="settings-description" />
-                                        <TextBlock Text="{Binding ViewModel.Platform, StringFormat='Platform: {0}'}"
+                                        <TextBlock Text="{Binding Platform, StringFormat='Platform: {0}'}"
                                                    Classes="settings-description" />
                                     </StackPanel>
                                 </Grid>
@@ -412,7 +413,7 @@
                 Margin="10,14,10,10"
                 Padding="16,9"
                 HorizontalAlignment="Right"
-                Command="{Binding ViewModel.LogoutCommand}">
+                Command="{Binding LogoutCommand}">
             <StackPanel Orientation="Horizontal" Spacing="8">
                 <ic:SymbolIcon Symbol="SignOut" FontSize="17" />
                 <TextBlock Text="Log out" VerticalAlignment="Center" />

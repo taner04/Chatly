@@ -1,6 +1,5 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:local="using:Chatly.Desktop.Views.Pages.ChatPage"
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
              xmlns:ic="using:FluentIcons.Avalonia"
@@ -9,7 +8,7 @@
              xmlns:messages="clr-namespace:Chatly.Desktop.ViewModels.Pages.ChatPage.Messages"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.ChatPage.ChatPage"
-             x:DataType="local:ChatPage">
+             x:DataType="viewModels:ChatPageViewModel">
     <UserControl.Resources>
         <converters:ImageUrlConverter x:Key="ImageUrlConverter" />
     </UserControl.Resources>
@@ -62,7 +61,7 @@
                             BorderThickness="0"
                             VerticalAlignment="Center"
                             x:CompileBindings="False"
-                            Command="{Binding DataContext.ViewModel.RemoveDraftAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            Command="{Binding DataContext.RemoveDraftAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
                             CommandParameter="{Binding}">
                         <ic:SymbolIcon Symbol="Dismiss" FontSize="13" />
                     </Button>
@@ -166,7 +165,7 @@
                 CornerRadius="12"
                 Padding="10">
             <ItemsControl Classes="stretch-items"
-                          ItemsSource="{Binding ViewModel.Chats}">
+                          ItemsSource="{Binding Chats}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <Button Classes="chat-row-button"
@@ -221,15 +220,15 @@
                     BorderBrush="{DynamicResource ChatlyBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    IsVisible="{Binding ViewModel.HasCurrentChat}">
+                    IsVisible="{Binding HasCurrentChat}">
                 <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="10">
                     <controls:UserAvatar Width="32"
                                          Height="32"
-                                         DisplayName="{Binding ViewModel.CurrentChat.User.Username}"
-                                         ProfilePictureUrl="{Binding ViewModel.CurrentChat.User.ProfilePictureUrl}"
-                                         IsOnline="{Binding ViewModel.CurrentChat.User.IsOnline}" />
+                                         DisplayName="{Binding CurrentChat.User.Username}"
+                                         ProfilePictureUrl="{Binding CurrentChat.User.ProfilePictureUrl}"
+                                         IsOnline="{Binding CurrentChat.User.IsOnline}" />
                     <TextBlock Grid.Column="1"
-                               Text="{Binding ViewModel.CurrentChat.Name}"
+                               Text="{Binding CurrentChat.Name}"
                                VerticalAlignment="Center"
                                FontSize="16"
                                FontWeight="SemiBold"
@@ -237,8 +236,8 @@
                     <Button Grid.Column="2"
                             Classes="icon-button friend-action"
                             ToolTip.Tip="Call"
-                            Command="{Binding ViewModel.Call.CallCommand}"
-                            CommandParameter="{Binding ViewModel.CurrentChat.User}">
+                            Command="{Binding Call.CallCommand}"
+                            CommandParameter="{Binding CurrentChat.User}">
                         <ic:SymbolIcon Symbol="Call" FontSize="18" />
                     </Button>
                 </Grid>
@@ -249,23 +248,23 @@
                           Margin="0,12"
                           VerticalScrollBarVisibility="Auto"
                           ScrollChanged="MessagesScrollViewer_OnScrollChanged"
-                          IsVisible="{Binding ViewModel.HasCurrentChat}">
+                          IsVisible="{Binding HasCurrentChat}">
                 <StackPanel>
                     <TextBlock Text="Loading messages..."
                                HorizontalAlignment="Center"
                                Margin="0,16"
                                Foreground="{DynamicResource ChatlyMutedTextBrush}"
-                               IsVisible="{Binding ViewModel.MessagesViewModel.IsLoadingMessages}" />
+                               IsVisible="{Binding MessagesViewModel.IsLoadingMessages}" />
 
                     <TextBlock Text="No messages yet. Start the conversation."
                                HorizontalAlignment="Center"
                                VerticalAlignment="Center"
                                Margin="0,28"
                                Foreground="{DynamicResource ChatlyMutedTextBrush}"
-                               IsVisible="{Binding ViewModel.MessagesViewModel.IsEmptyChat}" />
+                               IsVisible="{Binding MessagesViewModel.IsEmptyChat}" />
 
                     <ItemsControl Classes="stretch-items"
-                                  ItemsSource="{Binding ViewModel.MessagesViewModel.Messages}" />
+                                  ItemsSource="{Binding MessagesViewModel.Messages}" />
                 </StackPanel>
             </ScrollViewer>
 
@@ -275,7 +274,7 @@
                     BorderBrush="{DynamicResource ChatlyBorderBrush}"
                     BorderThickness="1"
                     CornerRadius="12"
-                    IsVisible="{Binding ViewModel.HasCurrentChat}">
+                    IsVisible="{Binding HasCurrentChat}">
                 <Grid ColumnDefinitions="*,Auto,Auto"
                       RowDefinitions="Auto,Auto,Auto"
                       ColumnSpacing="10"
@@ -285,11 +284,11 @@
                                 Spacing="5"
                                 Margin="4,0,4,7"
                                 VerticalAlignment="Center"
-                                IsVisible="{Binding ViewModel.TypingViewModel.IsOtherUserTyping}">
+                                IsVisible="{Binding TypingViewModel.IsOtherUserTyping}">
                         <TextBlock FontSize="11"
                                    VerticalAlignment="Center"
                                    Foreground="{DynamicResource ChatlyMutedTextBrush}">
-                            <Run Text="{Binding ViewModel.CurrentChat.Name}" FontWeight="SemiBold" />
+                            <Run Text="{Binding CurrentChat.Name}" FontWeight="SemiBold" />
                             <Run Text=" is typing" />
                         </TextBlock>
                         <StackPanel Orientation="Horizontal"
@@ -305,8 +304,8 @@
                                   Margin="4,0,4,8"
                                   HorizontalScrollBarVisibility="Auto"
                                   VerticalScrollBarVisibility="Disabled"
-                                  IsVisible="{Binding ViewModel.HasDraftAttachments}">
-                        <ItemsControl ItemsSource="{Binding ViewModel.DraftAttachments}">
+                                  IsVisible="{Binding HasDraftAttachments}">
+                        <ItemsControl ItemsSource="{Binding DraftAttachments}">
                             <ItemsControl.ItemsPanel>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal" Spacing="8" />
@@ -317,7 +316,7 @@
                     <TextBox Classes="chatly-input chat-message"
                              Grid.Row="2" Grid.Column="0"
                              VerticalAlignment="Center"
-                             Text="{Binding ViewModel.DraftMessage, Mode=TwoWay}"
+                             Text="{Binding DraftMessage, Mode=TwoWay}"
                              PlaceholderText="Write a message..."
                              KeyDown="MessageTextBox_OnKeyDown"
                              DragDrop.AllowDrop="True" Name="DropTargetTextBox" />
@@ -325,7 +324,7 @@
                             Grid.Row="2"
                             Classes="fluent-button send-message"
                             VerticalAlignment="Center"
-                            Command="{Binding ViewModel.AddAttachmentsCommand}"
+                            Command="{Binding AddAttachmentsCommand}"
                             ToolTip.Tip="Add attachments">
                         <ic:SymbolIcon Symbol="Attach" FontSize="19" />
                     </Button>
@@ -333,7 +332,7 @@
                             Grid.Row="2"
                             Classes="fluent-button send-message"
                             VerticalAlignment="Center"
-                            Command="{Binding ViewModel.SendMessageCommand}"
+                            Command="{Binding SendMessageCommand}"
                             ToolTip.Tip="Send message">
                         <ic:SymbolIcon Symbol="Send" FontSize="19" />
                     </Button>

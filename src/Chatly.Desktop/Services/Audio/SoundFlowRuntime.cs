@@ -1,6 +1,5 @@
 using System.IO;
 using Chatly.Desktop.Models.Audio;
-using SoundFlow.Abstracts;
 using SoundFlow.Abstracts.Devices;
 using SoundFlow.Backends.MiniAudio;
 using SoundFlow.Components;

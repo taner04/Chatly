@@ -27,7 +27,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         await typer.StartTypingAsync(chatId.Value);
         var started = await listener.ReceiveAsync<TypingStatusChangedNotification>();
         await typer.StopTypingAsync(chatId.Value);
-        var stopped = await listener.ReceiveAsync<TypingStatusChangedNotification>(notification => !notification.IsTyping);
+        var stopped =
+            await listener.ReceiveAsync<TypingStatusChangedNotification>(notification => !notification.IsTyping);
 
         Assert.Equal(chatId.Value, started.ChatId);
         Assert.True(started.IsTyping);
@@ -53,9 +54,11 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         await using var listener = await ConnectNotificationHubAsync(friend);
 
         var user = await ConnectNotificationHubAsync();
-        var online = await listener.ReceiveAsync<OnlineStatusChangedNotification>(notification => notification.IsOnline);
+        var online =
+            await listener.ReceiveAsync<OnlineStatusChangedNotification>(notification => notification.IsOnline);
         await user.DisposeAsync();
-        var offline = await listener.ReceiveAsync<OnlineStatusChangedNotification>(notification => !notification.IsOnline);
+        var offline =
+            await listener.ReceiveAsync<OnlineStatusChangedNotification>(notification => !notification.IsOnline);
 
         Assert.Equal(CurrentUser.Id.Value, online.UserId);
         Assert.Equal(CurrentUser.Id.Value, offline.UserId);
@@ -74,7 +77,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         await using var second = await ConnectNotificationHubAsync();
         await Task.Delay(OnlineStatusPublisher.OfflineGracePeriod + TimeSpan.FromSeconds(2), CurrentCancellationToken);
 
-        Assert.DoesNotContain(listener.ReceivedSoFar<OnlineStatusChangedNotification>(), notification => !notification.IsOnline);
+        Assert.DoesNotContain(listener.ReceivedSoFar<OnlineStatusChangedNotification>(),
+            notification => !notification.IsOnline);
         var friendships = await CreateAuthenticatedClient(friend).GetFriendshipsAsync(CurrentCancellationToken);
         Assert.True(Assert.Single(friendships.Content!).IsOnline);
     }
@@ -122,7 +126,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         var client = CreateAuthenticatedClient();
         var pending = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
 
-        await client.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId, CurrentCancellationToken);
+        await client.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
+            CurrentCancellationToken);
         var notification = await senderHub.ReceiveAsync<FriendRequestAcceptedNotification>();
 
         Assert.Equal(CurrentUser.Id.Value, notification.Friendship.FriendUserId);
@@ -146,7 +151,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
     {
         var friend = await CreateUserAsync("friend");
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
-        var sent = await CreateAuthenticatedClient(friend).SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
+        var sent = await CreateAuthenticatedClient(friend)
+            .SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
         await using var friendHub = await ConnectNotificationHubAsync(friend);
 
         await CreateAuthenticatedClient().SetReactionAsync(

@@ -46,7 +46,8 @@ public sealed class GetFriendRequestsEndpointTests(TestingFixture fixture) : Tes
     [InlineData(1, 101)]
     public async Task GetFriendRequests_Should_Return400_When_PaginationIsInvalid(int pageIndex, int pageSize)
     {
-        var response = await CreateAuthenticatedClient().GetFriendRequestsAsync(pageIndex, pageSize, CurrentCancellationToken);
+        var response = await CreateAuthenticatedClient()
+            .GetFriendRequestsAsync(pageIndex, pageSize, CurrentCancellationToken);
 
         Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
     }

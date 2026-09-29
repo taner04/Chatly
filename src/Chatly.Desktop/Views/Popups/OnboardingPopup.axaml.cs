@@ -1,15 +1,13 @@
-﻿using OnboardingPopupViewModel = Chatly.Desktop.ViewModels.Popups.OnboardingPopupViewModel;
+using Chatly.Desktop.ViewModels.Popups;
 
 namespace Chatly.Desktop.Views.Popups;
 
-[TransientService(typeof(IPopupOverlay<OnboardingPopupViewModel>))]
-internal partial class OnboardingPopup : UserControl, IPopupOverlay<OnboardingPopupViewModel>
+internal partial class OnboardingPopup : UserControl, IViewFor<OnboardingPopupViewModel>
 {
     public OnboardingPopup(OnboardingPopupViewModel viewModel)
     {
         ViewModel = viewModel;
-        DataContext = this;
-
+        DataContext = viewModel;
         InitializeComponent();
     }
 

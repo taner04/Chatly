@@ -2,7 +2,6 @@ using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 using Chatly.Desktop.Abstraction.Hubs;
 using Chatly.Desktop.Abstraction.Notification;
 using Chatly.Desktop.Mappers;
-using Chatly.Desktop.Services.Api.Hubs;
 using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.Services.Api.Hubs.NotificationHub.NotificationHandlers;

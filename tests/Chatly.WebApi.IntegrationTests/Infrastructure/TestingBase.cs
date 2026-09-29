@@ -50,7 +50,7 @@ public abstract class TestingBase(TestingFixture fixture) : IAsyncLifetime
     protected static void AssertError(IApiResponse response, HttpStatusCode statusCode, string errorCode)
     {
         Assert.Equal(statusCode, response.StatusCode);
-        using var problem = JsonDocument.Parse(Assert.IsType<ApiException>(response.Error, exactMatch: false).Content!);
+        using var problem = JsonDocument.Parse(Assert.IsType<ApiException>(response.Error, false).Content!);
         Assert.Equal(errorCode, problem.RootElement.GetProperty("errorCode").GetString());
     }
 

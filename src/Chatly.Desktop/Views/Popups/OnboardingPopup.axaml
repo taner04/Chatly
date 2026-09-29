@@ -2,10 +2,10 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:popups="clr-namespace:Chatly.Desktop.Views.Popups"
+             xmlns:popups="using:Chatly.Desktop.ViewModels.Popups"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Popups.OnboardingPopup"
-             x:DataType="popups:OnboardingPopup"
+             x:DataType="popups:OnboardingPopupViewModel"
              x:Name="Root"
              d:DesignWidth="512"
              d:DesignHeight="390"
@@ -55,18 +55,18 @@
                 <Button Classes="avatar-button"
                         HorizontalAlignment="Center"
                         VerticalAlignment="Center"
-                        Command="{Binding ViewModel.SelectProfilePictureCommand}">
+                        Command="{Binding SelectProfilePictureCommand}">
                     <Border Width="70"
                             Height="70"
                             CornerRadius="35"
                             ClipToBounds="True">
                         <Grid>
-                            <Image Source="{Binding ViewModel.ProfilePicturePreview}"
-                                   IsVisible="{Binding ViewModel.HasProfilePicturePreview}"
+                            <Image Source="{Binding ProfilePicturePreview}"
+                                   IsVisible="{Binding HasProfilePicturePreview}"
                                    Stretch="UniformToFill" />
                             <Grid Width="14"
                                   Height="14"
-                                  IsVisible="{Binding !ViewModel.HasProfilePicturePreview}"
+                                  IsVisible="{Binding !HasProfilePicturePreview}"
                                   HorizontalAlignment="Center"
                                   VerticalAlignment="Center">
                                 <Border Width="14"
@@ -90,12 +90,12 @@
                         CornerRadius="11"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Top"
-                        IsVisible="{Binding ViewModel.HasProfilePicturePreview}"
+                        IsVisible="{Binding HasProfilePicturePreview}"
                         Background="{DynamicResource ChatlyContentBrush}"
                         BorderBrush="{DynamicResource ChatlyBorderBrush}"
                         BorderThickness="1"
                         Foreground="{DynamicResource ChatlyTextBrush}"
-                        Command="{Binding ViewModel.RemoveProfilePictureCommand}">
+                        Command="{Binding RemoveProfilePictureCommand}">
                     <Grid Width="9"
                           Height="9"
                           HorizontalAlignment="Center"
@@ -118,7 +118,7 @@
                 <Border Width="22"
                         Height="22"
                         CornerRadius="11"
-                        IsVisible="{Binding !ViewModel.HasProfilePicturePreview}"
+                        IsVisible="{Binding !HasProfilePicturePreview}"
                         Background="{DynamicResource ChatlyAccentBrush}"
                         HorizontalAlignment="Right"
                         VerticalAlignment="Bottom"
@@ -141,13 +141,13 @@
 
             <TextBlock Text="Add picture"
                        FontSize="13"
-                       IsVisible="{Binding !ViewModel.HasProfilePicturePreview}"
+                       IsVisible="{Binding !HasProfilePicturePreview}"
                        Foreground="{DynamicResource ChatlyAccentBrush}"
                        HorizontalAlignment="Center" />
-            <TextBlock Text="{Binding ViewModel.ProfilePicture.Name}"
+            <TextBlock Text="{Binding ProfilePicture.Name}"
                        Width="260"
                        FontSize="13"
-                       IsVisible="{Binding ViewModel.HasProfilePicturePreview}"
+                       IsVisible="{Binding HasProfilePicturePreview}"
                        TextAlignment="Center"
                        TextTrimming="CharacterEllipsis"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}"
@@ -159,13 +159,13 @@
                        FontSize="13"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}" />
             <TextBox Classes="chatly-input profile-input"
-                     Text="{Binding ViewModel.Username, Mode=TwoWay}"
+                     Text="{Binding Username, Mode=TwoWay}"
                      PlaceholderText="Username"
-                     MaxLength="{Binding ViewModel.UsernameMaxLength}" />
+                     MaxLength="{Binding UsernameMaxLength}" />
         </StackPanel>
 
         <Button Classes="accent-button continue-button"
                 Content="Continue"
-                Command="{Binding ViewModel.CompleteOnboardingCommand}" />
+                Command="{Binding CompleteOnboardingCommand}" />
     </StackPanel>
 </UserControl>

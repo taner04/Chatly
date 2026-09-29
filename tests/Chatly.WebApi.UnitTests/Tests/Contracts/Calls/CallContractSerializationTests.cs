@@ -13,7 +13,8 @@ public sealed class CallContractSerializationTests
     public static TheoryData<CallMessage> Notifications =>
     [
         new IncomingCallNotification(CallId, RemoteUserId, "remote-user", CallRole.Receiver, CallState.Ringing),
-        new CallAcceptedNotification(CallId, RemoteUserId, "remote-user", CallRole.Caller, CallState.Active, AcceptedAt),
+        new CallAcceptedNotification(CallId, RemoteUserId, "remote-user", CallRole.Caller, CallState.Active,
+            AcceptedAt),
         new CallRejectedNotification(
             CallId,
             RemoteUserId,
@@ -30,7 +31,8 @@ public sealed class CallContractSerializationTests
             CallState.Ended,
             CallEndReason.Completed),
 
-        new CallStateChangedNotification(CallId, RemoteUserId, "remote-user", CallRole.Receiver, CallState.Active, AcceptedAt)
+        new CallStateChangedNotification(CallId, RemoteUserId, "remote-user", CallRole.Receiver, CallState.Active,
+            AcceptedAt)
     ];
 
     [Theory]

@@ -1,101 +1,106 @@
 <!doctype html>
 <html>
 <body>
-<audio id="out" autoplay></audio>
+<audio autoplay id="out"></audio>
 <script>
-const send = (message) => { try { invokeCSharpAction(JSON.stringify(message)); } catch { } };
-
-window.onerror = (message) => send({ ev: 'jserror', message: String(message) });
-
-async function startLoopback() {
-    const context = new AudioContext({ sampleRate: 48000 });
-    const oscillator = context.createOscillator();
-    oscillator.frequency.value = 440;
-    const destination = context.createMediaStreamDestination();
-    oscillator.connect(destination);
-    oscillator.start();
-
-    const sender = new RTCPeerConnection();
-    const receiver = new RTCPeerConnection();
-    sender.onicecandidate = (e) => e.candidate && receiver.addIceCandidate(e.candidate);
-    receiver.onicecandidate = (e) => e.candidate && sender.addIceCandidate(e.candidate);
-    sender.onconnectionstatechange = () => send({ ev: 'connection', state: sender.connectionState });
-
-    receiver.ontrack = async (e) => {
-        const output = document.getElementById('out');
-        output.srcObject = e.streams[0];
+    const send = (message) => {
         try {
-            await output.play();
-            send({ ev: 'playback', ok: true });
-        } catch (error) {
-            send({ ev: 'playback', ok: false, error: error.name });
+            invokeCSharpAction(JSON.stringify(message));
+        } catch {
         }
-
-        const analyser = context.createAnalyser();
-        analyser.fftSize = 2048;
-        context.createMediaStreamSource(e.streams[0]).connect(analyser);
-        const samples = new Float32Array(analyser.fftSize);
-
-        setInterval(async () => {
-            analyser.getFloatTimeDomainData(samples);
-            let sum = 0;
-            for (const sample of samples) sum += sample * sample;
-
-            const stats = { received: 0, lost: 0, concealed: 0 };
-            (await receiver.getStats()).forEach((report) => {
-                if (report.type === 'inbound-rtp' && report.kind === 'audio') {
-                    stats.received = report.packetsReceived;
-                    stats.lost = report.packetsLost;
-                    stats.concealed = report.concealedSamples;
-                }
-            });
-
-            send({
-                ev: 'tick',
-                time: performance.now(),
-                rms: Math.sqrt(sum / samples.length),
-                audioContext: context.state,
-                visibility: document.visibilityState,
-                ...stats
-            });
-        }, 1000);
     };
 
-    destination.stream.getTracks().forEach((track) => sender.addTrack(track, destination.stream));
-    const offer = await sender.createOffer();
-    await sender.setLocalDescription(offer);
-    await receiver.setRemoteDescription(offer);
-    const answer = await receiver.createAnswer();
-    await receiver.setLocalDescription(answer);
-    await sender.setRemoteDescription(answer);
+    window.onerror = (message) => send({ev: 'jserror', message: String(message)});
 
-    const codec = offer.sdp.match(/a=rtpmap:\d+ (opus\/48000[^\r\n]*)/i);
-    send({ ev: 'codec', codec: codec ? codec[1] : null });
-    send({
-        ev: 'env',
-        secure: window.isSecureContext,
-        rtc: typeof RTCPeerConnection === 'function',
-        userAgent: navigator.userAgent
-    });
-}
+    async function startLoopback() {
+        const context = new AudioContext({sampleRate: 48000});
+        const oscillator = context.createOscillator();
+        oscillator.frequency.value = 440;
+        const destination = context.createMediaStreamDestination();
+        oscillator.connect(destination);
+        oscillator.start();
 
-async function requestMicrophone() {
-    try {
-        const stream = await navigator.mediaDevices.getUserMedia({
-            audio: { echoCancellation: true, noiseSuppression: true, autoGainControl: true }
+        const sender = new RTCPeerConnection();
+        const receiver = new RTCPeerConnection();
+        sender.onicecandidate = (e) => e.candidate && receiver.addIceCandidate(e.candidate);
+        receiver.onicecandidate = (e) => e.candidate && sender.addIceCandidate(e.candidate);
+        sender.onconnectionstatechange = () => send({ev: 'connection', state: sender.connectionState});
+
+        receiver.ontrack = async (e) => {
+            const output = document.getElementById('out');
+            output.srcObject = e.streams[0];
+            try {
+                await output.play();
+                send({ev: 'playback', ok: true});
+            } catch (error) {
+                send({ev: 'playback', ok: false, error: error.name});
+            }
+
+            const analyser = context.createAnalyser();
+            analyser.fftSize = 2048;
+            context.createMediaStreamSource(e.streams[0]).connect(analyser);
+            const samples = new Float32Array(analyser.fftSize);
+
+            setInterval(async () => {
+                analyser.getFloatTimeDomainData(samples);
+                let sum = 0;
+                for (const sample of samples) sum += sample * sample;
+
+                const stats = {received: 0, lost: 0, concealed: 0};
+                (await receiver.getStats()).forEach((report) => {
+                    if (report.type === 'inbound-rtp' && report.kind === 'audio') {
+                        stats.received = report.packetsReceived;
+                        stats.lost = report.packetsLost;
+                        stats.concealed = report.concealedSamples;
+                    }
+                });
+
+                send({
+                    ev: 'tick',
+                    time: performance.now(),
+                    rms: Math.sqrt(sum / samples.length),
+                    audioContext: context.state,
+                    visibility: document.visibilityState,
+                    ...stats
+                });
+            }, 1000);
+        };
+
+        destination.stream.getTracks().forEach((track) => sender.addTrack(track, destination.stream));
+        const offer = await sender.createOffer();
+        await sender.setLocalDescription(offer);
+        await receiver.setRemoteDescription(offer);
+        const answer = await receiver.createAnswer();
+        await receiver.setLocalDescription(answer);
+        await sender.setRemoteDescription(answer);
+
+        const codec = offer.sdp.match(/a=rtpmap:\d+ (opus\/48000[^\r\n]*)/i);
+        send({ev: 'codec', codec: codec ? codec[1] : null});
+        send({
+            ev: 'env',
+            secure: window.isSecureContext,
+            rtc: typeof RTCPeerConnection === 'function',
+            userAgent: navigator.userAgent
         });
-        const track = stream.getAudioTracks()[0];
-        send({ ev: 'microphone', ok: true, label: track.label, settings: track.getSettings() });
-        track.stop();
-    } catch (error) {
-        send({ ev: 'microphone', ok: false, error: `${error.name}: ${error.message}` });
     }
-}
 
-window.requestMicrophone = requestMicrophone;
-window.addEventListener('load', () => {
-    startLoopback().catch((error) => send({ ev: 'loopback', ok: false, error: `${error.name}: ${error.message}` }));
-});
+    async function requestMicrophone() {
+        try {
+            const stream = await navigator.mediaDevices.getUserMedia({
+                audio: {echoCancellation: true, noiseSuppression: true, autoGainControl: true}
+            });
+            const track = stream.getAudioTracks()[0];
+            send({ev: 'microphone', ok: true, label: track.label, settings: track.getSettings()});
+            track.stop();
+        } catch (error) {
+            send({ev: 'microphone', ok: false, error: `${error.name}: ${error.message}`});
+        }
+    }
+
+    window.requestMicrophone = requestMicrophone;
+    window.addEventListener('load', () => {
+        startLoopback().catch((error) => send({ev: 'loopback', ok: false, error: `${error.name}: ${error.message}`}));
+    });
 </script>
 </body>
 </html>

@@ -13,7 +13,7 @@ public abstract class ContainerBase<T> : IAsyncLifetime where T : DockerContaine
     {
         Container = BuildContainer();
 
-        for (var attempt = 1; ; attempt++)
+        for (var attempt = 1;; attempt++)
         {
             try
             {

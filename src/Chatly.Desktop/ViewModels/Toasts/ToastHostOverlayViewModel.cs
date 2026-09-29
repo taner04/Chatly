@@ -5,5 +5,5 @@ namespace Chatly.Desktop.ViewModels.Toasts;
 [SingletonService]
 public sealed class ToastHostOverlayViewModel : ViewModelBase
 {
-    public ObservableCollection<IToastViewModel> Toasts { get; } = [];
+    public ObservableCollection<ToastViewModel> Toasts { get; } = [];
 }

@@ -11,6 +11,8 @@ public sealed partial class CallToneController(
 {
     private IAudioPlayback? _playback;
 
+    public async ValueTask DisposeAsync() => await StopAsync();
+
     internal Task StartIncomingAsync() => StartAsync();
 
     internal Task StartOutgoingAsync() => StartAsync();
@@ -36,8 +38,6 @@ public sealed partial class CallToneController(
             LogOperationFailed(exception, nameof(StopAsync));
         }
     }
-
-    public async ValueTask DisposeAsync() => await StopAsync();
 
     private async Task StartAsync()
     {

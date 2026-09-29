@@ -23,9 +23,11 @@ public sealed class ServiceRegistrationGeneratorTests
         var first = GeneratorTestHelper.Run(source);
         var second = GeneratorTestHelper.Run(source);
 
-        var singleton = first.GeneratedSource.IndexOf("services.AddSingleton<global::ASingleton>();", StringComparison.Ordinal);
+        var singleton =
+            first.GeneratedSource.IndexOf("services.AddSingleton<global::ASingleton>();", StringComparison.Ordinal);
         var scoped = first.GeneratedSource.IndexOf("services.AddScoped<global::MScoped>();", StringComparison.Ordinal);
-        var transient = first.GeneratedSource.IndexOf("services.AddTransient<global::ZTransient>();", StringComparison.Ordinal);
+        var transient =
+            first.GeneratedSource.IndexOf("services.AddTransient<global::ZTransient>();", StringComparison.Ordinal);
         singleton.Should().BeGreaterThanOrEqualTo(0);
         scoped.Should().BeGreaterThan(singleton);
         transient.Should().BeGreaterThan(scoped);
@@ -217,10 +219,10 @@ public sealed class ServiceRegistrationGeneratorTests
 
     private static void AssertNoErrors(GeneratorTestResult result)
     {
-        result.GeneratorDiagnostics.Should().NotContain(
-            static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
-        result.CompilationDiagnostics.Should().NotContain(
-            static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
+        result.GeneratorDiagnostics.Should()
+            .NotContain(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
+        result.CompilationDiagnostics.Should()
+            .NotContain(static diagnostic => diagnostic.Severity == DiagnosticSeverity.Error);
     }
 
     private static int Count(string value, string search)

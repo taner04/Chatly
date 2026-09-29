@@ -21,6 +21,13 @@ internal sealed class ProbePageServer : IDisposable
 
     internal Uri Address { get; }
 
+    public void Dispose()
+    {
+        _cancellation.Cancel();
+        _listener.Stop();
+        _cancellation.Dispose();
+    }
+
     internal static ProbePageServer Start()
     {
         using var stream = typeof(ProbePageServer).Assembly.GetManifestResourceStream("probe.html")
@@ -33,13 +40,6 @@ internal sealed class ProbePageServer : IDisposable
         var server = new ProbePageServer(listener, memory.ToArray());
         _ = server.ServeAsync();
         return server;
-    }
-
-    public void Dispose()
-    {
-        _cancellation.Cancel();
-        _listener.Stop();
-        _cancellation.Dispose();
     }
 
     private async Task ServeAsync()

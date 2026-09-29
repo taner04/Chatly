@@ -19,12 +19,12 @@ using Chatly.Desktop.Services.Api.Refit;
 using Chatly.Desktop.Services.Calls;
 using Chatly.Desktop.Services.Friendships;
 using Chatly.Desktop.Services.Storage;
+using Chatly.Desktop.UnitTests.Infrastructure;
 using Chatly.Desktop.UnitTests.Tests.Services.Calls.TestDoubles;
 using Chatly.Desktop.ViewModels;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;
 using Chatly.Desktop.ViewModels.Pages.ChatPage.Messages;
 using Microsoft.Extensions.Logging.Abstractions;
-using Chatly.Desktop.UnitTests.Infrastructure;
 
 namespace Chatly.Desktop.UnitTests.Tests.Services.Hubs;
 
@@ -34,13 +34,13 @@ public sealed class ChatNotificationHandlerTests
     private readonly Guid _currentUserId = Guid.NewGuid();
     private readonly DirectChatState _directChats = new();
     private readonly FriendState _friends = new();
+    private readonly FakeNotificationSoundPlayer _sound = new();
+    private readonly IToastService _toasts = Substitute.For<IToastService>();
+    private readonly UserRegistry _users = new();
     private ChatMessagesViewModel _messages = null!;
     private ChatPageViewModel _page = null!;
     private ChatSidebarViewModel _sidebar = null!;
-    private readonly FakeNotificationSoundPlayer _sound = new();
-    private readonly IToastService _toasts = Substitute.For<IToastService>();
     private ChatTypingViewModel _typing = null!;
-    private readonly UserRegistry _users = new();
 
     private void CreateViewModels()
     {
@@ -170,20 +170,22 @@ public sealed class ChatNotificationHandlerTests
     });
 
     [Fact]
-    public Task FriendshipRemoved_Should_RemoveFriendAndChatAndNotify_When_FriendRemovesUser() => UiThread.RunAsync(async () =>
-    {
-        CreateViewModels();
-        var friendship = new FriendshipContract(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "friend", null, false);
-        var service = CreateFriendshipStateService();
-        service.ApplyAccepted(friendship);
+    public Task FriendshipRemoved_Should_RemoveFriendAndChatAndNotify_When_FriendRemovesUser() =>
+        UiThread.RunAsync(async () =>
+        {
+            CreateViewModels();
+            var friendship =
+                new FriendshipContract(Guid.NewGuid(), Guid.NewGuid(), Guid.NewGuid(), "friend", null, false);
+            var service = CreateFriendshipStateService();
+            service.ApplyAccepted(friendship);
 
-        await new FriendshipRemovedNotificationHandler(service, _toasts)
-            .HandleAsync(new FriendshipRemovedNotification(friendship.FriendUserId));
+            await new FriendshipRemovedNotificationHandler(service, _toasts)
+                .HandleAsync(new FriendshipRemovedNotification(friendship.FriendUserId));
 
-        _friends.Items.Should().BeEmpty();
-        _directChats.Items.Should().BeEmpty();
-        _toasts.ReceivedWithAnyArgs(1).AddToast(default!);
-    });
+            _friends.Items.Should().BeEmpty();
+            _directChats.Items.Should().BeEmpty();
+            _toasts.ReceivedWithAnyArgs(1).AddToast(default!);
+        });
 
     private IncomingMessageNotificationHandler CreateIncomingMessageHandler() =>
         new(_sidebar, _page, _messages, _typing, _sound);

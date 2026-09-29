@@ -3,9 +3,9 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-             xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage"
+             xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages.UserPage"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
-             x:DataType="local:UserPage"
+             x:DataType="viewModels:UserPageViewModel"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.UserPage">
     <UserControl.Styles>
@@ -34,13 +34,13 @@
         <Grid ColumnDefinitions="*,Auto">
             <Button Classes="current-user-profile"
                     HorizontalAlignment="Left"
-                    Command="{Binding ViewModel.OpenCurrentUserProfileCommand}">
+                    Command="{Binding OpenCurrentUserProfileCommand}">
                 <StackPanel Orientation="Horizontal" Spacing="12">
                     <controls:UserAvatar Width="56"
                                          Height="56"
-                                         ProfilePictureUrl="{Binding ViewModel.UserContext.CurrentUser.ProfilePictureUrl}"
-                                         DisplayName="{Binding ViewModel.UserContext.CurrentUser.Username}" />
-                    <TextBlock Text="{Binding ViewModel.UserContext.CurrentUser.Username}"
+                                         ProfilePictureUrl="{Binding UserContext.CurrentUser.ProfilePictureUrl}"
+                                         DisplayName="{Binding UserContext.CurrentUser.Username}" />
+                    <TextBlock Text="{Binding UserContext.CurrentUser.Username}"
                                VerticalAlignment="Center"
                                FontSize="20"
                                FontWeight="SemiBold"
@@ -50,11 +50,11 @@
             <Button Grid.Column="1"
                     Classes="fluent-button add-friend"
                     Content="Add Friend"
-                    Command="{Binding ViewModel.AddFriendCommand}" />
+                    Command="{Binding AddFriendCommand}" />
         </Grid>
 
         <Grid Grid.Row="1" RowDefinitions="Auto,*">
-            <TabStrip x:Name="TabNavigation">
+            <TabStrip SelectedIndex="{Binding SelectedTabIndex, Mode=TwoWay}">
                 <TabItem Header="Online Friends" />
                 <TabItem Header="All Friends" />
                 <TabItem>
@@ -63,8 +63,8 @@
                             <TextBlock Text="Pending Requests"
                                        VerticalAlignment="Center" />
                             <Border Classes="pending-request-badge"
-                                    IsVisible="{Binding ViewModel.FriendRequestState.HasPendingRequests}">
-                                <TextBlock Text="{Binding ViewModel.FriendRequestState.PendingCount}"
+                                    IsVisible="{Binding FriendRequestState.HasPendingRequests}">
+                                <TextBlock Text="{Binding FriendRequestState.PendingCount}"
                                            FontSize="11"
                                            FontWeight="SemiBold"
                                            Foreground="{DynamicResource ChatlyTextBrush}"
@@ -75,7 +75,7 @@
                     </TabItem.Header>
                 </TabItem>
             </TabStrip>
-            <ContentControl x:Name="TabPageHost" Grid.Row="1" Margin="0,16,0,0" />
+            <ContentControl Content="{Binding CurrentTab}" Grid.Row="1" Margin="0,16,0,0" />
         </Grid>
     </Grid>
 

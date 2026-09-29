@@ -1,3 +1,4 @@
+using System.Globalization;
 using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.UnitTests.Tests.Utilities;
@@ -13,6 +14,7 @@ public sealed class FileSizeFormatterTests
     [InlineData(10 * 1024 * 1024 + 512 * 1024, "10.5 MB")]
     public void Format_Should_UseLargestFittingUnit_When_SizeIsGiven(long size, string expected)
     {
-        FileSizeFormatter.Format(size).Should().Be(expected.Replace(".", System.Globalization.CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator));
+        FileSizeFormatter.Format(size).Should()
+            .Be(expected.Replace(".", CultureInfo.CurrentCulture.NumberFormat.NumberDecimalSeparator));
     }
 }

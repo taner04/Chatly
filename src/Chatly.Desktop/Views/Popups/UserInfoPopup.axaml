@@ -4,13 +4,13 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              xmlns:ic="using:FluentIcons.Avalonia"
-             xmlns:local="using:Chatly.Desktop.Views.Popups"
+             xmlns:local="using:Chatly.Desktop.ViewModels.Popups"
              mc:Ignorable="d"
              d:DesignWidth="492"
              d:DesignHeight="390"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Popups.UserInfoPopup"
-             x:DataType="local:UserInfoPopup"
+             x:DataType="local:UserInfoPopupViewModel"
              x:Name="Root">
     <UserControl.Styles>
         <Style Selector="Border.profile-card">
@@ -81,16 +81,16 @@
                     <Grid Width="92" Height="92">
                         <controls:UserAvatar Width="92"
                                              Height="92"
-                                             DisplayName="{Binding ViewModel.OriginalUsername}"
-                                             ProfilePictureUrl="{Binding ViewModel.VisibleProfilePictureUrl}" />
+                                             DisplayName="{Binding OriginalUsername}"
+                                             ProfilePictureUrl="{Binding VisibleProfilePictureUrl}" />
                         <Border CornerRadius="46"
                                 ClipToBounds="True"
-                                IsVisible="{Binding ViewModel.HasProfilePicturePreview}">
-                            <Image Source="{Binding ViewModel.ProfilePicturePreview}"
+                                IsVisible="{Binding HasProfilePicturePreview}">
+                            <Image Source="{Binding ProfilePicturePreview}"
                                    Stretch="UniformToFill" />
                         </Border>
                         <Button Classes="avatar-select"
-                                Command="{Binding ViewModel.SelectProfilePictureCommand}"
+                                Command="{Binding SelectProfilePictureCommand}"
                                 ToolTip.Tip="Choose profile picture" />
                         <Border Width="25"
                                 Height="25"
@@ -109,8 +109,8 @@
                     <Button Classes="remove-picture"
                             HorizontalAlignment="Right"
                             VerticalAlignment="Top"
-                            IsVisible="{Binding ViewModel.HasProfilePicture}"
-                            Command="{Binding ViewModel.RemoveProfilePictureCommand}"
+                            IsVisible="{Binding HasProfilePicture}"
+                            Command="{Binding RemoveProfilePictureCommand}"
                             ToolTip.Tip="Remove profile picture">
                         <ic:SymbolIcon Symbol="Dismiss"
                                        FontSize="13"
@@ -121,12 +121,12 @@
                 <StackPanel Grid.Column="1"
                             Spacing="7"
                             VerticalAlignment="Center">
-                    <TextBlock Text="{Binding ViewModel.OriginalUsername}"
+                    <TextBlock Text="{Binding OriginalUsername}"
                                FontSize="23"
                                FontWeight="SemiBold"
                                TextTrimming="CharacterEllipsis"
                                Foreground="{DynamicResource ChatlyTextBrush}" />
-                    <TextBlock Text="{Binding ViewModel.User.Email}"
+                    <TextBlock Text="{Binding User.Email}"
                                FontSize="13"
                                TextTrimming="CharacterEllipsis"
                                Foreground="{DynamicResource ChatlyMutedTextBrush}" />
@@ -149,8 +149,8 @@
                     <TextBox Classes="chatly-input"
                              Height="40"
                              Padding="12,0"
-                             Text="{Binding ViewModel.Username, Mode=TwoWay}"
-                             MaxLength="{Binding ViewModel.UsernameMaxLength}" />
+                             Text="{Binding Username, Mode=TwoWay}"
+                             MaxLength="{Binding UsernameMaxLength}" />
                 </StackPanel>
 
                 <Border Height="1" Background="{DynamicResource ChatlyBorderBrush}" />
@@ -158,7 +158,7 @@
                 <StackPanel Spacing="5">
                     <TextBlock Classes="detail-label" Text="Email address" />
                     <TextBlock Classes="detail-value"
-                               Text="{Binding ViewModel.User.Email}"
+                               Text="{Binding User.Email}"
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>
 
@@ -167,7 +167,7 @@
                 <StackPanel Spacing="5">
                     <TextBlock Classes="detail-label" Text="User ID" />
                     <TextBlock Classes="detail-value"
-                               Text="{Binding ViewModel.User.Id}"
+                               Text="{Binding User.Id}"
                                FontSize="12"
                                TextTrimming="CharacterEllipsis" />
                 </StackPanel>
@@ -178,11 +178,11 @@
             <Button Grid.Column="1"
                     Classes="profile-cancel"
                     Content="Cancel"
-                    Command="{Binding ViewModel.CancelCommand}" />
+                    Command="{Binding CancelCommand}" />
             <Button Grid.Column="2"
                     Classes="accent-button opacity-hover profile-save"
                     Content="Save"
-                    Command="{Binding ViewModel.SaveCommand}" />
+                    Command="{Binding SaveCommand}" />
         </Grid>
     </StackPanel>
 </UserControl>

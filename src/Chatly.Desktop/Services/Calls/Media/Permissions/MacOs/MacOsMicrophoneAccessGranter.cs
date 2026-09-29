@@ -1,7 +1,7 @@
 using System.Runtime.InteropServices;
+using System.Runtime.Versioning;
 using Avalonia.Platform;
 using Chatly.Desktop.Abstraction.Calls;
-using System.Runtime.Versioning;
 
 namespace Chatly.Desktop.Services.Calls.Media.Permissions.MacOs;
 
@@ -20,6 +20,10 @@ internal sealed unsafe partial class MacOsMicrophoneAccessGranter : IMicrophoneA
     private static int _allowedPort;
     private static string? _allowedHost;
 
+    private static IntPtr Implementation =>
+        (IntPtr)(delegate* unmanaged<IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, nint, IntPtr, void>)
+        &RequestMediaCapturePermission;
+
     public void GrantAccess(IPlatformHandle webViewHandle, Uri pageAddress)
     {
         if (webViewHandle is not IAppleWKWebViewPlatformHandle appleHandle)
@@ -35,7 +39,8 @@ internal sealed unsafe partial class MacOsMicrophoneAccessGranter : IMicrophoneA
 
             DisableFocusRequirement(webView);
 
-            var selector = Selector("webView:requestMediaCapturePermissionForOrigin:initiatedByFrame:type:decisionHandler:");
+            var selector =
+                Selector("webView:requestMediaCapturePermissionForOrigin:initiatedByFrame:type:decisionHandler:");
             var uiDelegate = SendReturningPointer(webView, Selector("UIDelegate"));
             if (uiDelegate == IntPtr.Zero)
             {
@@ -63,9 +68,6 @@ internal sealed unsafe partial class MacOsMicrophoneAccessGranter : IMicrophoneA
             SendWithBool(preferences, setter, false);
         }
     }
-
-    private static IntPtr Implementation =>
-        (IntPtr)(delegate* unmanaged<IntPtr, IntPtr, IntPtr, IntPtr, IntPtr, nint, IntPtr, void>)&RequestMediaCapturePermission;
 
     private static IntPtr GetOrCreateOwnDelegate(IntPtr selector)
     {
@@ -102,7 +104,8 @@ internal sealed unsafe partial class MacOsMicrophoneAccessGranter : IMicrophoneA
             var host = Marshal.PtrToStringUTF8(
                 SendReturningPointer(SendReturningPointer(origin, Selector("host")), Selector("UTF8String")));
             var port = (int)SendReturningPointer(origin, Selector("port"));
-            if (type == MicrophoneCaptureType && host == Volatile.Read(ref _allowedHost) && port == Volatile.Read(ref _allowedPort))
+            if (type == MicrophoneCaptureType && host == Volatile.Read(ref _allowedHost) &&
+                port == Volatile.Read(ref _allowedPort))
             {
                 decision = PermissionGrant;
             }

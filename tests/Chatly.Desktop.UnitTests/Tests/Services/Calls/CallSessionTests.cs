@@ -1,6 +1,7 @@
 using Chatly.Contracts.Features.Hubs;
 using Chatly.Contracts.Features.Hubs.Abstraction;
 using Chatly.Desktop.Models.Calls;
+using Chatly.Desktop.Models.Settings;
 using Chatly.Desktop.Services.Calls;
 using Chatly.Desktop.UnitTests.Tests.Services.Calls.TestDoubles;
 
@@ -109,7 +110,8 @@ public sealed class CallSessionTests
     [Fact]
     public async Task EnsureMedia_Should_EndCallAndTearDown_When_JoiningMediaFails()
     {
-        _hub.JoinMediaAsync(_callId).Returns(Task.FromException<CallMediaAccess>(new InvalidOperationException("no media")));
+        _hub.JoinMediaAsync(_callId)
+            .Returns(Task.FromException<CallMediaAccess>(new InvalidOperationException("no media")));
         var session = CallSessionFactory.Create(_hub, _media, new FakeNotificationSoundPlayer());
         session.SetCall(new CallInfo(_callId, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Active, null));
 
@@ -122,10 +124,11 @@ public sealed class CallSessionTests
         session.Snapshot.Should().Be(CallSnapshot.Empty);
     }
 
-    private async Task<CallSession> CreateJoinedSessionAsync(Chatly.Desktop.Models.Settings.AppSettings? appSettings = null)
+    private async Task<CallSession> CreateJoinedSessionAsync(AppSettings? appSettings = null)
     {
         var session = CallSessionFactory.Create(_hub, _media, new FakeNotificationSoundPlayer(), appSettings);
-        session.SetCall(new CallInfo(_callId, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Active, null, AcceptedAt));
+        session.SetCall(new CallInfo(_callId, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Active, null,
+            AcceptedAt));
         await session.RunAsync(
             () => session.EnsureMediaAsync(TestContext.Current.CancellationToken),
             TestContext.Current.CancellationToken);

@@ -3,13 +3,12 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              xmlns:ic="using:FluentIcons.Avalonia"
-             xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage.Popups"
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
              xmlns:users="using:Chatly.Desktop.ViewModels.Pages.UserPage.Popups"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Popups.AddFriendPopupOverlay"
-             x:DataType="local:AddFriendPopupOverlay"
+             x:DataType="users:AddFriendPopupOverlayViewModel"
              MinWidth="440"
              MaxWidth="720"
              MinHeight="300"
@@ -34,7 +33,45 @@
             <Setter Property="CornerRadius" Value="10" />
             <Setter Property="FontSize" Value="12" />
         </Style>
+        <Style Selector="StackPanel.empty-state">
+            <Setter Property="Spacing" Value="6" />
+            <Setter Property="Margin" Value="0,24,0,8" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="Border.empty-state-icon">
+            <Setter Property="Width" Value="48" />
+            <Setter Property="Height" Value="48" />
+            <Setter Property="Margin" Value="0,0,0,6" />
+            <Setter Property="CornerRadius" Value="24" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Background" Value="{DynamicResource ChatlyHoverBrush}" />
+            <Setter Property="BorderBrush" Value="{DynamicResource ChatlyBorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+        </Style>
+        <Style Selector="Border.empty-state-icon ic|SymbolIcon">
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+        <Style Selector="TextBlock.empty-state-title">
+            <Setter Property="FontSize" Value="14" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyTextBrush}" />
+        </Style>
+        <Style Selector="TextBlock.empty-state-message">
+            <Setter Property="FontSize" Value="13" />
+            <Setter Property="MaxWidth" Value="300" />
+            <Setter Property="TextAlignment" Value="Center" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+            <Setter Property="HorizontalAlignment" Value="Center" />
+            <Setter Property="Foreground" Value="{DynamicResource ChatlyMutedTextBrush}" />
+        </Style>
     </UserControl.Styles>
+
+    <UserControl.KeyBindings>
+        <KeyBinding Gesture="Enter" Command="{Binding SearchForUsersCommand}" />
+    </UserControl.KeyBindings>
 
     <StackPanel Spacing="20">
         <StackPanel Spacing="5">
@@ -49,14 +86,14 @@
 
         <Grid>
             <TextBox Classes="chatly-input add-friend-search"
-                     Text="{Binding ViewModel.UserName, Mode=TwoWay}"
+                     Text="{Binding UserName, Mode=TwoWay}"
                      PlaceholderText="Search by username" />
             <Button Classes="icon-button search-button"
                     HorizontalAlignment="Right"
                     VerticalAlignment="Center"
                     Margin="0,0,7,0"
                     ToolTip.Tip="Search"
-                    Command="{Binding ViewModel.SearchForUsersCommand}">
+                    Command="{Binding SearchForUsersCommand}">
                 <ic:SymbolIcon Symbol="Search" FontSize="17" />
             </Button>
         </Grid>
@@ -68,7 +105,7 @@
                       VerticalScrollBarVisibility="Auto"
                       HorizontalScrollBarVisibility="Disabled">
             <StackPanel>
-                <ItemsControl ItemsSource="{Binding ViewModel.SearchedUsers}">
+                <ItemsControl ItemsSource="{Binding SearchedUsers}">
                     <ItemsControl.ItemTemplate>
                         <DataTemplate x:DataType="users:UserSearchResultViewModel">
                             <Border Classes="list-row" Margin="0,0,0,8">
@@ -122,23 +159,33 @@
                 </ItemsControl>
                 <Button Content="Load more"
                         Classes="load-more-button"
-                        Command="{Binding ViewModel.LoadMoreUsersCommand}"
-                        IsVisible="{Binding ViewModel.HasMoreUsers}"
-                        IsEnabled="{Binding !ViewModel.IsSearching}"
+                        Command="{Binding LoadMoreUsersCommand}"
+                        IsVisible="{Binding HasMoreUsers}"
+                        IsEnabled="{Binding !IsSearching}"
                         HorizontalAlignment="Center"
                         Margin="0,4,0,8" />
             </StackPanel>
         </ScrollViewer>
         <TextBlock Text="Searching..."
-                   IsVisible="{Binding ViewModel.IsSearching}"
+                   IsVisible="{Binding IsSearching}"
                    FontSize="13"
                    Foreground="{DynamicResource ChatlyMutedTextBrush}"
                    HorizontalAlignment="Center" />
-        <TextBlock Text="No users found"
-                   IsVisible="{Binding ViewModel.HasNoSearchResults}"
-                   FontSize="13"
-                   Foreground="{DynamicResource ChatlyMutedTextBrush}"
-                   HorizontalAlignment="Center"
-                   Margin="0,8,0,4" />
+        <StackPanel Classes="empty-state" IsVisible="{Binding ShowSearchPrompt}">
+            <Border Classes="empty-state-icon">
+                <ic:SymbolIcon Symbol="PersonSearch" FontSize="24" />
+            </Border>
+            <TextBlock Classes="empty-state-title" Text="Start searching" />
+            <TextBlock Classes="empty-state-message"
+                       Text="Type a username and press Enter to find people to add." />
+        </StackPanel>
+        <StackPanel Classes="empty-state" IsVisible="{Binding HasNoSearchResults}">
+            <Border Classes="empty-state-icon">
+                <ic:SymbolIcon Symbol="PersonProhibited" FontSize="24" />
+            </Border>
+            <TextBlock Classes="empty-state-title" Text="No users found" />
+            <TextBlock Classes="empty-state-message"
+                       Text="Check the spelling or try a different username." />
+        </StackPanel>
     </StackPanel>
 </UserControl>

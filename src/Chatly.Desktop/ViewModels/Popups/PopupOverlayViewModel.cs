@@ -5,6 +5,8 @@ public abstract class PopupOverlayViewModel : ViewModelBase, IPopupViewModel
     private readonly TaskCompletionSource _completed = new(TaskCreationOptions.RunContinuationsAsynchronously);
     public abstract string Title { get; }
 
+    public virtual bool IsDismissible => false;
+
     public Task Completion => _completed.Task;
 
     public virtual void CloseOverlay()

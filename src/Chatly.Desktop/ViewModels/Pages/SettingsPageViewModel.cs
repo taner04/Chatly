@@ -1,6 +1,6 @@
+using System.Collections.ObjectModel;
 using Avalonia;
 using Avalonia.Controls.ApplicationLifetimes;
-using System.Collections.ObjectModel;
 using Chatly.Desktop.Abstraction.Calls;
 using Chatly.Desktop.Models.Calls;
 using Chatly.Desktop.Models.Settings;
@@ -19,7 +19,10 @@ public sealed partial class SettingsPageViewModel(
     ILogger<SettingsPageViewModel> logger) : PageViewModelBase
 {
     private static readonly CallAudioDevice DefaultInputDevice = new(null, "System default", CallAudioDeviceKind.Input);
-    private static readonly CallAudioDevice DefaultOutputDevice = new(null, "System default", CallAudioDeviceKind.Output);
+
+    private static readonly CallAudioDevice DefaultOutputDevice =
+        new(null, "System default", CallAudioDeviceKind.Output);
+
     private static readonly HashSet<string> BrowserAliasDeviceIds = ["default", "communications"];
 
     private bool _applyingDevices;

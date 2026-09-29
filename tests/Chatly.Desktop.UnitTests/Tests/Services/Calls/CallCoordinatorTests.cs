@@ -25,7 +25,8 @@ public sealed class CallCoordinatorTests
     [Fact]
     public async Task EndAsync_Should_TearDownLocalMedia_When_HubCallFails()
     {
-        _hub.EndCallAsync(_callId).Returns(Task.FromException(new InvalidOperationException("The hub is not connected.")));
+        _hub.EndCallAsync(_callId)
+            .Returns(Task.FromException(new InvalidOperationException("The hub is not connected.")));
         await JoinActiveCallAsync(_callId);
 
         var end = () => _coordinator.EndAsync(TestContext.Current.CancellationToken);

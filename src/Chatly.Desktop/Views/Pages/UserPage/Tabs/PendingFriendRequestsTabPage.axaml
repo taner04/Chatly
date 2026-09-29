@@ -2,17 +2,16 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:ic="using:FluentIcons.Avalonia"
              xmlns:controls="using:Chatly.Desktop.Views.Controls"
-             xmlns:local="using:Chatly.Desktop.Views.Pages.UserPage.Tabs"
              xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages.UserPage.Tabs"
              x:ClassModifier="internal"
              x:Class="Chatly.Desktop.Views.Pages.UserPage.Tabs.PendingFriendRequestsTabPage"
-             x:DataType="local:PendingFriendRequestsTabPage">
+             x:DataType="viewModels:PendingFriendRequestsTabPageViewModel">
     <ScrollViewer x:Name="FriendRequestsScrollViewer"
                   VerticalScrollBarVisibility="Auto"
                   ScrollChanged="FriendRequestsScrollViewer_OnScrollChanged"
                   HorizontalScrollBarVisibility="Disabled">
         <StackPanel>
-            <ItemsControl ItemsSource="{Binding ViewModel.FriendRequests}">
+            <ItemsControl ItemsSource="{Binding FriendRequests}">
                 <ItemsControl.ItemTemplate>
                     <DataTemplate x:DataType="viewModels:PendingFriendRequestViewModel">
                         <Border Classes="list-row" Margin="0,0,0,8">
@@ -45,7 +44,7 @@
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
             <TextBlock Text="Loading requests..."
-                       IsVisible="{Binding ViewModel.IsLoadingFriendRequests}"
+                       IsVisible="{Binding IsLoadingFriendRequests}"
                        HorizontalAlignment="Center"
                        Margin="0,8"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}" />

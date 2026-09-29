@@ -1,6 +1,6 @@
 namespace Chatly.Desktop.Abstraction.Navigation;
 
-public sealed class NavigatedEventArgs(Type viewModelType) : EventArgs
+public sealed class NavigatedEventArgs(INavigableViewModel page) : EventArgs
 {
-    public Type ViewModelType { get; } = viewModelType;
+    public INavigableViewModel Page { get; } = page;
 }

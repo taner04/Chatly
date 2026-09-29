@@ -18,6 +18,8 @@ public sealed partial class CallViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty] private Guid? _callId;
 
+    [ObservableProperty] private string _durationText = string.Empty;
+
     [ObservableProperty] private bool _hasCall;
 
     [ObservableProperty] private bool _isBusy;
@@ -28,11 +30,9 @@ public sealed partial class CallViewModel : ViewModelBase, IDisposable
 
     [ObservableProperty] private bool _isMuted;
 
-    [ObservableProperty] private bool _isReconnecting;
-
     [ObservableProperty] private bool _isOnAnotherDevice;
 
-    [ObservableProperty] private string _durationText = string.Empty;
+    [ObservableProperty] private bool _isReconnecting;
 
     [ObservableProperty] private User? _remoteUser;
 

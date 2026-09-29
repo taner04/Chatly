@@ -21,7 +21,7 @@
                 BoxShadow="0 20 48 0 #99000000">
             <Grid RowDefinitions="Auto,*">
                 <Grid Grid.Row="0" ColumnDefinitions="*,Auto" Margin="0,0,0,18">
-                    <TextBlock Text="{Binding ViewModel.Title}"
+                    <TextBlock Text="{Binding ViewModel.Current.Title}"
                                FontSize="19"
                                FontWeight="SemiBold"
                                Foreground="{DynamicResource ChatlyTextBrush}"
@@ -29,7 +29,7 @@
                 </Grid>
 
                 <ContentControl Grid.Row="1"
-                                Content="{Binding ViewModel.Content}" />
+                                Content="{Binding ViewModel.Current}" />
             </Grid>
         </Border>
     </Grid>

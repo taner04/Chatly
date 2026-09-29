@@ -9,7 +9,7 @@ public static class AppHostConstants
     public const string BlobStorageResourceName = "chatly-storage";
     public const string BlobServiceConnectionName = "chatly-blobs";
     public const string ProfilePicturesContainerName = "profile-pictures";
-    
+
     public const string Papercut = "chatly-papercut";
 
     public const string LiveKitResourceName = "chatly-livekit";

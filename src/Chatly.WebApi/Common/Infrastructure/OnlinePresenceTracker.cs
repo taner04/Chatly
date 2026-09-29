@@ -3,8 +3,8 @@ namespace Chatly.WebApi.Common.Infrastructure;
 [SingletonService]
 public sealed class OnlinePresenceTracker
 {
-    private readonly Dictionary<UserId, UserPresence> _presences = [];
     private readonly Lock _lock = new();
+    private readonly Dictionary<UserId, UserPresence> _presences = [];
 
     internal bool Connect(UserId userId, string connectionId)
     {

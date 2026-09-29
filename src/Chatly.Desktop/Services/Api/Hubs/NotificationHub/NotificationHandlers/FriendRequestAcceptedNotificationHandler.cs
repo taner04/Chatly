@@ -1,6 +1,5 @@
 using Chatly.Contracts.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 using Chatly.Desktop.Abstraction.Hubs;
-using Chatly.Desktop.Services.Api.Hubs;
 using Chatly.Desktop.Services.Friendships;
 using Chatly.Desktop.Utilities;
 

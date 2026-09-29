@@ -12,8 +12,10 @@ public sealed class DirectChatMapperTests
     {
         var registry = new UserRegistry();
         var userId = Guid.NewGuid();
-        var chat = DirectChatMapper.Map(new GetChatsResponse(Guid.NewGuid(), userId, "friend", null, true, 3), registry);
-        var friend = FriendMapper.Map(new FriendshipContract(Guid.NewGuid(), chat.Id, userId, "friend", null, true), registry);
+        var chat = DirectChatMapper.Map(new GetChatsResponse(Guid.NewGuid(), userId, "friend", null, true, 3),
+            registry);
+        var friend = FriendMapper.Map(new FriendshipContract(Guid.NewGuid(), chat.Id, userId, "friend", null, true),
+            registry);
 
         chat.User.Should().BeSameAs(friend.User);
         chat.UnreadMessageCount.Should().Be(3);

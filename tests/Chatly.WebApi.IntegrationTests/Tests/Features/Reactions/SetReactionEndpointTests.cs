@@ -10,10 +10,12 @@ public sealed class SetReactionEndpointTests(TestingFixture fixture) : TestingBa
     {
         var friend = await CreateUserAsync("friend");
         var chatId = await CreateFriendshipAsync(CurrentUser, friend);
-        var sent = await CreateAuthenticatedClient(friend).SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
+        var sent = await CreateAuthenticatedClient(friend)
+            .SendMessageAsync(chatId.Value, "news", CurrentCancellationToken);
         var client = CreateAuthenticatedClient();
 
-        await client.SetReactionAsync(sent.Content!.MessageId, new SetReactionRequest(ReactionType.Like), CurrentCancellationToken);
+        await client.SetReactionAsync(sent.Content!.MessageId, new SetReactionRequest(ReactionType.Like),
+            CurrentCancellationToken);
         var response = await client.SetReactionAsync(
             sent.Content.MessageId,
             new SetReactionRequest(ReactionType.Fire),

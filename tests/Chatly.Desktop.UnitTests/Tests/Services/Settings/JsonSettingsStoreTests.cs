@@ -7,7 +7,16 @@ namespace Chatly.Desktop.UnitTests.Tests.Services.Settings;
 
 public sealed class JsonSettingsStoreTests : IDisposable
 {
-    private readonly string _root = Path.Combine(Path.GetTempPath(), "chatly-settings-tests", Guid.NewGuid().ToString("N"));
+    private readonly string _root =
+        Path.Combine(Path.GetTempPath(), "chatly-settings-tests", Guid.NewGuid().ToString("N"));
+
+    public void Dispose()
+    {
+        if (Directory.Exists(_root))
+        {
+            Directory.Delete(_root, true);
+        }
+    }
 
     [Fact]
     public void LoadSettings_Should_ReturnDefaults_When_NoFileExists()
@@ -43,14 +52,6 @@ public sealed class JsonSettingsStoreTests : IDisposable
         var settings = CreateStore().LoadSettings<CallSettings>();
 
         settings.EchoCancellation.Should().BeTrue();
-    }
-
-    public void Dispose()
-    {
-        if (Directory.Exists(_root))
-        {
-            Directory.Delete(_root, true);
-        }
     }
 
     private JsonSettingsStore CreateStore() =>

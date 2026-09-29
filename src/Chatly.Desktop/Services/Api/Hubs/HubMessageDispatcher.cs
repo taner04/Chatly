@@ -38,5 +38,6 @@ internal sealed partial class HubMessageDispatcher : IHubMessageDispatcher
     private partial void LogDispatchingMessageOfTypeMessagetypeToHandlerHandlertype(Type messageType, Type handlerType);
 
     [LoggerMessage(LogLevel.Information, "Finished dispatching message of type {MessageType} to handler {HandlerType}")]
-    private partial void LogFinishedDispatchingMessageOfTypeMessagetypeToHandlerHandlertype(Type messageType, Type handlerType);
+    private partial void LogFinishedDispatchingMessageOfTypeMessagetypeToHandlerHandlertype(Type messageType,
+        Type handlerType);
 }

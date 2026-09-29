@@ -12,11 +12,11 @@ public sealed class CallNotificationHandlerTests
     private static readonly DateTimeOffset AcceptedAt = new(2026, 9, 25, 12, 0, 0, TimeSpan.Zero);
 
     private readonly Guid _callId = Guid.NewGuid();
-    private readonly Guid _remoteUserId = Guid.NewGuid();
     private readonly ICallingHubServer _hub = Substitute.For<ICallingHubServer>();
     private readonly FakeCallMediaHost _media = new();
-    private readonly FakeNotificationSoundPlayer _soundPlayer = new();
+    private readonly Guid _remoteUserId = Guid.NewGuid();
     private readonly CallSession _session;
+    private readonly FakeNotificationSoundPlayer _soundPlayer = new();
 
     public CallNotificationHandlerTests()
     {

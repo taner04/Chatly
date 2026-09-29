@@ -2,7 +2,14 @@ using System.Text.Json;
 
 namespace Chatly.WebViewCallProbe;
 
-internal sealed record ProbeTick(double Time, double Rms, long Received, long Lost, long Concealed, string AudioContext, string Visibility)
+internal sealed record ProbeTick(
+    double Time,
+    double Rms,
+    long Received,
+    long Lost,
+    long Concealed,
+    string AudioContext,
+    string Visibility)
 {
     internal static ProbeTick From(JsonElement message) => new(
         message.GetProperty("time").GetDouble(),

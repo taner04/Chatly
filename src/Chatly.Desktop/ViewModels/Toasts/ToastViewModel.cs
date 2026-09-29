@@ -3,7 +3,7 @@ using FluentIcons.Common;
 
 namespace Chatly.Desktop.ViewModels.Toasts;
 
-public sealed partial class ToastViewModel : ViewModelBase, IToastViewModel
+public sealed partial class ToastViewModel : ViewModelBase
 {
     internal ToastViewModel(
         string title,

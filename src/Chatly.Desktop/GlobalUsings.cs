@@ -15,6 +15,7 @@ global using Chatly.Desktop.Models;
 global using CommunityToolkit.Mvvm.ComponentModel;
 global using Chatly.DependencyInjection;
 global using Chatly.Desktop.Abstraction.Toasts;
+global using Chatly.Desktop.Abstraction.Views;
 global using Chatly.Desktop.Extensions;
 global using Chatly.Desktop.Models.UserSession;
 global using CommunityToolkit.Mvvm.Input;

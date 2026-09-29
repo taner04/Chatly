@@ -21,7 +21,8 @@ public sealed class ConverterTests
     [InlineData(null, null, false)]
     [InlineData("text", "Invert", false)]
     [InlineData(null, "Invert", true)]
-    public void StringHasValueConverter_Should_ReportPresence_When_ValueIsGiven(string? value, string? parameter, bool expected)
+    public void StringHasValueConverter_Should_ReportPresence_When_ValueIsGiven(string? value, string? parameter,
+        bool expected)
     {
         new StringHasValueConverter().Convert(value, typeof(bool), parameter, CultureInfo.InvariantCulture)
             .Should().Be(expected);

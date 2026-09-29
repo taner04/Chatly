@@ -65,12 +65,13 @@ internal sealed class CallingHub(
                 caller.Username,
                 CallRole.Receiver,
                 CallState.Ringing));
-            await callService.PublishToOtherDevicesAsync(callerUserId, Context.ConnectionId, new CallStateChangedNotification(
-                result.Call.Id.Value,
-                receiverUserId.Value,
-                result.Receiver.Username,
-                CallRole.Caller,
-                CallState.Ringing));
+            await callService.PublishToOtherDevicesAsync(callerUserId, Context.ConnectionId,
+                new CallStateChangedNotification(
+                    result.Call.Id.Value,
+                    receiverUserId.Value,
+                    result.Receiver.Username,
+                    CallRole.Caller,
+                    CallState.Ringing));
 
             return new CallInfo(
                 result.Call.Id.Value,
@@ -116,13 +117,14 @@ internal sealed class CallingHub(
             CallRole.Caller,
             CallState.Active,
             acceptedAt));
-        await callService.PublishToOtherDevicesAsync(call.ReceiverUserId, Context.ConnectionId, new CallStateChangedNotification(
-            call.Id.Value,
-            call.CallerUserId.Value,
-            call.CallerUser.Username,
-            CallRole.Receiver,
-            CallState.Active,
-            acceptedAt));
+        await callService.PublishToOtherDevicesAsync(call.ReceiverUserId, Context.ConnectionId,
+            new CallStateChangedNotification(
+                call.Id.Value,
+                call.CallerUserId.Value,
+                call.CallerUser.Username,
+                CallRole.Receiver,
+                CallState.Active,
+                acceptedAt));
         return CallContractMapper.ToCallInfo(call, actorUserId);
     }
 

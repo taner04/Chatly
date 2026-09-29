@@ -12,7 +12,8 @@ public sealed class FriendMapperTests
         var registry = new UserRegistry();
         var friendId = Guid.NewGuid();
         var known = registry.GetOrAdd(friendId, "friend", null, false);
-        var contract = new FriendshipContract(Guid.NewGuid(), Guid.NewGuid(), friendId, "friend_renamed", "https://pic", true);
+        var contract = new FriendshipContract(Guid.NewGuid(), Guid.NewGuid(), friendId, "friend_renamed", "https://pic",
+            true);
 
         var friend = FriendMapper.Map(contract, registry);
 

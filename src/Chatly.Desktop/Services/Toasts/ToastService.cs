@@ -1,40 +1,24 @@
 ﻿using Chatly.Desktop.Utilities;
+using Chatly.Desktop.ViewModels.Toasts;
 
 namespace Chatly.Desktop.Services.Toasts;
 
 [SingletonService(typeof(IToastService))]
-internal sealed class ToastService : IToastService
+internal sealed class ToastService(ToastHostOverlayViewModel toastHost) : IToastService
 {
     private const int MaxToastDurationMs = 5000;
     private const int MaxToasts = 5;
     private readonly LinkedList<Guid> _toastOrder = [];
 
     private readonly Dictionary<Guid, ActiveToast> _toasts = [];
-    private IToastHost? _toastHost;
 
-    public void AddToast(IToastViewModel toastViewModel)
+    public void AddToast(ToastViewModel toastViewModel)
     {
         ArgumentNullException.ThrowIfNull(toastViewModel);
         UiThreadDispatcher.SafeInvoke(() => AddToastCore(toastViewModel));
     }
 
-    public void RemoveToast(Guid id)
-    {
-        UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(id));
-    }
-
-    public void SetToastHost(IToastHost toastHost)
-    {
-        ArgumentNullException.ThrowIfNull(toastHost);
-        _toastHost = toastHost;
-    }
-
-    private IToastHost GetToastHost() =>
-        _toastHost ??
-        throw new InvalidOperationException(
-            "Toast host is not set. Please set the toast host before adding or removing toasts.");
-
-    private void AddToastCore(IToastViewModel toastViewModel)
+    private void AddToastCore(ToastViewModel toastViewModel)
     {
         if (_toasts.ContainsKey(toastViewModel.Id))
         {
@@ -50,7 +34,7 @@ internal sealed class ToastService : IToastService
         var orderNode = _toastOrder.AddFirst(toastViewModel.Id);
         _toasts.Add(toastViewModel.Id, new ActiveToast(toastViewModel, cancellationTokenSource, orderNode));
         toastViewModel.Dismissed += OnToastDismissed;
-        GetToastHost().AddToast(toastViewModel);
+        toastHost.Toasts.Insert(0, toastViewModel);
         _ = AutoDismissAsync(toastViewModel.Id, cancellationTokenSource);
     }
 
@@ -70,9 +54,9 @@ internal sealed class ToastService : IToastService
 
     private void OnToastDismissed(object? sender, EventArgs e)
     {
-        if (sender is IToastViewModel toastViewModel)
+        if (sender is ToastViewModel toastViewModel)
         {
-            RemoveToast(toastViewModel.Id);
+            UiThreadDispatcher.SafeInvoke(() => RemoveToastCore(toastViewModel.Id));
         }
     }
 
@@ -90,11 +74,11 @@ internal sealed class ToastService : IToastService
         toast.ViewModel.Dismissed -= OnToastDismissed;
         toast.CancellationTokenSource.Cancel();
         toast.CancellationTokenSource.Dispose();
-        GetToastHost().RemoveToast(id);
+        toastHost.Toasts.Remove(toast.ViewModel);
     }
 
     private sealed record ActiveToast(
-        IToastViewModel ViewModel,
+        ToastViewModel ViewModel,
         CancellationTokenSource CancellationTokenSource,
         LinkedListNode<Guid> OrderNode);
 }

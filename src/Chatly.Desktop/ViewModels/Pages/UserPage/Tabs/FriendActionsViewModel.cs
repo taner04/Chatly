@@ -1,12 +1,12 @@
 using Chatly.Desktop.Services.Api.Clients;
-using Chatly.Desktop.Services.Chat;
 using Chatly.Desktop.Services.Friendships;
+using Chatly.Desktop.ViewModels.Pages.ChatPage;
 
 namespace Chatly.Desktop.ViewModels.Pages.UserPage.Tabs;
 
 [SingletonService]
 public sealed partial class FriendActionsViewModel(
-    ChatNavigationService chatNavigationService,
+    INavigationService navigationService,
     FriendsApiClient friendsApiClient,
     FriendshipStateService friendshipStateService,
     IToastService toastService) : ViewModelBase
@@ -18,7 +18,7 @@ public sealed partial class FriendActionsViewModel(
     {
         if (friend?.ChatId is { } chatId)
         {
-            await chatNavigationService.NavigateAsync(chatId, cancellationToken);
+            await navigationService.NavigateToAsync<ChatPageViewModel>(chatId, cancellationToken);
         }
     }
 

@@ -52,6 +52,8 @@ public sealed partial class UserInfoPopupViewModel : ProfilePicturePopupViewMode
 
     public override string Title => "Your profile";
 
+    public override bool IsDismissible => true;
+
     public int UsernameMaxLength => UsernamePolicy.MaxLength;
 
     public User User { get; }
