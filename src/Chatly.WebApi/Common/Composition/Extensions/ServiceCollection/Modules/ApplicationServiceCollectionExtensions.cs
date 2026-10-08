@@ -30,7 +30,7 @@ internal static class ApplicationServiceCollectionExtensions
                 options.PipelineBehaviors =
                 [
                     typeof(LoggingBehaviour<,>),
-                    typeof(UserProvisioningBehaviour<,>),
+                    typeof(DeviceSessionBehaviour<,>),
                     typeof(FluentValidationBehaviour<,>)
                 ];
             });

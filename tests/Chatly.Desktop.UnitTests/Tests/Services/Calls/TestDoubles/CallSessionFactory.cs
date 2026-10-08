@@ -27,6 +27,7 @@ internal static class CallSessionFactory
         store.LoadSettings<NotificationSettings>().Returns(new NotificationSettings());
         store.LoadSettings<ThemeSettings>().Returns(new ThemeSettings());
         store.LoadSettings<CallSettings>().Returns(new CallSettings());
+        store.LoadSettings<DeviceSettings>().Returns(new DeviceSettings());
         return new AppSettings(store);
     }
 }

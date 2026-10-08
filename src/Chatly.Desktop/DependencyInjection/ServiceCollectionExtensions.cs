@@ -33,7 +33,8 @@ internal static class ServiceCollectionExtensions
                     client.BaseAddress = options.BaseAddress;
                     client.Timeout = TimeSpan.FromSeconds(options.TimeoutInSeconds);
                 })
-                .AddHttpMessageHandler<BearerDelegatingHandler>();
+                .AddHttpMessageHandler<BearerDelegatingHandler>()
+                .AddHttpMessageHandler<DeviceSessionDelegatingHandler>();
 
             services.AddOsSpecificServices();
 

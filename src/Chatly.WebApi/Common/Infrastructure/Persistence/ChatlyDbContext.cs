@@ -1,5 +1,6 @@
 using Chatly.WebApi.Common.Infrastructure.Persistence.Configuration;
 using Chatly.WebApi.Features.Calls.Models;
+using Chatly.WebApi.Features.DeviceSessions.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.Friendships.Models;
 using Chatly.WebApi.Features.MessageAttachments.Models;
@@ -21,6 +22,7 @@ public sealed class ChatlyDbContext(DbContextOptions<ChatlyDbContext> options) :
     public DbSet<Reaction> Reactions => Set<Reaction>();
     public DbSet<StoredFile> StoredFiles => Set<StoredFile>();
     public DbSet<MessageAttachment> MessageAttachments => Set<MessageAttachment>();
+    public DbSet<DeviceSession> DeviceSessions => Set<DeviceSession>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

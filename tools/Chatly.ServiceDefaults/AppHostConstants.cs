@@ -13,4 +13,6 @@ public static class AppHostConstants
     public const string Papercut = "chatly-papercut";
 
     public const string LiveKitResourceName = "chatly-livekit";
+
+    public const string KeycloakResourceName = "chatly-keycloak";
 }

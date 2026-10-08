@@ -52,7 +52,6 @@ internal sealed class SoundFlowAudioPlayback : IAudioPlayback, ISoundFlowRuntime
 
     private ValueTask StopCore()
     {
-        var shouldStop = false;
         lock (_syncRoot)
         {
             if (_disposed || !_isPlaying)
@@ -61,15 +60,11 @@ internal sealed class SoundFlowAudioPlayback : IAudioPlayback, ISoundFlowRuntime
             }
 
             _isPlaying = false;
-            shouldStop = true;
         }
 
         try
         {
-            if (shouldStop)
-            {
-                _runtime.StopPlayback(_player);
-            }
+            _runtime.StopPlayback(_player);
         }
         finally
         {
@@ -81,7 +76,7 @@ internal sealed class SoundFlowAudioPlayback : IAudioPlayback, ISoundFlowRuntime
 
     private void DisposeCore()
     {
-        var shouldStop = false;
+        bool shouldStop;
         lock (_syncRoot)
         {
             if (_disposed)

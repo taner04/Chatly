@@ -52,7 +52,7 @@ internal sealed unsafe partial class MacOsMicrophoneAccessGranter : IMicrophoneA
             var delegateClass = object_getClass(uiDelegate);
             if (!class_respondsToSelector(delegateClass, selector))
             {
-                class_addMethod(delegateClass, selector, Implementation, MethodTypes);
+                _ = class_addMethod(delegateClass, selector, Implementation, MethodTypes);
             }
         }
     }
@@ -80,7 +80,7 @@ internal sealed unsafe partial class MacOsMicrophoneAccessGranter : IMicrophoneA
         if (delegateClass == IntPtr.Zero)
         {
             delegateClass = objc_allocateClassPair(objc_getClass("NSObject"), DelegateClassName, 0);
-            class_addMethod(delegateClass, selector, Implementation, MethodTypes);
+            _ = class_addMethod(delegateClass, selector, Implementation, MethodTypes);
             objc_registerClassPair(delegateClass);
         }
 

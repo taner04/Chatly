@@ -13,7 +13,7 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
             new SendFriendRequestRequest(Guid.NewGuid()),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -25,11 +25,11 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
             new SendFriendRequestRequest(receiver.Id.Value),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         var pending = await CreateAuthenticatedClient(receiver).GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        var request = Assert.Single(pending.Content!.Items);
-        Assert.Equal(CurrentUser.Id.Value, request.SenderUserId);
-        Assert.Equal(CurrentUser.Username, request.SenderUsername);
+        var request = pending.Content!.Items.Should().ContainSingle().Subject;
+        request.SenderUserId.Should().Be(CurrentUser.Id.Value);
+        request.SenderUsername.Should().Be(CurrentUser.Username);
     }
 
     [Fact]
@@ -63,7 +63,7 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
             new SendFriendRequestRequest(Guid.NewGuid()),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -89,15 +89,15 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var receiverClient = CreateAuthenticatedClient(receiver);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await receiverClient.RejectFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
-            CurrentCancellationToken);
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
+        await receiverClient.RejectFriendRequestAsync(requestId, CurrentCancellationToken);
 
         var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         var again = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        Assert.Single(again.Content!.Items);
+        again.Content!.Items.Should().ContainSingle();
     }
 
     [Fact]
@@ -108,14 +108,14 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var receiverClient = CreateAuthenticatedClient(receiver);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await receiverClient.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
-            CurrentCancellationToken);
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
+        await receiverClient.AcceptFriendRequestAsync(requestId, CurrentCancellationToken);
         await client.RemoveFriendshipAsync(receiver.Id.Value, CurrentCancellationToken);
 
         var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
     }
 
     [Fact]
@@ -126,8 +126,8 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var receiverClient = CreateAuthenticatedClient(receiver);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await receiverClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await receiverClient.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
-            CurrentCancellationToken);
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
+        await receiverClient.AcceptFriendRequestAsync(requestId, CurrentCancellationToken);
 
         var response = await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value),
             CurrentCancellationToken);
@@ -143,17 +143,17 @@ public sealed class SendFriendRequestEndpointTests(TestingFixture fixture) : Tes
         var otherClient = CreateAuthenticatedClient(other);
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(other.Id.Value), CurrentCancellationToken);
         var pending = await otherClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        await otherClient.RejectFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
-            CurrentCancellationToken);
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
+        await otherClient.RejectFriendRequestAsync(requestId, CurrentCancellationToken);
 
         var response = await otherClient.SendFriendRequestAsync(
             new SendFriendRequestRequest(CurrentUser.Id.Value),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         var incoming = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        Assert.Equal(other.Id.Value, Assert.Single(incoming.Content!.Items).SenderUserId);
+        incoming.Content!.Items.Should().ContainSingle().Subject.SenderUserId.Should().Be(other.Id.Value);
         var outgoing = await otherClient.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        Assert.Empty(outgoing.Content!.Items);
+        outgoing.Content!.Items.Should().BeEmpty();
     }
 }

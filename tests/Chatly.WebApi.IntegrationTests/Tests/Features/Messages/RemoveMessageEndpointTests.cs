@@ -12,10 +12,10 @@ public sealed class RemoveMessageEndpointTests(TestingFixture fixture) : Testing
 
         var response = await client.RemoveMessageAsync(sent.Content!.MessageId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         await using var dbContext = GetDbContext();
         var message = await dbContext.Messages.SingleAsync(CurrentCancellationToken);
-        Assert.True(message.IsDeleted);
+        message.IsDeleted.Should().BeTrue();
     }
 
     [Fact]
@@ -28,9 +28,9 @@ public sealed class RemoveMessageEndpointTests(TestingFixture fixture) : Testing
         var response = await CreateAuthenticatedClient(friend)
             .RemoveMessageAsync(sent.Content!.MessageId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         await using var dbContext = GetDbContext();
-        Assert.False((await dbContext.Messages.SingleAsync(CurrentCancellationToken)).IsDeleted);
+        (await dbContext.Messages.SingleAsync(CurrentCancellationToken)).IsDeleted.Should().BeFalse();
     }
 
     [Fact]
@@ -44,15 +44,15 @@ public sealed class RemoveMessageEndpointTests(TestingFixture fixture) : Testing
             "with file",
             [CreateFile("notes.txt", "text/plain")],
             CurrentCancellationToken);
-        var blobUrl = Assert.Single(sent.Content!.Attachments).Url;
-        Assert.Equal(HttpStatusCode.OK, await GetBlobStatusAsync(blobUrl));
+        var blobUrl = sent.Content!.Attachments.Should().ContainSingle().Subject.Url;
+        (await GetBlobStatusAsync(blobUrl)).Should().Be(HttpStatusCode.OK);
 
         var response = await client.RemoveMessageAsync(sent.Content.MessageId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         await using var dbContext = GetDbContext();
-        Assert.False(await dbContext.StoredFiles.AnyAsync(CurrentCancellationToken));
-        Assert.False(await dbContext.MessageAttachments.AnyAsync(CurrentCancellationToken));
-        Assert.Equal(HttpStatusCode.NotFound, await GetBlobStatusAsync(blobUrl));
+        (await dbContext.StoredFiles.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
+        (await dbContext.MessageAttachments.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
+        (await GetBlobStatusAsync(blobUrl)).Should().Be(HttpStatusCode.NotFound);
     }
 }

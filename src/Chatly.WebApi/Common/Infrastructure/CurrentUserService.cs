@@ -1,37 +1,37 @@
-﻿namespace Chatly.WebApi.Common.Infrastructure;
+using System.Security.Claims;
+using Chatly.WebApi.Features.DeviceSessions.Models;
+using Chatly.WebApi.Features.DeviceSessions.Services;
+
+namespace Chatly.WebApi.Common.Infrastructure;
 
 [ScopedService]
 public sealed class CurrentUserService(IHttpContextAccessor httpContextAccessor)
 {
-    internal const string UserIdItemKey = "Chatly.UserId";
+    internal const string UserIdClaim = "chatly_user_id";
+    internal const string ChatlyAuthenticationType = "Chatly";
     internal const string SubClaim = "sub";
+    internal const string SessionIdClaim = "sid";
     internal const string EmailClaim = "email";
-    internal const string RoleClaim = "permissions";
+
+    internal UserId UserId =>
+        FindUserId(HttpContext.User) ?? throw new UnauthorizedAccessException("User is not authenticated.");
+
+    internal DeviceInfo Device => field ??= DeviceInfoReader.Read(HttpContext.Request.Headers);
+
+    internal string? IdentitySessionId => FindIdentitySessionId(HttpContext.User);
 
     private HttpContext HttpContext => httpContextAccessor.HttpContext ??
                                        throw new UnauthorizedAccessException(
                                            "No user is associated with the current operation.");
 
-    internal string GetAuth0Id() => GetClaimValue<string>(SubClaim);
+    internal static UserId? FindUserId(ClaimsPrincipal? principal) =>
+        principal?.Identities
+            .FirstOrDefault(identity => identity.AuthenticationType == ChatlyAuthenticationType)?
+            .FindFirst(UserIdClaim)?.Value is { } value
+        && Guid.TryParse(value, out var userId)
+            ? UserId.From(userId)
+            : null;
 
-    internal UserId GetCurrentUserId()
-    {
-        if (HttpContext.Items.TryGetValue(UserIdItemKey, out var id)
-            && id is UserId userId)
-        {
-            return userId;
-        }
-
-        throw new UnauthorizedAccessException("User is not authenticated.");
-    }
-
-    internal T GetClaimValue<T>(
-        string claimType)
-    {
-        var claimValue =
-            HttpContext.User.FindFirst(claimType)?.Value ??
-            throw new UnauthorizedAccessException($"Claim '{claimType}' is missing.");
-
-        return (T)Convert.ChangeType(claimValue, typeof(T));
-    }
+    internal static string? FindIdentitySessionId(ClaimsPrincipal? principal) =>
+        principal?.FindFirst(SessionIdClaim)?.Value;
 }

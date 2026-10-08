@@ -9,14 +9,12 @@ internal sealed class AcceptFriendRequestEndpoint : IEndpoint
         app.MapPost(
                 ApiRoutes.FriendRequests.Accept,
                 async (
-                    [FromRoute] Guid friendRequestId,
-                    [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(
+                        [FromRoute] Guid friendRequestId,
+                        [FromServices] IMediator mediator,
+                        CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(
                         new AcceptFriendRequestCommand(friendRequestId),
-                        cancellationToken));
-                })
+                        cancellationToken)))
             .WithName("AcceptFriendRequest")
             .WithTags("Friend Request")
             .RequireAuthorization()

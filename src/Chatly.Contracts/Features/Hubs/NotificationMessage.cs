@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using Chatly.Contracts.Features.DeviceSessions.Notifications;
 using Chatly.Contracts.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 using Chatly.Contracts.Features.Friendships.Endpoints.RemoveFriendship;
@@ -20,4 +21,6 @@ namespace Chatly.Contracts.Features.Hubs;
 [JsonDerivedType(typeof(OnlineStatusChangedNotification), "OnlineStatusChanged")]
 [JsonDerivedType(typeof(FriendshipRemovedNotification), "FriendshipRemoved")]
 [JsonDerivedType(typeof(UserProfileUpdatedNotification), "UserProfileUpdated")]
+[JsonDerivedType(typeof(DeviceSessionRevokedNotification), "DeviceSessionRevoked")]
+[JsonDerivedType(typeof(DeviceSessionsChangedNotification), "DeviceSessionsChanged")]
 public abstract class NotificationMessage : IHubMessage;

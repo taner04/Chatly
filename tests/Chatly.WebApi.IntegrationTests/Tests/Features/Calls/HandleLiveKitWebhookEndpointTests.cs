@@ -18,7 +18,7 @@ public sealed class HandleLiveKitWebhookEndpointTests(TestingFixture fixture) : 
             new StringContent(RoomFinished(Guid.NewGuid()), Encoding.UTF8, "application/webhook+json"),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.Unauthorized, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.Unauthorized);
     }
 
     [Fact]
@@ -31,19 +31,17 @@ public sealed class HandleLiveKitWebhookEndpointTests(TestingFixture fixture) : 
         var started = await caller.StartCallAsync(friend.Id.Value);
         await receiver.AcceptCallAsync(started.CallId);
         var body = RoomFinished(started.CallId);
-        using var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LiveKit.Webhook)
-        {
-            Content = new StringContent(body, Encoding.UTF8, "application/webhook+json")
-        };
+        using var request = new HttpRequestMessage(HttpMethod.Post, ApiRoutes.LiveKit.Webhook);
+        request.Content = new StringContent(body, Encoding.UTF8, "application/webhook+json");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", CreateSignature(body));
 
         var response = await CreateHttpClient().SendAsync(request, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         await using var dbContext = GetDbContext();
         var call = await dbContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallState.Ended, call.Status);
-        Assert.Equal(CallEndReason.Failed, call.EndReason);
+        call.Status.Should().Be(CallState.Ended);
+        call.EndReason.Should().Be(CallEndReason.Failed);
     }
 
     private static string RoomFinished(Guid callId) =>

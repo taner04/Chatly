@@ -1,3 +1,6 @@
+using System.Globalization;
+using System.Web;
+
 namespace Chatly.WebApi.IntegrationTests.Tests.Features.Messages;
 
 public sealed class GetMessagesEndpointTests(TestingFixture fixture) : TestingBase(fixture)
@@ -21,11 +24,11 @@ public sealed class GetMessagesEndpointTests(TestingFixture fixture) : TestingBa
             2,
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, firstPage.StatusCode);
-        Assert.True(firstPage.Content.HasMore);
-        Assert.Equal(["second", "third"], firstPage.Content.Items.Select(message => message.Content));
-        Assert.False(secondPage.Content!.HasMore);
-        Assert.Equal("first", Assert.Single(secondPage.Content.Items).Content);
+        firstPage.StatusCode.Should().Be(HttpStatusCode.OK);
+        firstPage.Content.HasMore.Should().BeTrue();
+        firstPage.Content.Items.Select(message => message.Content).Should().Equal("second", "third");
+        secondPage.Content!.HasMore.Should().BeFalse();
+        secondPage.Content.Items.Should().ContainSingle().Subject.Content.Should().Be("first");
     }
 
     [Fact]
@@ -37,7 +40,7 @@ public sealed class GetMessagesEndpointTests(TestingFixture fixture) : TestingBa
 
         var response = await CreateAuthenticatedClient().GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -52,8 +55,31 @@ public sealed class GetMessagesEndpointTests(TestingFixture fixture) : TestingBa
         var response = await CreateAuthenticatedClient(friend)
             .GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
 
-        var message = Assert.Single(response.Content!.Items);
-        Assert.True(message.IsDeleted);
-        Assert.DoesNotContain("secret", message.Content);
+        var message = response.Content!.Items.Should().ContainSingle().Subject;
+        message.IsDeleted.Should().BeTrue();
+        message.Content.Should().NotContain("secret");
+    }
+
+    [Fact]
+    public async Task GetMessages_Should_ReturnStableLongLivedAttachmentUrl_When_LoadedRepeatedly()
+    {
+        var friend = await CreateUserAsync("friend");
+        var chatId = await CreateFriendshipAsync(CurrentUser, friend);
+        var client = CreateAuthenticatedClient();
+        await client.SendMessageWithFilesAsync(
+            chatId.Value,
+            "photo",
+            [CreateFile("photo.png", "image/png")],
+            CurrentCancellationToken);
+
+        var first = await client.GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
+        var second = await client.GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
+
+        var url = first.Content!.Items.Single().Attachments.Single().Url;
+        second.Content!.Items.Single().Attachments.Single().Url.Should().Be(url);
+        var expiresOn = DateTimeOffset.Parse(
+            HttpUtility.ParseQueryString(new Uri(url).Query)["se"]!,
+            CultureInfo.InvariantCulture);
+        expiresOn.Should().BeAfter(DateTimeOffset.UtcNow.AddHours(24));
     }
 }

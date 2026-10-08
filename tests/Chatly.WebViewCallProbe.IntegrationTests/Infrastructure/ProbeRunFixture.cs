@@ -11,13 +11,23 @@ public sealed class ProbeRunFixture
 
     private readonly Lazy<Task<IReadOnlyList<ProbeCheck>>> _checks;
     private readonly StringBuilder _output = new();
+    private readonly Lock _outputLock = new();
 
     public ProbeRunFixture()
     {
         _checks = new Lazy<Task<IReadOnlyList<ProbeCheck>>>(RunAsync);
     }
 
-    public string Output => _output.ToString();
+    public string Output
+    {
+        get
+        {
+            lock (_outputLock)
+            {
+                return _output.ToString();
+            }
+        }
+    }
 
     public string ReportPath { get; } = Path.Combine(
         AppContext.BaseDirectory,
@@ -75,7 +85,7 @@ public sealed class ProbeRunFixture
             return;
         }
 
-        lock (_output)
+        lock (_outputLock)
         {
             _output.AppendLine(line);
         }

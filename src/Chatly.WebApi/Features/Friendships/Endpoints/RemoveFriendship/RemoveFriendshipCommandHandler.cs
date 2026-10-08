@@ -1,4 +1,5 @@
 using Chatly.Contracts.Features.Friendships.Endpoints.RemoveFriendship;
+using Chatly.WebApi.Features.Calls.Services;
 using Chatly.WebApi.Features.FriendRequests.Enums;
 using Chatly.WebApi.Features.Friendships.Models;
 
@@ -7,11 +8,12 @@ namespace Chatly.WebApi.Features.Friendships.Endpoints.RemoveFriendship;
 internal sealed class RemoveFriendshipCommandHandler(
     CurrentUserService userService,
     ChatlyDbContext context,
+    CallService callService,
     NotificationPublisher notificationPublisher) : ICommandHandler<RemoveFriendshipCommand>
 {
     public async ValueTask<Unit> Handle(RemoveFriendshipCommand command, CancellationToken cancellationToken)
     {
-        var userId = userService.GetCurrentUserId();
+        var userId = userService.UserId;
 
         var userPair = UserPair.Create(userId, command.AssociatedUserId);
 
@@ -35,6 +37,7 @@ internal sealed class RemoveFriendshipCommandHandler(
         }
 
         await context.SaveChangesAsync(cancellationToken);
+        await callService.EndCallBetweenAsync(userId, command.AssociatedUserId, cancellationToken);
 
         await notificationPublisher.PublishAsync(
             command.AssociatedUserId,

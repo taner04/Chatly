@@ -4,6 +4,7 @@ using Avalonia.Markup.Xaml;
 using Chatly.Desktop.DependencyInjection;
 using Chatly.Desktop.Models.Settings;
 using Chatly.Desktop.Services.Startup;
+using Chatly.Desktop.Utilities;
 using Chatly.Desktop.Views;
 using Chatly.Desktop.Views.Windows;
 using Microsoft.Extensions.Configuration;
@@ -13,11 +14,11 @@ namespace Chatly.Desktop;
 
 public class App : Application
 {
+    private readonly AtomicFlag _shutdownStarted = new();
     private IClassicDesktopStyleApplicationLifetime? _desktop;
     private MainWindow? _mainWindow;
     private ServiceProvider? _services;
     private bool _shutdownCompleted;
-    private int _shutdownStarted;
 
     public override void Initialize()
     {
@@ -82,7 +83,7 @@ public class App : Application
 
     private async Task ShutdownAsync()
     {
-        if (Interlocked.Exchange(ref _shutdownStarted, 1) != 0)
+        if (!_shutdownStarted.TrySet())
         {
             return;
         }

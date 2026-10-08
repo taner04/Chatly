@@ -13,14 +13,14 @@ public sealed class RejectFriendRequestEndpointTests(TestingFixture fixture) : T
             CurrentCancellationToken);
         var client = CreateAuthenticatedClient();
         var pending = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        var requestId = Assert.Single(pending.Content!.Items).FriendRequestId;
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
 
         var response = await client.RejectFriendRequestAsync(requestId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         var remaining = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        Assert.Empty(remaining.Content!.Items);
+        remaining.Content!.Items.Should().BeEmpty();
         await using var dbContext = GetDbContext();
-        Assert.False(await dbContext.Friendships.AnyAsync(CurrentCancellationToken));
+        (await dbContext.Friendships.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 }

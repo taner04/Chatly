@@ -6,7 +6,7 @@ namespace Chatly.Desktop.Services.Api.Refit.Endpoints;
 
 public interface IMessageEndpoint
 {
-    [Get(ApiRoutes.Chats.Messages)]
+    [Get(ApiRoutes.Chats.ChatMessages)]
     Task<ApiResponse<GetMessagesResponse>> GetMessagesAsync(
         Guid chatId,
         [Query(Format = "O")] DateTimeOffset? beforeSentAt,

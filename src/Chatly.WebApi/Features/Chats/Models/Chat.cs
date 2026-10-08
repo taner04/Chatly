@@ -8,6 +8,7 @@ public readonly partial struct ChatId : IGuidEntityId<ChatId>
 
 public sealed class Chat : UserPairEntity<ChatId>
 {
+    [UsedImplicitly]
     private Chat()
     {
     }

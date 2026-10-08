@@ -8,6 +8,7 @@ public readonly partial struct FriendshipId : IGuidEntityId<FriendshipId>
 
 public sealed class Friendship : UserPairEntity<FriendshipId>
 {
+    [UsedImplicitly]
     private Friendship()
     {
     }

@@ -40,12 +40,24 @@ public abstract class ObservableCollectionState<TItem> : ObservableObject
     protected void SetItems(IEnumerable<TItem> items)
     {
         ArgumentNullException.ThrowIfNull(items);
-        var replacements = items.ToList();
-        ClearItems();
+        var replacements = items.DistinctBy(item => item.Id).ToList();
+        var replacementIds = replacements.Select(item => item.Id).ToHashSet();
 
-        foreach (var item in replacements)
+        foreach (var stale in _items.Where(item => !replacementIds.Contains(item.Id)).ToList())
         {
-            AddItem(item);
+            RemoveItem(stale);
+        }
+
+        for (var index = 0; index < replacements.Count; index++)
+        {
+            var id = replacements[index].Id;
+            AddItem(replacements[index]);
+
+            var currentIndex = _items.IndexOf(_items.First(item => item.Id == id));
+            if (currentIndex != index)
+            {
+                _items.Move(currentIndex, index);
+            }
         }
     }
 

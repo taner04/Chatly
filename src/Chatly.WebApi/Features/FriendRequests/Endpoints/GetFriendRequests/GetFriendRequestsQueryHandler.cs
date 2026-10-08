@@ -15,7 +15,7 @@ internal sealed class GetFriendRequestsQueryHandler(
         GetFriendRequestsQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
 
         var page = await context.FriendRequests
             .AsNoTracking()

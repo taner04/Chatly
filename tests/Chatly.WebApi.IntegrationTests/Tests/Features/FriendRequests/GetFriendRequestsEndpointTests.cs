@@ -17,9 +17,9 @@ public sealed class GetFriendRequestsEndpointTests(TestingFixture fixture) : Tes
 
         var response = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(incoming.Id.Value, Assert.Single(response.Content!.Items).SenderUserId);
-        Assert.Equal(1, response.Content.Pagination.TotalCount);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.Items.Should().ContainSingle().Subject.SenderUserId.Should().Be(incoming.Id.Value);
+        response.Content.Pagination.TotalCount.Should().Be(1);
     }
 
     [Fact]
@@ -35,9 +35,9 @@ public sealed class GetFriendRequestsEndpointTests(TestingFixture fixture) : Tes
 
         var response = await CreateAuthenticatedClient().GetFriendRequestsAsync(1, 2, CurrentCancellationToken);
 
-        Assert.Equal(2, response.Content!.Items.Count);
-        Assert.Equal(3, response.Content.Pagination.TotalCount);
-        Assert.Equal(2, response.Content.Pagination.NextPageIndex);
+        response.Content!.Items.Count.Should().Be(2);
+        response.Content.Pagination.TotalCount.Should().Be(3);
+        response.Content.Pagination.NextPageIndex.Should().Be(2);
     }
 
     [Theory]
@@ -49,6 +49,6 @@ public sealed class GetFriendRequestsEndpointTests(TestingFixture fixture) : Tes
         var response = await CreateAuthenticatedClient()
             .GetFriendRequestsAsync(pageIndex, pageSize, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 }

@@ -3,6 +3,7 @@
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
              xmlns:ic="using:FluentIcons.Avalonia"
              xmlns:calls="using:Chatly.Desktop.Models.Calls"
+             xmlns:deviceSessions="using:Chatly.Contracts.Features.DeviceSessions.Models"
              xmlns:viewModels="using:Chatly.Desktop.ViewModels.Pages"
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
              mc:Ignorable="d" d:DesignWidth="800" d:DesignHeight="450"
@@ -91,6 +92,9 @@
         </Style>
         <Style Selector="Border.settings-card-content.calls.expanded">
             <Setter Property="MaxHeight" Value="400" />
+        </Style>
+        <Style Selector="Border.settings-card-content.devices.expanded">
+            <Setter Property="MaxHeight" Value="520" />
         </Style>
         <Style Selector="Border.settings-card-content.about.expanded">
             <Setter Property="MaxHeight" Value="130" />
@@ -343,6 +347,122 @@
                                         <TextBlock Text="Refresh devices" VerticalAlignment="Center" />
                                     </StackPanel>
                                 </Button>
+                            </StackPanel>
+                        </Border>
+                    </StackPanel>
+                </Border>
+
+                <Border Classes="settings-card">
+                    <StackPanel>
+                        <ToggleButton x:Name="DevicesCardToggle"
+                                      Classes="settings-card-header">
+                            <Grid ColumnDefinitions="Auto,*,Auto" ColumnSpacing="12">
+                                <Border Classes="settings-card-icon">
+                                    <ic:SymbolIcon Symbol="Laptop"
+                                                   FontSize="18" />
+                                </Border>
+                                <StackPanel Grid.Column="1" VerticalAlignment="Center">
+                                    <TextBlock Text="Devices"
+                                               FontSize="16"
+                                               FontWeight="SemiBold"
+                                               Foreground="{DynamicResource ChatlyTextBrush}" />
+                                    <TextBlock Text="Devices that are signed in to your account"
+                                               Classes="settings-description" />
+                                </StackPanel>
+                                <ic:SymbolIcon Grid.Column="2"
+                                               Classes="settings-card-arrow"
+                                               Symbol="ChevronUp"
+                                               FontSize="18"
+                                               Foreground="{DynamicResource ChatlyMutedTextBrush}"
+                                               RenderTransformOrigin="50%,50%">
+                                    <ic:SymbolIcon.Transitions>
+                                        <Transitions>
+                                            <TransformOperationsTransition Property="RenderTransform"
+                                                                           Duration="0:0:0.18" />
+                                        </Transitions>
+                                    </ic:SymbolIcon.Transitions>
+                                </ic:SymbolIcon>
+                            </Grid>
+                        </ToggleButton>
+
+                        <Border Padding="18,4,18,18"
+                                Classes="settings-card-content devices"
+                                Classes.expanded="{Binding IsChecked, ElementName=DevicesCardToggle}">
+                            <StackPanel Spacing="14">
+                                <Separator Background="{DynamicResource ChatlyBorderBrush}" />
+                                <ScrollViewer MaxHeight="360"
+                                              HorizontalScrollBarVisibility="Disabled"
+                                              VerticalScrollBarVisibility="Auto">
+                                    <ItemsControl ItemsSource="{Binding DeviceSessions}">
+                                        <ItemsControl.ItemsPanel>
+                                            <ItemsPanelTemplate>
+                                                <StackPanel Spacing="14" />
+                                            </ItemsPanelTemplate>
+                                        </ItemsControl.ItemsPanel>
+                                        <ItemsControl.ItemTemplate>
+                                            <DataTemplate x:DataType="deviceSessions:DeviceSessionContract">
+                                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                                                    <StackPanel VerticalAlignment="Center" Spacing="2">
+                                                        <StackPanel Orientation="Horizontal" Spacing="8">
+                                                            <TextBlock Text="{Binding DeviceName}"
+                                                                       Classes="settings-label"
+                                                                       TextTrimming="CharacterEllipsis" />
+                                                            <Border IsVisible="{Binding IsCurrent}"
+                                                                    Background="{DynamicResource ChatlyHoverBrush}"
+                                                                    BorderBrush="{DynamicResource ChatlyBorderBrush}"
+                                                                    BorderThickness="1"
+                                                                    CornerRadius="6"
+                                                                    Padding="6,1"
+                                                                    VerticalAlignment="Center">
+                                                                <TextBlock Text="This device"
+                                                                           Classes="settings-description" />
+                                                            </Border>
+                                                        </StackPanel>
+                                                        <TextBlock Classes="settings-description">
+                                                            <TextBlock.Text>
+                                                                <MultiBinding
+                                                                    StringFormat="{}{0} · Version {1} · Last active {2:g}">
+                                                                    <Binding Path="Platform" />
+                                                                    <Binding Path="AppVersion" />
+                                                                    <Binding Path="LastSeenAt" />
+                                                                </MultiBinding>
+                                                            </TextBlock.Text>
+                                                        </TextBlock>
+                                                    </StackPanel>
+                                                    <Button Grid.Column="1"
+                                                            Classes="fluent-button"
+                                                            Padding="12,6"
+                                                            VerticalAlignment="Center"
+                                                            IsVisible="{Binding !IsCurrent}"
+                                                            Command="{Binding $parent[UserControl].((viewModels:SettingsPageViewModel)DataContext).RevokeDeviceSessionCommand}"
+                                                            CommandParameter="{Binding}">
+                                                        <TextBlock Text="Sign out" VerticalAlignment="Center" />
+                                                    </Button>
+                                                </Grid>
+                                            </DataTemplate>
+                                        </ItemsControl.ItemTemplate>
+                                    </ItemsControl>
+                                </ScrollViewer>
+                                <StackPanel Orientation="Horizontal" Spacing="10">
+                                    <Button Classes="fluent-button"
+                                            Padding="14,7"
+                                            Command="{Binding RefreshDeviceSessionsCommand}"
+                                            IsEnabled="{Binding !IsLoadingDeviceSessions}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <ic:SymbolIcon Symbol="ArrowClockwise" FontSize="16" />
+                                            <TextBlock Text="Refresh" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                    <Button Classes="fluent-button"
+                                            Padding="14,7"
+                                            Command="{Binding RevokeOtherDeviceSessionsCommand}"
+                                            IsVisible="{Binding HasOtherDeviceSessions}">
+                                        <StackPanel Orientation="Horizontal" Spacing="6">
+                                            <ic:SymbolIcon Symbol="SignOut" FontSize="16" />
+                                            <TextBlock Text="Sign out all other devices" VerticalAlignment="Center" />
+                                        </StackPanel>
+                                    </Button>
+                                </StackPanel>
                             </StackPanel>
                         </Border>
                     </StackPanel>

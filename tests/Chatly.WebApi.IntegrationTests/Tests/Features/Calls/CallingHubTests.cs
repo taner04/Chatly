@@ -13,9 +13,10 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         var stranger = await CreateUserAsync("stranger");
         await using var caller = await ConnectCallHubAsync();
 
-        var exception = await Assert.ThrowsAsync<HubException>(() => caller.StartCallAsync(stranger.Id.Value));
+        var exception = (await caller.Awaiting(client => client.StartCallAsync(stranger.Id.Value))
+            .Should().ThrowExactlyAsync<HubException>()).Which;
 
-        Assert.Contains("friends", exception.Message);
+        exception.Message.Should().Contain("friends");
     }
 
     [Fact]
@@ -34,19 +35,19 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await caller.EndCallAsync(started.CallId);
         var ended = await receiver.ReceiveAsync<CallEndedNotification>();
 
-        Assert.Equal(CallState.Ringing, started.State);
-        Assert.Equal(started.CallId, incoming.CallId);
-        Assert.Equal(CurrentUser.Id.Value, incoming.RemoteUserId);
-        Assert.Equal(CallState.Active, accepted.State);
-        Assert.NotNull(accepted.AcceptedAt);
-        Assert.Equal(accepted.AcceptedAt, acceptedNotification.AcceptedAt);
-        Assert.False(string.IsNullOrWhiteSpace(media.Token));
-        Assert.Equal(CallEndReason.Completed, ended.Reason);
+        started.State.Should().Be(CallState.Ringing);
+        incoming.CallId.Should().Be(started.CallId);
+        incoming.RemoteUserId.Should().Be(CurrentUser.Id.Value);
+        accepted.State.Should().Be(CallState.Active);
+        accepted.AcceptedAt.Should().NotBeNull();
+        acceptedNotification.AcceptedAt.Should().Be(accepted.AcceptedAt);
+        string.IsNullOrWhiteSpace(media.Token).Should().BeFalse();
+        ended.Reason.Should().Be(CallEndReason.Completed);
 
         await using var dbContext = GetDbContext();
         var call = await dbContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallState.Ended, call.Status);
-        Assert.False(await dbContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken));
+        call.Status.Should().Be(CallState.Ended);
+        (await dbContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 
     [Fact]
@@ -60,9 +61,10 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await using var otherCaller = await ConnectCallHubAsync(otherFriend);
         await caller.StartCallAsync(friend.Id.Value);
 
-        var exception = await Assert.ThrowsAsync<HubException>(() => otherCaller.StartCallAsync(friend.Id.Value));
+        var exception = (await otherCaller.Awaiting(client => client.StartCallAsync(friend.Id.Value))
+            .Should().ThrowExactlyAsync<HubException>()).Which;
 
-        Assert.Contains("already in a call", exception.Message);
+        exception.Message.Should().Contain("already in a call");
     }
 
     [Fact]
@@ -73,7 +75,8 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await using var caller = await ConnectCallHubAsync();
         var started = await caller.StartCallAsync(friend.Id.Value);
 
-        await Assert.ThrowsAsync<HubException>(() => caller.JoinMediaAsync(started.CallId));
+        await caller.Awaiting(client => client.JoinMediaAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
     }
 
     [Fact]
@@ -88,8 +91,8 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await receiver.RejectCallAsync(started.CallId);
         var rejected = await caller.ReceiveAsync<CallRejectedNotification>();
 
-        Assert.Equal(CallEndReason.Declined, rejected.Reason);
-        Assert.Null(await caller.GetCurrentCallAsync());
+        rejected.Reason.Should().Be(CallEndReason.Declined);
+        (await caller.GetCurrentCallAsync()).Should().BeNull();
     }
 
     [Fact]
@@ -104,7 +107,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await caller.EndCallAsync(started.CallId);
         var ended = await receiver.ReceiveAsync<CallEndedNotification>();
 
-        Assert.Equal(CallEndReason.Cancelled, ended.Reason);
+        ended.Reason.Should().Be(CallEndReason.Cancelled);
     }
 
     [Fact]
@@ -123,8 +126,8 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
             await receiverLaptop.ReceiveAsync<CallStateChangedNotification>(notification =>
                 notification.State == CallState.Active);
 
-        Assert.Equal(started.CallId, changed.CallId);
-        Assert.NotNull(changed.AcceptedAt);
+        changed.CallId.Should().Be(started.CallId);
+        changed.AcceptedAt.Should().NotBeNull();
     }
 
     [Fact]
@@ -140,11 +143,11 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         var callerView = await caller.GetCurrentCallAsync();
         var receiverView = await receiver.GetCurrentCallAsync();
 
-        Assert.Equal(CallRole.Caller, callerView!.Role);
-        Assert.Equal(friend.Id.Value, callerView.RemoteUserId);
-        Assert.Equal(CallRole.Receiver, receiverView!.Role);
-        Assert.Equal(CallState.Active, receiverView.State);
-        Assert.Equal(callerView.AcceptedAt, receiverView.AcceptedAt);
+        callerView!.Role.Should().Be(CallRole.Caller);
+        callerView.RemoteUserId.Should().Be(friend.Id.Value);
+        receiverView!.Role.Should().Be(CallRole.Receiver);
+        receiverView.State.Should().Be(CallState.Active);
+        receiverView.AcceptedAt.Should().Be(callerView.AcceptedAt);
     }
 
     [Fact]
@@ -152,9 +155,10 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
     {
         await using var caller = await ConnectCallHubAsync();
 
-        var exception = await Assert.ThrowsAsync<HubException>(() => caller.StartCallAsync(CurrentUser.Id.Value));
+        var exception = (await caller.Awaiting(client => client.StartCallAsync(CurrentUser.Id.Value))
+            .Should().ThrowExactlyAsync<HubException>()).Which;
 
-        Assert.Contains("themselves", exception.Message);
+        exception.Message.Should().Contain("themselves");
     }
 
     [Fact]
@@ -165,7 +169,8 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await using var caller = await ConnectCallHubAsync();
         var started = await caller.StartCallAsync(friend.Id.Value);
 
-        await Assert.ThrowsAsync<HubException>(() => caller.AcceptCallAsync(started.CallId));
+        await caller.Awaiting(client => client.AcceptCallAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
 
         await AssertStoredCallAsync(CallState.Ringing, null);
     }
@@ -178,7 +183,8 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await using var caller = await ConnectCallHubAsync();
         var started = await caller.StartCallAsync(friend.Id.Value);
 
-        await Assert.ThrowsAsync<HubException>(() => caller.RejectCallAsync(started.CallId));
+        await caller.Awaiting(client => client.RejectCallAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
 
         await AssertStoredCallAsync(CallState.Ringing, null);
     }
@@ -196,7 +202,7 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await receiver.EndCallAsync(started.CallId);
         var ended = await caller.ReceiveAsync<CallEndedNotification>();
 
-        Assert.Equal(CallEndReason.Completed, ended.Reason);
+        ended.Reason.Should().Be(CallEndReason.Completed);
         await AssertStoredCallAsync(CallState.Ended, CallEndReason.Completed);
     }
 
@@ -212,10 +218,11 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await caller.EndCallAsync(started.CallId);
         var endedAt = await GetStoredEndedAtAsync();
 
-        await Assert.ThrowsAsync<HubException>(() => receiver.EndCallAsync(started.CallId));
+        await receiver.Awaiting(client => client.EndCallAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
 
         await AssertStoredCallAsync(CallState.Ended, CallEndReason.Completed);
-        Assert.Equal(endedAt, await GetStoredEndedAtAsync());
+        (await GetStoredEndedAtAsync()).Should().Be(endedAt);
     }
 
     [Fact]
@@ -230,8 +237,10 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         var started = await caller.StartCallAsync(friend.Id.Value);
         await receiver.AcceptCallAsync(started.CallId);
 
-        await Assert.ThrowsAsync<HubException>(() => intruder.EndCallAsync(started.CallId));
-        await Assert.ThrowsAsync<HubException>(() => intruder.JoinMediaAsync(started.CallId));
+        await intruder.Awaiting(client => client.EndCallAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
+        await intruder.Awaiting(client => client.JoinMediaAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
 
         await AssertStoredCallAsync(CallState.Active, null);
     }
@@ -247,15 +256,16 @@ public sealed class CallingHubTests(TestingFixture fixture) : TestingBase(fixtur
         await receiver.AcceptCallAsync(started.CallId);
         await caller.EndCallAsync(started.CallId);
 
-        await Assert.ThrowsAsync<HubException>(() => receiver.JoinMediaAsync(started.CallId));
+        await receiver.Awaiting(client => client.JoinMediaAsync(started.CallId))
+            .Should().ThrowExactlyAsync<HubException>();
     }
 
     private async Task AssertStoredCallAsync(CallState status, CallEndReason? reason)
     {
         await using var dbContext = GetDbContext();
         var call = await dbContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(status, call.Status);
-        Assert.Equal(reason, call.EndReason);
+        call.Status.Should().Be(status);
+        call.EndReason.Should().Be(reason);
     }
 
     private async Task<DateTimeOffset?> GetStoredEndedAtAsync()

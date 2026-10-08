@@ -1,14 +1,15 @@
 using Chatly.WebApi.Common.Infrastructure.Email;
+using Chatly.WebApi.Features.Users.Exceptions;
 using Chatly.WebApi.Features.Users.Services;
 using Chatly.WebApi.Features.Users.Services.ProfilePictures;
 
 namespace Chatly.WebApi.Features.Users.Endpoints.CompleteOnboarding;
 
-internal sealed class CompleteOnboardingCommandHandler(
+internal sealed partial class CompleteOnboardingCommandHandler(
     IEmailService emailService,
     UserService userService,
     ProfilePictureService profilePictureService,
-    ChatlyDbContext context)
+    ILogger<CompleteOnboardingCommandHandler> logger)
     : ICommandHandler<CompleteOnboardingCommand, CurrentUserResponse>
 {
     public async ValueTask<CurrentUserResponse> Handle(
@@ -16,6 +17,11 @@ internal sealed class CompleteOnboardingCommandHandler(
         CancellationToken cancellationToken)
     {
         var user = await userService.GetCurrentUserAsync(cancellationToken);
+        if (user.OnboardingCompleted)
+        {
+            throw new OnboardingAlreadyCompletedException();
+        }
+
         await userService.UpdateUsernameAsync(
             user,
             command.NewUsername,
@@ -39,7 +45,7 @@ internal sealed class CompleteOnboardingCommandHandler(
 
         try
         {
-            await context.SaveChangesAsync(cancellationToken);
+            await userService.SaveAsync(user, cancellationToken);
         }
         catch
         {
@@ -61,8 +67,18 @@ internal sealed class CompleteOnboardingCommandHandler(
                 EmailTemplateKeys.Welcome)
             .AddValue("Username", user.Username!);
 
-        await emailService.SendEmailAsync(user.Email, emailRequest, cancellationToken);
+        try
+        {
+            await emailService.SendEmailAsync(user.Email, emailRequest, cancellationToken);
+        }
+        catch (Exception exception) when (!cancellationToken.IsCancellationRequested)
+        {
+            LogWelcomeEmailFailed(exception);
+        }
 
         return userService.CreateResponse(user);
     }
+
+    [LoggerMessage(LogLevel.Warning, "The welcome email could not be sent.")]
+    private partial void LogWelcomeEmailFailed(Exception exception);
 }

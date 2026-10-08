@@ -10,15 +10,13 @@ internal sealed class SetReactionEndpoint : IEndpoint
         app.MapPut(
                 ApiRoutes.Messages.Reaction,
                 async (
-                    [FromRoute] Guid messageId,
-                    [FromBody] SetReactionRequest request,
-                    [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(
+                        [FromRoute] Guid messageId,
+                        [FromBody] SetReactionRequest request,
+                        [FromServices] IMediator mediator,
+                        CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(
                         new SetReactionCommand(MessageId.From(messageId), request.ReactionType),
-                        cancellationToken));
-                })
+                        cancellationToken)))
             .WithName("SetReaction")
             .WithTags("Reactions")
             .RequireAuthorization()

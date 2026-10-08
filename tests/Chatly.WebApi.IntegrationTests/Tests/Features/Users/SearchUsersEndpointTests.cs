@@ -13,11 +13,11 @@ public sealed class SearchUsersEndpointTests(TestingFixture fixture) : TestingBa
 
         var response = await CreateAuthenticatedClient().SearchUsersAsync("alice", 1, 10, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("Alice_Test", Assert.Single(response.Content!.Items).Username);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.Items.Should().ContainSingle().Subject.Username.Should().Be("Alice_Test");
 
         var self = await CreateAuthenticatedClient().SearchUsersAsync("current", 1, 10, CurrentCancellationToken);
-        Assert.Empty(self.Content!.Items);
+        self.Content!.Items.Should().BeEmpty();
     }
 
     [Fact]
@@ -37,10 +37,10 @@ public sealed class SearchUsersEndpointTests(TestingFixture fixture) : TestingBa
         var response = await client.SearchUsersAsync("match", 1, 10, CurrentCancellationToken);
 
         var statuses = response.Content!.Items.ToDictionary(user => user.Username, user => user.RelationshipStatus);
-        Assert.Equal(UserRelationshipStatus.Friends, statuses["match_friend"]);
-        Assert.Equal(UserRelationshipStatus.OutgoingFriendRequest, statuses["match_outgoing"]);
-        Assert.Equal(UserRelationshipStatus.IncomingFriendRequest, statuses["match_incoming"]);
-        Assert.Equal(UserRelationshipStatus.None, statuses["match_none"]);
+        statuses["match_friend"].Should().Be(UserRelationshipStatus.Friends);
+        statuses["match_outgoing"].Should().Be(UserRelationshipStatus.OutgoingFriendRequest);
+        statuses["match_incoming"].Should().Be(UserRelationshipStatus.IncomingFriendRequest);
+        statuses["match_none"].Should().Be(UserRelationshipStatus.None);
     }
 
     [Theory]
@@ -53,8 +53,8 @@ public sealed class SearchUsersEndpointTests(TestingFixture fixture) : TestingBa
 
         var response = await CreateAuthenticatedClient().SearchUsersAsync(search, 1, 10, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
         var expected = search == "_" ? ["under_score"] : Array.Empty<string>();
-        Assert.Equal(expected, response.Content!.Items.Select(user => user.Username));
+        response.Content!.Items.Select(user => user.Username).Should().Equal(expected);
     }
 }

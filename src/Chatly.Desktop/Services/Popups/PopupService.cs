@@ -8,14 +8,24 @@ internal sealed class PopupService(
     IServiceProvider serviceProvider,
     PopupOverlayHostViewModel popupHost) : IPopupService
 {
-    public async Task ShowAsync<TViewModel>() where TViewModel : IPopupViewModel
+    public Task ShowAsync(Type popupViewModelType, CancellationToken cancellationToken = default)
     {
+        popupViewModelType.ThrowIfNotAssignableTo<IPopupViewModel>();
+
+        return popupHost.Current is null
+            ? ShowAsync((IPopupViewModel)serviceProvider.GetRequiredService(popupViewModelType), cancellationToken)
+            : Task.CompletedTask;
+    }
+
+    public async Task ShowAsync(IPopupViewModel popup, CancellationToken cancellationToken = default)
+    {
+        ArgumentNullException.ThrowIfNull(popup);
+
         if (popupHost.Current is not null)
         {
             return;
         }
 
-        var popup = serviceProvider.GetRequiredService<TViewModel>();
         popupHost.Current = popup;
 
         try

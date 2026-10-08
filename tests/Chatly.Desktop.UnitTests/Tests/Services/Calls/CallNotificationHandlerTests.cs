@@ -3,11 +3,12 @@ using Chatly.Contracts.Features.Hubs.Abstraction;
 using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
 using Chatly.Desktop.Services.Api.Hubs.CallHub.CallHandlers;
 using Chatly.Desktop.Services.Calls;
+using Chatly.Desktop.UnitTests.Infrastructure;
 using Chatly.Desktop.UnitTests.Tests.Services.Calls.TestDoubles;
 
 namespace Chatly.Desktop.UnitTests.Tests.Services.Calls;
 
-public sealed class CallNotificationHandlerTests
+public sealed class CallNotificationHandlerTests : TestBase
 {
     private static readonly DateTimeOffset AcceptedAt = new(2026, 9, 25, 12, 0, 0, TimeSpan.Zero);
 
@@ -72,7 +73,7 @@ public sealed class CallNotificationHandlerTests
     public async Task CallRejected_Should_TearDownAndStopRinging_When_ReceiverDeclines()
     {
         _session.SetCall(new CallInfo(_callId, _remoteUserId, "receiver", CallRole.Caller, CallState.Ringing, null));
-        await _session.RunAsync(() => _session.StartOutgoingToneAsync(), TestContext.Current.CancellationToken);
+        await _session.RunAsync(() => _session.StartOutgoingToneAsync(), CurrentCancellationToken);
 
         await new CallRejectedNotificationHandler(_session).HandleAsync(new CallRejectedNotification(
             _callId,
@@ -90,7 +91,7 @@ public sealed class CallNotificationHandlerTests
     public async Task CallAccepted_Should_StopRingingAndJoinMedia_When_CallerIsNotified()
     {
         _session.SetCall(new CallInfo(_callId, _remoteUserId, "receiver", CallRole.Caller, CallState.Ringing, null));
-        await _session.RunAsync(() => _session.StartOutgoingToneAsync(), TestContext.Current.CancellationToken);
+        await _session.RunAsync(() => _session.StartOutgoingToneAsync(), CurrentCancellationToken);
 
         await new CallAcceptedNotificationHandler(_session).HandleAsync(Accepted(_callId));
 

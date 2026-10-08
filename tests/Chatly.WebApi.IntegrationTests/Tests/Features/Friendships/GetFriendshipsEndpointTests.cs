@@ -11,12 +11,12 @@ public sealed class GetFriendshipsEndpointTests(TestingFixture fixture) : Testin
 
         var response = await CreateAuthenticatedClient().GetFriendshipsAsync(CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        var friendship = Assert.Single(response.Content!);
-        Assert.Equal(friend.Id.Value, friendship.FriendUserId);
-        Assert.Equal(friend.Username, friendship.FriendUsername);
-        Assert.Equal(chatId.Value, friendship.DirectChatId);
-        Assert.False(friendship.IsOnline);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        var friendship = response.Content!.Should().ContainSingle().Subject;
+        friendship.FriendUserId.Should().Be(friend.Id.Value);
+        friendship.FriendUsername.Should().Be(friend.Username);
+        friendship.DirectChatId.Should().Be(chatId.Value);
+        friendship.IsOnline.Should().BeFalse();
     }
 
     [Fact]
@@ -34,6 +34,6 @@ public sealed class GetFriendshipsEndpointTests(TestingFixture fixture) : Testin
             return response.Content?.SingleOrDefault(friendship => friendship.IsOnline);
         });
 
-        Assert.NotNull(onlineFriend);
+        onlineFriend.Should().NotBeNull();
     }
 }

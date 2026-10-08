@@ -9,19 +9,17 @@ internal sealed class SendMessageEndpoint : IEndpoint
         app.MapPost(
                 ApiRoutes.Messages.Collection,
                 async (
-                    [FromForm] Guid chatId,
-                    [FromForm] string? content,
-                    [FromForm] IFormFileCollection? files,
-                    [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(
+                        [FromForm] Guid chatId,
+                        [FromForm] string? content,
+                        [FromForm] IFormFileCollection? files,
+                        [FromServices] IMediator mediator,
+                        CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(
                         new SendMessageCommand(
                             ChatId.From(chatId),
                             content,
                             files?.ToArray() ?? []),
-                        cancellationToken));
-                })
+                        cancellationToken)))
             .WithName("SendMessage")
             .WithTags("Messages")
             .RequireAuthorization()

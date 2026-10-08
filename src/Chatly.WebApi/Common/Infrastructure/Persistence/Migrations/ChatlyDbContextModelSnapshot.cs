@@ -202,6 +202,67 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.ToTable("ChatReadStates", (string)null);
                 });
 
+            modelBuilder.Entity("Chatly.WebApi.Features.DeviceSessions.Models.DeviceSession", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("AppVersion")
+                        .IsRequired()
+                        .HasMaxLength(32)
+                        .HasColumnType("character varying(32)");
+
+                    b.Property<DateTimeOffset>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("DeviceId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("DeviceName")
+                        .IsRequired()
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<string>("IdentitySessionId")
+                        .HasMaxLength(128)
+                        .HasColumnType("character varying(128)");
+
+                    b.Property<DateTimeOffset>("LastSeenAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("Platform")
+                        .IsRequired()
+                        .HasMaxLength(64)
+                        .HasColumnType("character varying(64)");
+
+                    b.Property<DateTimeOffset?>("RevokedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<DateTimeOffset?>("UpdatedAt")
+                        .HasColumnType("timestamp with time zone");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
+
+                    b.Property<Guid>("UserId")
+                        .HasColumnType("uuid");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("IdentitySessionId");
+
+                    b.HasIndex("UserId", "DeviceId")
+                        .IsUnique();
+
+                    b.ToTable("DeviceSessions", (string)null);
+                });
+
             modelBuilder.Entity("Chatly.WebApi.Features.FriendRequests.Models.FriendRequest", b =>
                 {
                     b.Property<Guid>("Id")
@@ -479,11 +540,6 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                     b.Property<Guid>("Id")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Auth0Id")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("character varying(256)");
-
                     b.Property<DateTimeOffset>("CreatedAt")
                         .HasColumnType("timestamp with time zone");
 
@@ -496,6 +552,11 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .IsRequired()
                         .HasMaxLength(320)
                         .HasColumnType("citext");
+
+                    b.Property<string>("IdentityId")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("character varying(256)");
 
                     b.Property<DateTimeOffset?>("LastAbsenceEmailAt")
                         .HasColumnType("timestamp with time zone");
@@ -522,10 +583,10 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Auth0Id")
+                    b.HasIndex("Email")
                         .IsUnique();
 
-                    b.HasIndex("Email")
+                    b.HasIndex("IdentityId")
                         .IsUnique();
 
                     b.HasIndex("ProfilePictureFileId")
@@ -603,6 +664,15 @@ namespace Chatly.WebApi.Common.Infrastructure.Persistence.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
+                    b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
+                        .WithMany()
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("Chatly.WebApi.Features.DeviceSessions.Models.DeviceSession", b =>
+                {
                     b.HasOne("Chatly.WebApi.Features.Users.Models.User", null)
                         .WithMany()
                         .HasForeignKey("UserId")

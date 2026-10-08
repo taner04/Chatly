@@ -10,6 +10,7 @@ public readonly partial struct MessageAttachmentId : IGuidEntityId<MessageAttach
 
 public sealed class MessageAttachment : Entity<MessageAttachmentId>
 {
+    [UsedImplicitly]
     private MessageAttachment()
     {
     }

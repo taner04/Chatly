@@ -1,5 +1,6 @@
 using Chatly.Contracts.Common.Pagination;
 using Chatly.Contracts.Features.Chats.Endpoints.GetChats;
+using Chatly.Contracts.Features.DeviceSessions.Models;
 using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 using Chatly.Contracts.Features.FriendRequests.Models;
 using Chatly.Contracts.Features.Friendships.Models;
@@ -7,7 +8,6 @@ using Chatly.Contracts.Features.Messages.Endpoints.GetMessages;
 using Chatly.Contracts.Features.Messages.Models;
 using Chatly.Contracts.Features.Reactions.Endpoints.SetReaction;
 using Chatly.Contracts.Features.Reactions.Models;
-using Chatly.Contracts.Features.StoredFiles.Endpoints.UploadAttachment;
 using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUser;
 using Chatly.Contracts.Features.Users.Endpoints.GetCurrentUserProfilePicture;
 using Chatly.Contracts.Features.Users.Endpoints.SearchUsers;
@@ -73,6 +73,19 @@ public interface IChatlyApiClient
         Guid friendRequestId,
         CancellationToken cancellationToken);
 
+    [Get(ApiRoutes.Users.Sessions)]
+    Task<IApiResponse<IReadOnlyList<DeviceSessionContract>>> GetDeviceSessionsAsync(
+        CancellationToken cancellationToken);
+
+    [Delete(ApiRoutes.Users.SessionById)]
+    Task<IApiResponse> RevokeDeviceSessionAsync(Guid sessionId, CancellationToken cancellationToken);
+
+    [Delete(ApiRoutes.Users.Sessions)]
+    Task<IApiResponse> RevokeOtherDeviceSessionsAsync(CancellationToken cancellationToken);
+
+    [Delete(ApiRoutes.Users.CurrentSession)]
+    Task<IApiResponse> RevokeCurrentDeviceSessionAsync(CancellationToken cancellationToken);
+
     [Get(ApiRoutes.Friendships.Collection)]
     Task<IApiResponse<IReadOnlyList<FriendshipContract>>> GetFriendshipsAsync(CancellationToken cancellationToken);
 
@@ -85,7 +98,7 @@ public interface IChatlyApiClient
     [Put(ApiRoutes.Chats.Read)]
     Task<IApiResponse> MarkChatReadAsync(Guid chatId, CancellationToken cancellationToken);
 
-    [Get(ApiRoutes.Chats.Messages)]
+    [Get(ApiRoutes.Chats.ChatMessages)]
     Task<IApiResponse<GetMessagesResponse>> GetMessagesAsync(
         Guid chatId,
         [AliasAs("pageSize")] int pageSize,
@@ -106,7 +119,7 @@ public interface IChatlyApiClient
         [AliasAs("files")] IEnumerable<StreamPart> files,
         CancellationToken cancellationToken);
 
-    [Get(ApiRoutes.Chats.Messages)]
+    [Get(ApiRoutes.Chats.ChatMessages)]
     Task<IApiResponse<GetMessagesResponse>> GetMessagesBeforeAsync(
         Guid chatId,
         [AliasAs("beforeSentAt")] [Query(Format = "O")]
@@ -114,15 +127,6 @@ public interface IChatlyApiClient
         [AliasAs("beforeMessageId")] Guid beforeMessageId,
         [AliasAs("pageSize")] int pageSize,
         CancellationToken cancellationToken);
-
-    [Multipart]
-    [Post(ApiRoutes.Attachments.Collection)]
-    Task<IApiResponse<UploadAttachmentResponse>> UploadAttachmentAsync(
-        [AliasAs("file")] StreamPart file,
-        CancellationToken cancellationToken);
-
-    [Delete(ApiRoutes.Attachments.ById)]
-    Task<IApiResponse> RemoveAttachmentAsync(Guid attachmentId, CancellationToken cancellationToken);
 
     [Delete(ApiRoutes.Messages.ById)]
     Task<IApiResponse> RemoveMessageAsync(Guid messageId, CancellationToken cancellationToken);

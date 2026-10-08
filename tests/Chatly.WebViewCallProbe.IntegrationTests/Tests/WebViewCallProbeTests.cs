@@ -24,8 +24,8 @@ public sealed class WebViewCallProbeTests(ProbeRunFixture probe) : IClassFixture
         var checks = await probe.GetChecksAsync();
         var check = checks.SingleOrDefault(candidate => candidate.Name == name);
 
-        Assert.True(check is not null, $"'{name}' was not reported by the probe.{Environment.NewLine}{probe.Output}");
-        Assert.True(check.Passed, $"{name}: {check.Detail}");
+        check.Should().NotBeNull($"'{name}' was not reported by the probe.{Environment.NewLine}{probe.Output}");
+        check.Passed.Should().BeTrue($"{name}: {check.Detail}");
     }
 
     [Fact(Explicit = true)]
@@ -35,6 +35,6 @@ public sealed class WebViewCallProbeTests(ProbeRunFixture probe) : IClassFixture
 
         var checks = await probe.GetChecksAsync();
 
-        Assert.All(checks, check => Assert.Contains(check.Name, known));
+        checks.Should().AllSatisfy(check => known.Should().Contain(check.Name));
     }
 }

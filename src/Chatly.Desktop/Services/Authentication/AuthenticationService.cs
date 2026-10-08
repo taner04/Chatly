@@ -10,31 +10,53 @@ namespace Chatly.Desktop.Services.Authentication;
 [SingletonService]
 public sealed partial class AuthenticationService
 {
+    private static readonly TimeSpan AccessTokenRefreshMargin = TimeSpan.FromMinutes(1);
+
     private readonly OidcClient _client;
     private readonly ILogger<AuthenticationService> _logger;
     private readonly SemaphoreSlim _operationLock = new(1, 1);
-    private readonly Auth0Option _options;
+    private readonly OidcOption _options;
     private readonly ISecureTokenStore _secureTokenStore;
+    private readonly UserSessionContext _sessionContext;
+    private string? _accessToken;
+    private DateTimeOffset _accessTokenExpiration;
     private string? _identityToken;
 
     public AuthenticationService(
-        IOptions<Auth0Option> auth0Options,
+        IOptions<OidcOption> oidcOptions,
         ISecureTokenStore secureTokenStore,
+        UserSessionContext sessionContext,
         IBrowser browser,
         ILogger<AuthenticationService> logger)
+        : this(
+            oidcOptions.Value,
+            new OidcClient(new OidcClientOptions
+            {
+                Authority = oidcOptions.Value.Authority,
+                ClientId = oidcOptions.Value.ClientId,
+                Scope = oidcOptions.Value.Scope,
+                RedirectUri = oidcOptions.Value.RedirectUri,
+                PostLogoutRedirectUri = oidcOptions.Value.RedirectUri,
+                Browser = browser
+            }),
+            secureTokenStore,
+            sessionContext,
+            logger)
     {
-        _options = auth0Options.Value;
+    }
+
+    internal AuthenticationService(
+        OidcOption options,
+        OidcClient client,
+        ISecureTokenStore secureTokenStore,
+        UserSessionContext sessionContext,
+        ILogger<AuthenticationService> logger)
+    {
+        _options = options;
+        _client = client;
         _secureTokenStore = secureTokenStore;
+        _sessionContext = sessionContext;
         _logger = logger;
-        _client = new OidcClient(new OidcClientOptions
-        {
-            Authority = $"https://{_options.Domain}",
-            ClientId = _options.ClientId,
-            Scope = _options.Scope,
-            RedirectUri = _options.RedirectUri,
-            PostLogoutRedirectUri = _options.RedirectUri,
-            Browser = browser
-        });
     }
 
     internal async Task<string> AuthenticateAsync(CancellationToken cancellationToken)
@@ -47,6 +69,42 @@ public sealed partial class AuthenticationService
         finally
         {
             _operationLock.Release();
+        }
+    }
+
+    internal async Task<string?> GetAccessTokenAsync(CancellationToken cancellationToken)
+    {
+        if (IsAccessTokenValid())
+        {
+            return _accessToken;
+        }
+
+        var sessionEnded = false;
+        await _operationLock.WaitAsync(cancellationToken);
+        try
+        {
+            if (_accessToken is null || IsAccessTokenValid())
+            {
+                return _accessToken;
+            }
+
+            var refreshToken = await _secureTokenStore.TryReadRefreshTokenAsync(cancellationToken);
+            var accessToken = refreshToken is null ? null : await TryRefreshAsync(refreshToken, cancellationToken);
+            if (accessToken is null)
+            {
+                ClearTokens();
+                sessionEnded = true;
+            }
+
+            return accessToken;
+        }
+        finally
+        {
+            _operationLock.Release();
+            if (sessionEnded)
+            {
+                _sessionContext.NotifyDeviceSessionRevoked();
+            }
         }
     }
 
@@ -102,18 +160,30 @@ public sealed partial class AuthenticationService
         }
         finally
         {
-            _identityToken = null;
+            ClearTokens();
             await _secureTokenStore.DeleteRefreshTokenAsync(CancellationToken.None);
         }
     }
 
+    private bool IsAccessTokenValid() =>
+        _accessToken is not null && DateTimeOffset.UtcNow < _accessTokenExpiration - AccessTokenRefreshMargin;
+
+    private void SetAccessToken(string accessToken, DateTimeOffset expiration)
+    {
+        _accessToken = accessToken;
+        _accessTokenExpiration = expiration;
+    }
+
+    private void ClearTokens()
+    {
+        _identityToken = null;
+        _accessToken = null;
+        _accessTokenExpiration = default;
+    }
+
     private async Task<string> LoginAsync(CancellationToken cancellationToken)
     {
-        var parameters = new Parameters
-        {
-            { "connection", _options.ConnectionName },
-            { "audience", _options.Audience }
-        };
+        var parameters = new Parameters();
 
         if (!string.IsNullOrWhiteSpace(_options.Prompt))
         {
@@ -133,6 +203,7 @@ public sealed partial class AuthenticationService
         var accessToken = RequireToken(result.AccessToken, "access");
         var refreshToken = RequireToken(result.RefreshToken, "refresh");
         _identityToken = result.IdentityToken;
+        SetAccessToken(accessToken, result.AccessTokenExpiration);
 
         await _secureTokenStore.SaveRefreshTokenAsync(refreshToken, cancellationToken);
         return accessToken;
@@ -148,7 +219,7 @@ public sealed partial class AuthenticationService
 
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (result.IsError && string.Equals(result.Error, "invalid_grant", StringComparison.Ordinal))
+        if (result is { IsError: true, Error: "invalid_grant" })
         {
             return null;
         }
@@ -157,6 +228,7 @@ public sealed partial class AuthenticationService
 
         var accessToken = RequireToken(result.AccessToken, "access");
         _identityToken = result.IdentityToken;
+        SetAccessToken(accessToken, result.AccessTokenExpiration);
         var nextRefreshToken = string.IsNullOrWhiteSpace(result.RefreshToken)
             ? refreshToken
             : result.RefreshToken;
@@ -182,10 +254,10 @@ public sealed partial class AuthenticationService
     private static string RequireToken(string? token, string tokenType) =>
         !string.IsNullOrWhiteSpace(token)
             ? token
-            : throw new InvalidOperationException($"Auth0 did not return a {tokenType} token.");
+            : throw new InvalidOperationException($"The identity provider did not return a {tokenType} token.");
 
     [LoggerMessage(
         LogLevel.Warning,
-        "Remote Auth0 logout failed. Local credentials will still be removed.")]
+        "Remote identity provider logout failed. Local credentials will still be removed.")]
     private partial void LogRemoteLogoutFailed(Exception exception);
 }

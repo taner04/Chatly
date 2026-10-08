@@ -27,9 +27,9 @@ public sealed class CallExpiryJobTests(TestingFixture fixture) : TestingBase(fix
 
         await using var assertContext = GetDbContext();
         var call = await assertContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallState.Ended, call.Status);
-        Assert.Equal(CallEndReason.Missed, call.EndReason);
-        Assert.False(await assertContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken));
+        call.Status.Should().Be(CallState.Ended);
+        call.EndReason.Should().Be(CallEndReason.Missed);
+        (await assertContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 
     [Fact]
@@ -47,7 +47,7 @@ public sealed class CallExpiryJobTests(TestingFixture fixture) : TestingBase(fix
         }
 
         await using var dbContext = GetDbContext();
-        Assert.Equal(CallState.Ringing, (await dbContext.Calls.SingleAsync(CurrentCancellationToken)).Status);
+        (await dbContext.Calls.SingleAsync(CurrentCancellationToken)).Status.Should().Be(CallState.Ringing);
     }
 
     [Fact]
@@ -74,8 +74,8 @@ public sealed class CallExpiryJobTests(TestingFixture fixture) : TestingBase(fix
 
         await using var assertContext = GetDbContext();
         var call = await assertContext.Calls.SingleAsync(CurrentCancellationToken);
-        Assert.Equal(CallState.Ended, call.Status);
-        Assert.Equal(CallEndReason.Failed, call.EndReason);
-        Assert.False(await assertContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken));
+        call.Status.Should().Be(CallState.Ended);
+        call.EndReason.Should().Be(CallEndReason.Failed);
+        (await assertContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 }

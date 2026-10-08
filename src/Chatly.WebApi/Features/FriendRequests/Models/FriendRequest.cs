@@ -10,6 +10,7 @@ public readonly partial struct FriendRequestId : IGuidEntityId<FriendRequestId>
 
 public sealed class FriendRequest : UserPairEntity<FriendRequestId>
 {
+    [UsedImplicitly]
     private FriendRequest()
     {
     }

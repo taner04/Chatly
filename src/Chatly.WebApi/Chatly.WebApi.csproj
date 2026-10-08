@@ -1,15 +1,10 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
-    <PropertyGroup>
-        <TargetFramework>net10.0</TargetFramework>
-        <Nullable>enable</Nullable>
-        <ImplicitUsings>enable</ImplicitUsings>
-    </PropertyGroup>
-
     <ItemGroup>
         <PackageReference Include="Azure.Storage.Blobs"/>
         <PackageReference Include="FluentValidation"/>
         <PackageReference Include="FluentValidation.DependencyInjectionExtensions"/>
+        <PackageReference Include="JetBrains.Annotations" PrivateAssets="all"/>
         <PackageReference Include="Hangfire"/>
         <PackageReference Include="Hangfire.PostgreSql"/>
         <PackageReference Include="MailKit"/>
@@ -56,6 +51,30 @@
         <InternalsVisibleTo Include="Chatly.WebApi.UnitTests"/>
         <InternalsVisibleTo Include="Chatly.WebApi.IntegrationTests"/>
         <InternalsVisibleTo Include="DynamicProxyGenAssembly2"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="Chatly.Contracts.Common"/>
+        <Using Include="Chatly.Contracts.Features.Hubs.Abstraction"/>
+        <Using Include="Chatly.Contracts.Features.Users.Endpoints.GetCurrentUser"/>
+        <Using Include="Chatly.Contracts.Features.Users.Endpoints.GetCurrentUserProfilePicture"/>
+        <Using Include="Chatly.Contracts.Features.Users.Endpoints.SearchUsers"/>
+        <Using Include="Chatly.DependencyInjection"/>
+        <Using Include="Chatly.WebApi.Common.Abstraction"/>
+        <Using Include="Chatly.WebApi.Common.Extensions"/>
+        <Using Include="Chatly.WebApi.Common.Infrastructure"/>
+        <Using Include="Chatly.WebApi.Common.Infrastructure.Persistence"/>
+        <Using Include="Chatly.WebApi.Common.Shared.Exceptions"/>
+        <Using Include="Chatly.WebApi.Common.Shared.Models"/>
+        <Using Include="Chatly.WebApi.Features.Chats.Models"/>
+        <Using Include="Chatly.WebApi.Features.Messages.Models"/>
+        <Using Include="Chatly.WebApi.Features.Users.Models"/>
+        <Using Include="FluentValidation"/>
+        <Using Include="JetBrains.Annotations"/>
+        <Using Include="Mediator"/>
+        <Using Include="Microsoft.AspNetCore.Mvc"/>
+        <Using Include="Microsoft.EntityFrameworkCore"/>
+        <Using Include="Vogen"/>
     </ItemGroup>
 
 </Project>

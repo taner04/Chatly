@@ -1,5 +1,6 @@
 using Chatly.WebApi.Common.Infrastructure.Persistence;
 using Chatly.WebApi.Features.Chats.Models;
+using Chatly.WebApi.Features.DeviceSessions.Models;
 using Chatly.WebApi.Features.FriendRequests.Models;
 using Chatly.WebApi.Features.Friendships.Models;
 using Chatly.WebApi.Features.Messages.Models;
@@ -18,36 +19,45 @@ public sealed partial class DatabaseMigrationWorker
         await strategy.ExecuteAsync(async () =>
         {
             const string seedCreatedBy = "DevelopmentSeed";
-            const string secondUserAuth0Id = "auth0|6a88a4ef8a2e6820529a6ab5";
-            const string primaryUserAuth0Id = "auth0|69d50162f32c110c72fdfeb9";
+            const string secondUserIdentityId = "0b7d6f3e-6d1c-4b8a-9f2e-5a3c1d7e9f02";
+            const string primaryUserIdentityId = "0b7d6f3e-6d1c-4b8a-9f2e-5a3c1d7e9f01";
 
             var seedUsers = Enumerable.Range(1, 50)
                 .Select(index => new
                 {
                     Email = $"testuser{index:D3}@chatly.test",
-                    Auth0Id = $"seed|user-{index:D3}",
+                    IdentityId = $"seed|user-{index:D3}",
                     Username = $"testuser{index:D3}"
                 })
                 .Append(new
                 {
                     Email = "test@byom.de",
-                    Auth0Id = secondUserAuth0Id,
+                    IdentityId = secondUserIdentityId,
                     Username = "Tester"
                 })
                 .Append(new
                 {
                     Email = "taner@byom.de",
-                    Auth0Id = primaryUserAuth0Id,
+                    IdentityId = primaryUserIdentityId,
                     Username = "Taner"
                 })
                 .ToList();
 
-            var existingAuth0Ids = await dbContext.Users
-                .Select(user => user.Auth0Id)
+            foreach (var seedUser in seedUsers)
+            {
+                await dbContext.Users
+                    .Where(user => user.Email == seedUser.Email && user.IdentityId != seedUser.IdentityId)
+                    .ExecuteUpdateAsync(
+                        setters => setters.SetProperty(user => user.IdentityId, seedUser.IdentityId),
+                        cancellationToken);
+            }
+
+            var existingIdentityIds = await dbContext.Users
+                .Select(user => user.IdentityId)
                 .ToListAsync(cancellationToken);
             var usersToAdd = seedUsers
-                .Where(user => !existingAuth0Ids.Contains(user.Auth0Id))
-                .Select(user => new User(user.Email, user.Auth0Id)
+                .Where(user => !existingIdentityIds.Contains(user.IdentityId))
+                .Select(user => new User(user.Email, user.IdentityId)
                 {
                     Username = user.Username,
                     OnboardingCompleted = true
@@ -64,10 +74,10 @@ public sealed partial class DatabaseMigrationWorker
             var users = await dbContext.Users
                 .AsNoTracking()
                 .ToListAsync(cancellationToken);
-            var primaryUser = users.Single(user => user.Auth0Id == primaryUserAuth0Id);
-            var secondUser = users.Single(user => user.Auth0Id == secondUserAuth0Id);
+            var primaryUser = users.Single(user => user.IdentityId == primaryUserIdentityId);
+            var secondUser = users.Single(user => user.IdentityId == secondUserIdentityId);
             var paginationUsers = users
-                .Where(user => user.Auth0Id.StartsWith("seed|user-", StringComparison.Ordinal))
+                .Where(user => user.IdentityId.StartsWith("seed|user-", StringComparison.Ordinal))
                 .OrderBy(user => user.Username)
                 .ToList();
 
@@ -163,6 +173,39 @@ public sealed partial class DatabaseMigrationWorker
                 };
                 message.SetCreated(seedCreatedBy);
                 dbContext.Messages.Add(message);
+            }
+
+            var seedDeviceSessions = new (Guid DeviceId, string DeviceName, string Platform, int HoursAgo)[]
+            {
+                (Guid.Parse("0199b000-0000-7000-8000-000000000001"), "SEED-WINDOWS-PC", "Windows", 2),
+                (Guid.Parse("0199b000-0000-7000-8000-000000000002"), "SEED-MACBOOK", "macOS", 26)
+            };
+            var seedDeviceIds = seedDeviceSessions.Select(device => device.DeviceId).ToList();
+            var existingDeviceSessions = await dbContext.DeviceSessions
+                .Where(session => session.UserId == primaryUser.Id && seedDeviceIds.Contains(session.DeviceId))
+                .ToDictionaryAsync(session => session.DeviceId, cancellationToken);
+
+            foreach (var device in seedDeviceSessions)
+            {
+                var lastSeenAt = DateTimeOffset.UtcNow.AddHours(-device.HoursAgo);
+                if (existingDeviceSessions.TryGetValue(device.DeviceId, out var existingSession))
+                {
+                    existingSession.RevokedAt = null;
+                    existingSession.LastSeenAt = lastSeenAt;
+                    continue;
+                }
+
+                var deviceSession = new DeviceSession(
+                    primaryUser.Id,
+                    device.DeviceId,
+                    device.DeviceName,
+                    device.Platform,
+                    "1.0.0")
+                {
+                    LastSeenAt = lastSeenAt
+                };
+                deviceSession.SetCreated(seedCreatedBy);
+                dbContext.DeviceSessions.Add(deviceSession);
             }
 
             await dbContext.SaveChangesAsync(cancellationToken);

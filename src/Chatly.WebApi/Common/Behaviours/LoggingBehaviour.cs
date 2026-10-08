@@ -14,15 +14,12 @@ internal sealed partial class LoggingBehaviour<TMessage, TResponse>(
         MessageHandlerDelegate<TMessage, TResponse> next,
         CancellationToken cancellationToken)
     {
-        var properties = new Dictionary<string, object?>(StringComparer.Ordinal)
-        {
-            ["@RequestData"] = message
-        };
+        var properties = new Dictionary<string, object?>(StringComparer.Ordinal);
 
         var httpContext = httpContextAccessor.HttpContext;
         if (httpContext is not null)
         {
-            properties["User"] = httpContext.User?.Identity?.Name;
+            properties["User"] = httpContext.User.Identity?.Name;
             properties["RemoteIP"] = httpContext.Connection.RemoteIpAddress;
 
             var httpRequest = httpContext.Request;

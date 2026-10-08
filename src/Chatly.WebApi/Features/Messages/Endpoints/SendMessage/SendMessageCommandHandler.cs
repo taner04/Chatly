@@ -20,7 +20,7 @@ internal sealed class SendMessageCommandHandler(
         SendMessageCommand command,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
 
         var chat = await chatAccessService.GetAsync(command.ChatId, userId, cancellationToken)
                    ?? throw new EntityNotFoundException<Chat>(command.ChatId.Value);

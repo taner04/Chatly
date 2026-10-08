@@ -13,15 +13,15 @@ public readonly partial struct UserId : IGuidEntityId<UserId>
 public sealed class User : Entity<UserId>
 {
     internal const int MaxEmailLength = 320;
-    internal const int MaxAuth0IdLength = 256;
+    internal const int MaxIdentityIdLength = 256;
 
-    public User(string email, string auth0Id)
+    public User(string email, string identityId)
     {
         Guard.Against.InvalidEmail<User>(email);
-        Guard.Against.NullOrEmpty<User>(auth0Id);
+        Guard.Against.NullOrEmpty<User>(identityId);
 
         Email = email;
-        Auth0Id = auth0Id;
+        IdentityId = identityId;
         Username = null;
         ProfilePictureFileId = null;
         OnboardingCompleted = false;
@@ -29,7 +29,7 @@ public sealed class User : Entity<UserId>
     }
 
     public string Email { get; set; }
-    public string Auth0Id { get; private set; }
+    public string IdentityId { get; private set; }
     public string? Username { get; set; }
     public StoredFileId? ProfilePictureFileId { get; set; }
     public StoredFile? ProfilePictureFile { get; set; }

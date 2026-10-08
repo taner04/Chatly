@@ -12,7 +12,7 @@ internal sealed class RemoveReactionCommandHandler(
 {
     public async ValueTask<Unit> Handle(RemoveReactionCommand command, CancellationToken cancellationToken)
     {
-        var userId = userService.GetCurrentUserId();
+        var userId = userService.UserId;
 
         var reaction = await context.Reactions
                            .FirstOrDefaultAsync(

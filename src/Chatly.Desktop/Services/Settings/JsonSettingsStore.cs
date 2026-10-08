@@ -2,12 +2,15 @@ using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using Chatly.Desktop.Abstraction.Settings;
+using Chatly.Desktop.Options;
+using Microsoft.Extensions.Options;
 
 namespace Chatly.Desktop.Services.Settings;
 
 [SingletonService(typeof(ISettingsStore))]
 internal sealed partial class JsonSettingsStore(
     ISettingsDirectoryProvider directoryProvider,
+    IOptions<DesktopProfileOption> profileOptions,
     ILogger<JsonSettingsStore> logger) : ISettingsStore
 {
     private static readonly JsonSerializerOptions JsonOptions = new()
@@ -16,7 +19,9 @@ internal sealed partial class JsonSettingsStore(
         Converters = { new JsonStringEnumConverter(allowIntegerValues: false) }
     };
 
-    private readonly string _rootDirectory = Path.Combine(directoryProvider.GetRootDirectory(), "Chatly", "Settings");
+    private readonly string _rootDirectory = profileOptions.Value.Name == DesktopProfileOption.DefaultName
+        ? Path.Combine(directoryProvider.GetRootDirectory(), "Chatly", "Settings")
+        : Path.Combine(directoryProvider.GetRootDirectory(), "Chatly", "Settings", profileOptions.Value.Name);
 
     public void SaveSettings<T>(T settings)
         where T : class, ISettingsGroup

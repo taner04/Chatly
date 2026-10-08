@@ -33,8 +33,8 @@ public sealed class CallExpiryRecurringJobTests(TestingFixture fixture) : Testin
 
         await using var assertContext = GetDbContext();
         var calls = await assertContext.Calls.ToDictionaryAsync(call => call.Id.Value, CurrentCancellationToken);
-        Assert.Equal(CallState.Ended, calls[stale.CallId].Status);
-        Assert.Equal(CallEndReason.Missed, calls[stale.CallId].EndReason);
-        Assert.Equal(CallState.Ringing, calls[fresh.CallId].Status);
+        calls[stale.CallId].Status.Should().Be(CallState.Ended);
+        calls[stale.CallId].EndReason.Should().Be(CallEndReason.Missed);
+        calls[fresh.CallId].Status.Should().Be(CallState.Ringing);
     }
 }

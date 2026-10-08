@@ -4,11 +4,16 @@
     "AzuriteImage": "mcr.microsoft.com/azure-storage/azurite:3.37.0"
   },
   "WebApi": {
-    "Auth0Option": {
-      "Domain": "chatly-tests.local",
-      "Audience": "https://chatly-api.tests",
+    "OidcOption": {
+      "Authority": "https://identity.chatly.tests/realms/chatly",
+      "Audience": "chatly-api",
       "ClientId": "chatly-tests",
+      "BackchannelLogoutAudience": "chatly-desktop",
       "UsePersistentStorage": "false"
+    },
+    "IdentityAdminOption": {
+      "ClientId": "chatly-api",
+      "ClientSecret": "chatly-tests-secret"
     },
     "EmailOption": {
       "Host": "localhost",

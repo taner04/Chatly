@@ -14,6 +14,11 @@ public sealed class DirectChatState
         SetItems(directChats);
     }
 
+    protected override void OnExistingItem(DirectChat existing, DirectChat incoming)
+    {
+        existing.UnreadMessageCount = incoming.UnreadMessageCount;
+    }
+
     internal void RemoveByUserId(Guid userId)
     {
         var directChat = Items.FirstOrDefault(chat => chat.User.Id == userId);

@@ -1,5 +1,7 @@
 using Chatly.ServiceDefaults;
 using Chatly.WebApi.Common.Infrastructure.Email;
+using Chatly.WebApi.Features.DeviceSessions.Services;
+using Chatly.WebApi.IntegrationTests.Infrastructure.Mocks.Identity;
 using Chatly.WebApi.IntegrationTests.Infrastructure.Mocks.Jwt;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc.Testing;
@@ -15,6 +17,8 @@ internal sealed class WebApiFactory(string databaseConnectionString, string blob
     : WebApplicationFactory<Program>
 {
     public IEmailService EmailService { get; } = Substitute.For<IEmailService>();
+
+    public IdentityProviderHandlerMock IdentityProvider { get; } = new();
 
     protected override void ConfigureWebHost(IWebHostBuilder builder)
     {
@@ -43,6 +47,8 @@ internal sealed class WebApiFactory(string databaseConnectionString, string blob
             services.AddMockJwtBearerOptions();
             services.RemoveAll<IEmailService>();
             services.AddSingleton(EmailService);
+            services.AddHttpClient<IdentitySessionClient>()
+                .ConfigurePrimaryHttpMessageHandler(() => IdentityProvider);
         });
     }
 }

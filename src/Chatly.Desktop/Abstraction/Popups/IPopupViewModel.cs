@@ -6,6 +6,10 @@ public interface IPopupViewModel
 
     bool IsDismissible { get; }
 
+    double PopupWidth { get; }
+
+    double PopupMinHeight { get; }
+
     Task Completion { get; }
 
     void CloseOverlay();

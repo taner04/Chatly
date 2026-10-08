@@ -31,7 +31,7 @@ internal sealed partial class AuditableInterceptor(
         var changeMadeBy = "system";
         try
         {
-            changeMadeBy = currentUserService.GetCurrentUserId().Value.ToString();
+            changeMadeBy = currentUserService.UserId.Value.ToString();
         }
         catch (UnauthorizedAccessException)
         {

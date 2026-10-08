@@ -11,12 +11,12 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
         var response = await CreateAuthenticatedClient()
             .SendMessageAsync(chatId.Value, "  hello  ", CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal("hello", response.Content!.Content);
-        Assert.Equal(CurrentUser.Id.Value, response.Content.SenderUserId);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.Content.Should().Be("hello");
+        response.Content.SenderUserId.Should().Be(CurrentUser.Id.Value);
         var messages = await CreateAuthenticatedClient(friend)
             .GetMessagesAsync(chatId.Value, 20, CurrentCancellationToken);
-        Assert.Equal(response.Content.MessageId, Assert.Single(messages.Content!.Items).MessageId);
+        messages.Content!.Items.Should().ContainSingle().Subject.MessageId.Should().Be(response.Content.MessageId);
     }
 
     [Fact]
@@ -29,7 +29,7 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
         var response = await CreateAuthenticatedClient()
             .SendMessageAsync(chatId.Value, "intruder", CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
     }
 
     [Fact]
@@ -41,7 +41,7 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
         var response = await CreateAuthenticatedClient()
             .SendMessageAsync(chatId.Value, "   ", CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -56,11 +56,11 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
             [CreateFile("notes.txt", "text/plain"), CreateFile("photo.png", "image/png")],
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(["notes.txt", "photo.png"], response.Content!.Attachments.Select(file => file.FileName).Order());
-        Assert.All(response.Content.Attachments, attachment => Assert.False(string.IsNullOrWhiteSpace(attachment.Url)));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.Attachments.Select(file => file.FileName).Order().Should().Equal("notes.txt", "photo.png");
+        response.Content.Attachments.Should().AllSatisfy(attachment => attachment.Url.Should().NotBeNullOrWhiteSpace());
         await using var dbContext = GetDbContext();
-        Assert.Equal(2, await dbContext.MessageAttachments.CountAsync(CurrentCancellationToken));
+        (await dbContext.MessageAttachments.CountAsync(CurrentCancellationToken)).Should().Be(2);
     }
 
     [Fact]
@@ -75,8 +75,8 @@ public sealed class SendMessageEndpointTests(TestingFixture fixture) : TestingBa
             Enumerable.Range(1, 6).Select(index => CreateFile($"file{index}.txt", "text/plain")),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
         await using var dbContext = GetDbContext();
-        Assert.False(await dbContext.Messages.AnyAsync(CurrentCancellationToken));
+        (await dbContext.Messages.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 }

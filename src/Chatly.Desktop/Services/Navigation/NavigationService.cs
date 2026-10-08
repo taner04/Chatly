@@ -39,7 +39,7 @@ internal sealed partial class NavigationService(
         object? parameter,
         CancellationToken cancellationToken)
     {
-        ValidateViewModelType(viewModelType);
+        viewModelType.ThrowIfNotAssignableTo<INavigableViewModel>();
 
         NavigationEntry target;
         await _transitionLock.WaitAsync(cancellationToken);
@@ -181,18 +181,6 @@ internal sealed partial class NavigationService(
 
     [LoggerMessage(LogLevel.Error, "Restoring {ViewModelType} after failed navigation failed.")]
     private partial void LogNavigationRestoreFailed(Type viewModelType, Exception exception);
-
-    private static void ValidateViewModelType(Type viewModelType)
-    {
-        ArgumentNullException.ThrowIfNull(viewModelType);
-
-        if (!typeof(INavigableViewModel).IsAssignableFrom(viewModelType))
-        {
-            throw new ArgumentException(
-                $"Type '{viewModelType}' must implement {nameof(INavigableViewModel)}.",
-                nameof(viewModelType));
-        }
-    }
 
     private sealed record NavigationEntry(INavigableViewModel Page, object? Parameter);
 }

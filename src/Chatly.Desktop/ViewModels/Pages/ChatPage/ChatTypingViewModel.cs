@@ -16,6 +16,7 @@ public sealed partial class ChatTypingViewModel(
     private DateTimeOffset? _lastTypingStatusSentAt;
     private CancellationTokenSource? _typingIdleCancellation;
     private CancellationTokenSource? _typingStatusExpiryCancellation;
+    private int _typingStatusExpiryVersion;
 
     [ObservableProperty] public partial bool IsOtherUserTyping { get; private set; }
 
@@ -85,7 +86,7 @@ public sealed partial class ChatTypingViewModel(
 
         var cancellation = new CancellationTokenSource();
         _typingStatusExpiryCancellation = cancellation;
-        _ = ExpireOtherUserTypingAsync(cancellation);
+        _ = ExpireOtherUserTypingAsync(cancellation, ++_typingStatusExpiryVersion);
     }
 
     internal async Task StopOutgoingTypingAsync(Guid chatId)
@@ -112,6 +113,7 @@ public sealed partial class ChatTypingViewModel(
     {
         _typingStatusExpiryCancellation?.Cancel();
         _typingStatusExpiryCancellation = null;
+        _typingStatusExpiryVersion++;
         IsOtherUserTyping = false;
     }
 
@@ -156,14 +158,14 @@ public sealed partial class ChatTypingViewModel(
         }
     }
 
-    private async Task ExpireOtherUserTypingAsync(CancellationTokenSource cancellation)
+    private async Task ExpireOtherUserTypingAsync(CancellationTokenSource cancellation, int version)
     {
         try
         {
             await Task.Delay(TypingStatusExpiry, cancellation.Token);
             UiThreadDispatcher.SafeInvoke(() =>
             {
-                if (ReferenceEquals(_typingStatusExpiryCancellation, cancellation))
+                if (_typingStatusExpiryVersion == version)
                 {
                     _typingStatusExpiryCancellation = null;
                     IsOtherUserTyping = false;

@@ -40,8 +40,7 @@
                 <Button Classes="reaction-chip"
                         Classes.own="{Binding IsOwnReaction}"
                         Content="{Binding Emoji}"
-                        x:CompileBindings="False"
-                        Command="{Binding DataContext.RemoveReactionCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                        Command="{Binding $parent[UserControl].((messages:ChatMessageViewModel)DataContext).RemoveReactionCommand}"
                         CommandParameter="{Binding}"
                         IsHitTestVisible="{Binding IsOwnReaction}" />
             </Border>

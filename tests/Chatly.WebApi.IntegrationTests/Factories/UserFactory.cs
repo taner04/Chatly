@@ -8,7 +8,7 @@ internal static class UserFactory
 
     internal static User Create(string username)
     {
-        var user = new User($"{username}@chatly.tests", $"auth0|{username}")
+        var user = new User($"{username}@chatly.tests", $"identity|{username}")
         {
             Username = username,
             OnboardingCompleted = true
@@ -17,5 +17,5 @@ internal static class UserFactory
         return user;
     }
 
-    internal static TestUser ToTestUser(User user) => new(user.Id, user.Auth0Id, user.Email, user.Username!);
+    internal static TestUser ToTestUser(User user) => new(user.Id, user.IdentityId, user.Email, user.Username!);
 }

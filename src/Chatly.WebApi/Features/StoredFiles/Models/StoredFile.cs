@@ -12,6 +12,7 @@ public sealed class StoredFile : Entity<StoredFileId>
     internal const int MaxFileNameLength = 255;
     internal const int MaxContentTypeLength = 255;
 
+    [UsedImplicitly]
     private StoredFile()
     {
     }

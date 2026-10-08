@@ -7,8 +7,8 @@ public sealed class GetCurrentUserProfilePictureEndpointTests(TestingFixture fix
     {
         var response = await CreateAuthenticatedClient().GetCurrentUserProfilePictureAsync(CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Null(response.Content!.ProfilePictureUrl);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.ProfilePictureUrl.Should().BeNull();
     }
 
     [Fact]
@@ -19,6 +19,6 @@ public sealed class GetCurrentUserProfilePictureEndpointTests(TestingFixture fix
 
         var response = await client.GetCurrentUserProfilePictureAsync(CurrentCancellationToken);
 
-        Assert.False(string.IsNullOrWhiteSpace(response.Content!.ProfilePictureUrl));
+        string.IsNullOrWhiteSpace(response.Content!.ProfilePictureUrl).Should().BeFalse();
     }
 }

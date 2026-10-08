@@ -3,14 +3,17 @@ using Chatly.Contracts.Features.Hubs;
 using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
 using Chatly.WebApi.Features.Calls.Models;
 using Chatly.WebApi.Features.Calls.Services;
+using Chatly.WebApi.Features.DeviceSessions.Services;
 using Microsoft.AspNetCore.SignalR;
 
 namespace Chatly.WebApi.Features.Hubs.CallingHub;
 
 internal sealed class CallingHub(
     ChatlyDbContext context,
+    DeviceSessionService deviceSessionService,
     CallService callService,
-    LiveKitTokenFactory liveKitTokenFactory) : HubBase<ICallingHubClient>(context), ICallingHubServer
+    LiveKitTokenFactory liveKitTokenFactory)
+    : HubBase<ICallingHubClient>(context, deviceSessionService), ICallingHubServer
 {
     public async Task<CallInfo> StartCallAsync(Guid calleeUserId)
     {
@@ -20,7 +23,7 @@ internal sealed class CallingHub(
         }
 
         var cancellationToken = Context.ConnectionAborted;
-        var callerUserId = await GetCurrentUserIdAsync(cancellationToken);
+        var callerUserId = CurrentUserId;
         var receiverUserId = UserId.From(calleeUserId);
         if (callerUserId == receiverUserId)
         {
@@ -94,7 +97,7 @@ internal sealed class CallingHub(
     public async Task<CallInfo?> GetCurrentCallAsync()
     {
         var cancellationToken = Context.ConnectionAborted;
-        var actorUserId = await GetCurrentUserIdAsync(cancellationToken);
+        var actorUserId = CurrentUserId;
         var call = await Database.Calls
             .AsNoTracking()
             .Include(activeCall => activeCall.CallerUser)
@@ -150,7 +153,7 @@ internal sealed class CallingHub(
         }
 
         var cancellationToken = Context.ConnectionAborted;
-        var actorUserId = await GetCurrentUserIdAsync(cancellationToken);
+        var actorUserId = CurrentUserId;
         var call = await Database.Calls
                        .AsNoTracking()
                        .Include(activeCall => activeCall.CallerUser)
@@ -183,7 +186,7 @@ internal sealed class CallingHub(
         }
 
         var cancellationToken = Context.ConnectionAborted;
-        var actorUserId = await GetCurrentUserIdAsync(cancellationToken);
+        var actorUserId = CurrentUserId;
 
         try
         {

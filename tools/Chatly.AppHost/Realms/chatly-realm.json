@@ -1,0 +1,170 @@
+{
+  "realm": "chatly",
+  "displayName": "Chatly",
+  "loginTheme": "chatly",
+  "emailTheme": "chatly",
+  "enabled": true,
+  "sslRequired": "external",
+  "registrationAllowed": true,
+  "registrationEmailAsUsername": true,
+  "loginWithEmailAllowed": true,
+  "duplicateEmailsAllowed": false,
+  "resetPasswordAllowed": true,
+  "verifyEmail": true,
+  "rememberMe": true,
+  "bruteForceProtected": true,
+  "accessTokenLifespan": 300,
+  "ssoSessionIdleTimeout": 2592000,
+  "ssoSessionMaxLifespan": 7776000,
+  "revokeRefreshToken": true,
+  "refreshTokenMaxReuse": 0,
+  "smtpServer": {
+    "host": "${CHATLY_SMTP_HOST}",
+    "port": "${CHATLY_SMTP_PORT}",
+    "from": "${CHATLY_SMTP_FROM}",
+    "fromDisplayName": "${CHATLY_SMTP_FROM_NAME}",
+    "auth": "false",
+    "ssl": "false",
+    "starttls": "false"
+  },
+  "clients": [
+    {
+      "clientId": "chatly-desktop",
+      "name": "Chatly Desktop",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "http://127.0.0.1:7890/callback/"
+      ],
+      "webOrigins": [],
+      "attributes": {
+        "pkce.code.challenge.method": "S256",
+        "post.logout.redirect.uris": "http://127.0.0.1:7890/callback/",
+        "backchannel.logout.url": "${CHATLY_BACKCHANNEL_LOGOUT_URL}",
+        "backchannel.logout.session.required": "true",
+        "backchannel.logout.revoke.offline.tokens": "false"
+      },
+      "protocolMappers": [
+        {
+          "name": "chatly-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "chatly-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "chatly-api-docs",
+      "name": "Chatly API Docs",
+      "enabled": true,
+      "publicClient": true,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "redirectUris": [
+        "https://localhost:7123/*"
+      ],
+      "webOrigins": [
+        "https://localhost:7123"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "protocolMappers": [
+        {
+          "name": "chatly-api-audience",
+          "protocol": "openid-connect",
+          "protocolMapper": "oidc-audience-mapper",
+          "config": {
+            "included.custom.audience": "chatly-api",
+            "access.token.claim": "true",
+            "id.token.claim": "false",
+            "introspection.token.claim": "true"
+          }
+        }
+      ]
+    },
+    {
+      "clientId": "chatly-api",
+      "name": "Chatly API",
+      "enabled": true,
+      "publicClient": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "${CHATLY_API_CLIENT_SECRET}",
+      "standardFlowEnabled": false,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true
+    }
+  ],
+  "users": [
+    {
+      "username": "service-account-chatly-api",
+      "enabled": true,
+      "serviceAccountClientId": "chatly-api",
+      "clientRoles": {
+        "realm-management": [
+          "view-users",
+          "manage-users"
+        ]
+      }
+    },
+    {
+      "id": "0b7d6f3e-6d1c-4b8a-9f2e-5a3c1d7e9f01",
+      "username": "taner@byom.de",
+      "email": "taner@byom.de",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": [
+        "default-roles-chatly"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${CHATLY_SEED_USER_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    },
+    {
+      "id": "0b7d6f3e-6d1c-4b8a-9f2e-5a3c1d7e9f02",
+      "username": "test@byom.de",
+      "email": "test@byom.de",
+      "emailVerified": true,
+      "enabled": true,
+      "realmRoles": [
+        "default-roles-chatly"
+      ],
+      "credentials": [
+        {
+          "type": "password",
+          "value": "${CHATLY_SEED_USER_PASSWORD}",
+          "temporary": false
+        }
+      ]
+    }
+  ],
+  "components": {
+    "org.keycloak.userprofile.UserProfileProvider": [
+      {
+        "providerId": "declarative-user-profile",
+        "subComponents": {},
+        "config": {
+          "kc.user.profile.config": [
+            "{\"attributes\":[{\"name\":\"username\",\"displayName\":\"${username}\",\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"validations\":{\"length\":{\"min\":3,\"max\":255},\"username-prohibited-characters\":{},\"up-username-not-idn-homograph\":{}}},{\"name\":\"email\",\"displayName\":\"${email}\",\"required\":{\"roles\":[\"user\"]},\"permissions\":{\"view\":[\"admin\",\"user\"],\"edit\":[\"admin\",\"user\"]},\"validations\":{\"email\":{},\"length\":{\"max\":255}}}],\"groups\":[{\"name\":\"user-metadata\",\"displayHeader\":\"User metadata\",\"displayDescription\":\"Attributes, which refer to user metadata\"}]}"
+          ]
+        }
+      }
+    ]
+  }
+}

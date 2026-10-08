@@ -1,4 +1,6 @@
+using Chatly.Desktop.Models.Settings;
 using Chatly.Desktop.Options;
+using Chatly.Desktop.Services.Authentication;
 using Microsoft.AspNetCore.SignalR.Client;
 using Microsoft.Extensions.Options;
 
@@ -6,7 +8,8 @@ namespace Chatly.Desktop.Services.Api.Hubs;
 
 internal abstract class HubConnectionBase(
     IOptions<WebApiClientOption> webApiClientOption,
-    UserSessionContext sessionContext,
+    AuthenticationService authenticationService,
+    AppSettings appSettings,
     ILogger logger) : IAsyncDisposable
 {
     private const int MaxRetryAttempts = 5;
@@ -185,8 +188,16 @@ internal abstract class HubConnectionBase(
             _hubConnection = new HubConnectionBuilder()
                 .WithUrl(
                     new Uri(_webApiClientOption.BaseAddress, HubRoute),
-                    options => options.AccessTokenProvider = () => Task.FromResult(sessionContext.AccessToken))
-                .WithAutomaticReconnect()
+                    options =>
+                    {
+                        options.AccessTokenProvider = () =>
+                            authenticationService.GetAccessTokenAsync(CancellationToken.None);
+                        foreach (var (name, value) in DeviceSessionHeaderValues.Create(appSettings))
+                        {
+                            options.Headers[name] = value;
+                        }
+                    })
+                .WithAutomaticReconnect(new IndefiniteRetryPolicy())
                 .Build();
             _hubConnection.Reconnected += _ => NotifyReconnectedAsync();
             return _hubConnection;

@@ -39,7 +39,7 @@ public sealed class CallContractSerializationTests
     [MemberData(nameof(Notifications))]
     public void Notification_Should_RoundTripPolymorphically_When_SerializedAsCall(CallMessage expected)
     {
-        var json = JsonSerializer.Serialize<CallMessage>(expected);
+        var json = JsonSerializer.Serialize(expected);
 
         var actual = JsonSerializer.Deserialize<CallMessage>(json);
 
@@ -47,7 +47,7 @@ public sealed class CallContractSerializationTests
         actual.Should().NotBeNull();
         actual.Should().BeOfType(expected.GetType());
         actual.Should().Be(expected);
-        actual!.Role.Should().Be(expected.Role);
+        actual.Role.Should().Be(expected.Role);
         actual.State.Should().Be(expected.State);
     }
 
@@ -69,7 +69,7 @@ public sealed class CallContractSerializationTests
         var actual = JsonSerializer.Deserialize<CallInfo>(json);
 
         actual.Should().Be(expected);
-        actual!.Role.Should().Be(role);
+        actual.Role.Should().Be(role);
     }
 
     [Fact]

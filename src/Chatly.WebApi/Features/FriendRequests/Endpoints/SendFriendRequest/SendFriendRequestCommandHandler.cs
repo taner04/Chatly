@@ -19,7 +19,7 @@ internal sealed class SendFriendRequestCommandHandler(
         SendFriendRequestCommand command,
         CancellationToken cancellationToken)
     {
-        var userId = currentUser.GetCurrentUserId();
+        var userId = currentUser.UserId;
         if (command.ReceiverId == userId)
         {
             throw new FriendRequestToSelfException();

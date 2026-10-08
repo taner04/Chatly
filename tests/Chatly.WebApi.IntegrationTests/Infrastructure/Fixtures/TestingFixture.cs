@@ -1,6 +1,10 @@
 using System.Diagnostics.CodeAnalysis;
 using System.Net.Http.Headers;
+using System.Security.Claims;
+using Chatly.WebApi.Common.Infrastructure;
 using Chatly.WebApi.Common.Infrastructure.Email;
+using Chatly.WebApi.IntegrationTests.Infrastructure.Mocks.DeviceSession;
+using Chatly.WebApi.IntegrationTests.Infrastructure.Mocks.Identity;
 using Chatly.WebApi.IntegrationTests.Infrastructure.Mocks.Jwt;
 using Chatly.WebApi.IntegrationTests.Infrastructure.TestContainers.Azurite;
 using Chatly.WebApi.IntegrationTests.Infrastructure.TestContainers.Postgres;
@@ -18,10 +22,12 @@ public sealed class TestingFixture : IAsyncLifetime
     private readonly PostgresTestDatabase _database = new();
     private WebApiFactory? _factoryInstance;
 
-    private WebApiFactory _factory =>
+    private WebApiFactory Factory =>
         _factoryInstance ?? throw new InvalidOperationException("The test API has not been started.");
 
-    internal IEmailService EmailService => _factory.EmailService;
+    internal IEmailService EmailService => Factory.EmailService;
+
+    internal IdentityProviderHandlerMock IdentityProvider => Factory.IdentityProvider;
 
     public async ValueTask InitializeAsync()
     {
@@ -46,49 +52,84 @@ public sealed class TestingFixture : IAsyncLifetime
     {
         await _database.ResetAsync();
         EmailService.ClearSubstitute();
+        IdentityProvider.Reset();
     }
 
     internal ChatlyDbContext CreateDbContext() => _database.CreateDbContext();
 
-    internal IServiceScope CreateScope() => _factory.Services.CreateScope();
+    internal IServiceScope CreateScope() => Factory.Services.CreateScope();
 
-    internal HttpClient CreateHttpClient() => _factory.CreateClient();
+    internal HttpClient CreateHttpClient() => Factory.CreateClient();
 
-    internal IChatlyApiClient CreateApiClient(TestUser? user)
+    internal IChatlyApiClient CreateApiClient(TestUser? user, Guid? deviceId = null, string? identitySessionId = null)
     {
-        var client = _factory.CreateClient();
-        if (user is not null)
+        var client = Factory.CreateClient();
+        if (user is null)
         {
-            client.DefaultRequestHeaders.Authorization =
-                new AuthenticationHeaderValue("Bearer", JwtTokenMock.CreateToken(user));
+            return RestService.For<IChatlyApiClient>(client);
         }
+
+        client.DefaultRequestHeaders.Authorization =
+            new AuthenticationHeaderValue("Bearer", CreateToken(user, identitySessionId));
+        DeviceSessionHeadersMock.Apply(client.DefaultRequestHeaders, deviceId ?? Guid.NewGuid());
 
         return RestService.For<IChatlyApiClient>(client);
     }
 
-    internal Task<CallHubTestClient> ConnectCallHubAsync(TestUser user) =>
-        ConnectHubAsync(ApiRoutes.Hubs.Call, user, connection => new CallHubTestClient(connection));
+    internal Task<CallHubTestClient> ConnectCallHubAsync(TestUser user, Guid? deviceId = null) =>
+        ConnectHubAsync(ApiRoutes.Hubs.Call, user, deviceId, null, connection => new CallHubTestClient(connection));
 
-    internal Task<NotificationHubTestClient> ConnectNotificationHubAsync(TestUser user) =>
-        ConnectHubAsync(ApiRoutes.Hubs.Notification, user, connection => new NotificationHubTestClient(connection));
+    internal Task<NotificationHubTestClient> ConnectNotificationHubAsync(
+        TestUser user,
+        Guid? deviceId = null,
+        string? identitySessionId = null) =>
+        ConnectHubAsync(
+            ApiRoutes.Hubs.Notification,
+            user,
+            deviceId,
+            identitySessionId,
+            connection => new NotificationHubTestClient(connection));
+
+    private static string CreateToken(TestUser user, string? identitySessionId) =>
+        JwtTokenMock.CreateToken(
+            user,
+            identitySessionId is null ? [] : [new Claim(CurrentUserService.SessionIdClaim, identitySessionId)]);
 
     private async Task<TClient> ConnectHubAsync<TClient>(
         string route,
         TestUser user,
+        Guid? deviceId,
+        string? identitySessionId,
         Func<HubConnection, TClient> createClient)
     {
-        var token = JwtTokenMock.CreateToken(user);
+        var token = CreateToken(user, identitySessionId);
         var connection = new HubConnectionBuilder()
-            .WithUrl(new Uri(_factory.Server.BaseAddress, route), options =>
+            .WithUrl(new Uri(Factory.Server.BaseAddress, route), options =>
             {
                 options.Transports = HttpTransportType.LongPolling;
-                options.HttpMessageHandlerFactory = _ => _factory.Server.CreateHandler();
+                options.HttpMessageHandlerFactory = _ => Factory.Server.CreateHandler();
                 options.AccessTokenProvider = () => Task.FromResult<string?>(token);
+                foreach (var (name, value) in DeviceSessionHeadersMock.Create(deviceId ?? Guid.NewGuid()))
+                {
+                    options.Headers[name] = value;
+                }
             })
             .Build();
 
         var client = createClient(connection);
         await connection.StartAsync(TestContext.Current.CancellationToken);
+        await WaitUntilServerConnectedAsync(connection);
         return client;
+    }
+
+    private static async Task WaitUntilServerConnectedAsync(HubConnection connection)
+    {
+        try
+        {
+            await connection.InvokeAsync("ServerConnectedBarrier", TestContext.Current.CancellationToken);
+        }
+        catch (Exception) when (!TestContext.Current.CancellationToken.IsCancellationRequested)
+        {
+        }
     }
 }

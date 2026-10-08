@@ -6,9 +6,7 @@ internal sealed class GetCurrentUserEndpoint : IEndpoint
     {
         app.MapGet(ApiRoutes.Users.Current,
                 async ([FromServices] IMediator mediator, CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(new GetCurrentUserQuery(), cancellationToken));
-                })
+                Results.Ok(await mediator.Send(new GetCurrentUserQuery(), cancellationToken)))
             .WithName("GetCurrentUser")
             .WithTags("User")
             .RequireAuthorization()

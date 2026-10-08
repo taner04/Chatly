@@ -7,8 +7,6 @@ namespace Chatly.WebApi.IntegrationTests.Infrastructure.Api;
 
 public abstract class HubTestClient<TMessage> : IAsyncDisposable where TMessage : class, IHubMessage
 {
-    private static readonly TimeSpan ReceiveTimeout = TimeSpan.FromSeconds(10);
-
     private readonly Channel<TMessage> _received = Channel.CreateUnbounded<TMessage>();
 
     protected HubTestClient(HubConnection connection)
@@ -16,6 +14,8 @@ public abstract class HubTestClient<TMessage> : IAsyncDisposable where TMessage 
         Connection = connection;
         Connection.On<TMessage>(nameof(INotificationHubClient.Receive), message => _received.Writer.TryWrite(message));
     }
+
+    private static TimeSpan ReceiveTimeout => TimeSpan.FromSeconds(10);
 
     public HubConnection Connection { get; }
 

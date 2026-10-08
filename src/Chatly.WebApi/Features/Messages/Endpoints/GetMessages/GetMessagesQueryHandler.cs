@@ -16,7 +16,7 @@ internal sealed class GetMessagesQueryHandler(
         GetMessagesQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
         if (await chatAccessService.GetAsync(query.ChatId, userId, cancellationToken) is null)
         {
             throw new EntityNotFoundException<Chat>(query.ChatId.Value);

@@ -13,7 +13,7 @@ internal sealed class GetFriendshipsQueryHandler(
         GetFriendshipsQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
 
         var friendships = await (
                 from friendship in context.Friendships.AsNoTracking().ForUser(userId)

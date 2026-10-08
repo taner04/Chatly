@@ -16,6 +16,7 @@ internal sealed class ApplicationStartupService(
     MainWindow mainWindow,
     StartupConnectivityService startupConnectivityService,
     SessionService sessionService,
+    RevokedDeviceSignOutService revokedDeviceSignOutService,
     UserSessionContext sessionContext,
     INavigationService navigationService,
     IPopupService popupService,
@@ -36,8 +37,7 @@ internal sealed class ApplicationStartupService(
         try
         {
             await WaitForApiAsync(splashScreen.ViewModel.CancellationToken);
-            splashScreen.ViewModel.StartupMessage = "Authenticating...";
-            await sessionService.StartAsync(splashScreen.ViewModel.CancellationToken);
+            await ConnectAsync(splashScreen.ViewModel.CancellationToken);
         }
         catch (OperationCanceledException) when (splashScreen.ViewModel.CancellationToken.IsCancellationRequested)
         {
@@ -46,18 +46,13 @@ internal sealed class ApplicationStartupService(
             return;
         }
 
-        await audioHost.InitializeAsync(splashScreen.ViewModel.CancellationToken);
-
-        foreach (var hub in hubHosts)
-        {
-            await hub.StartAsync(splashScreen.ViewModel.CancellationToken);
-        }
-
         await navigationService.NavigateToAsync<UserPageViewModel>();
 
         desktop.MainWindow = mainWindow;
         mainWindow.Show();
         splashScreen.Close();
+
+        revokedDeviceSignOutService.Start();
 
         try
         {
@@ -81,6 +76,41 @@ internal sealed class ApplicationStartupService(
         foreach (var hub in hubHosts)
         {
             await hub.StopAsync(cancellationToken);
+        }
+    }
+
+    private async Task ConnectAsync(CancellationToken cancellationToken)
+    {
+        var signedIn = false;
+        while (true)
+        {
+            try
+            {
+                if (!signedIn)
+                {
+                    splashScreen.ViewModel.StartupMessage = "Authenticating...";
+                    await sessionService.StartAsync(cancellationToken);
+                    signedIn = true;
+                }
+
+                splashScreen.ViewModel.StartupMessage = "Connecting...";
+                await audioHost.InitializeAsync(cancellationToken);
+                foreach (var hub in hubHosts)
+                {
+                    await hub.StartAsync(cancellationToken);
+                }
+
+                return;
+            }
+            catch (Exception exception) when (exception is not OperationCanceledException)
+            {
+                logger.LogWarning(exception, "Starting the session failed during startup.");
+                await splashScreen.ViewModel.WaitForRetryAsync(
+                    signedIn
+                        ? "Connecting failed. Check your connection and try again."
+                        : "Signing in failed. Check your connection and try again.",
+                    cancellationToken);
+            }
         }
     }
 

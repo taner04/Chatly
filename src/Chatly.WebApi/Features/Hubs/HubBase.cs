@@ -1,4 +1,7 @@
 using Chatly.Contracts.Features.Hubs;
+using Chatly.WebApi.Features.DeviceSessions.Exceptions;
+using Chatly.WebApi.Features.DeviceSessions.Models;
+using Chatly.WebApi.Features.DeviceSessions.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -7,31 +10,18 @@ namespace Chatly.WebApi.Features.Hubs;
 [Authorize]
 public abstract class HubBase<THubClient> : Hub<THubClient> where THubClient : class, IHubClient
 {
-    protected HubBase(ChatlyDbContext context)
+    private readonly DeviceSessionService _deviceSessionService;
+
+    private protected HubBase(ChatlyDbContext context, DeviceSessionService deviceSessionService)
     {
         Database = context;
+        _deviceSessionService = deviceSessionService;
     }
 
     protected ChatlyDbContext Database { get; }
 
-    protected async Task<UserId> GetCurrentUserIdAsync(CancellationToken cancellationToken)
-    {
-        if (Context.Items.TryGetValue(CurrentUserService.UserIdItemKey, out var value) && value is UserId userId)
-        {
-            SetHttpContextUserId(userId);
-            return userId;
-        }
-
-        var auth0Id = Context.User?.FindFirst(CurrentUserService.SubClaim)?.Value
-                      ?? throw new HubException("The user is not authenticated.");
-        userId = await Database.Users
-            .Where(user => user.Auth0Id == auth0Id)
-            .Select(user => user.Id)
-            .SingleAsync(cancellationToken);
-        Context.Items[CurrentUserService.UserIdItemKey] = userId;
-        SetHttpContextUserId(userId);
-        return userId;
-    }
+    protected UserId CurrentUserId =>
+        CurrentUserService.FindUserId(Context.User) ?? throw new HubException("The user is not authenticated.");
 
     private protected Task<List<UserId>> GetFriendUserIdsAsync(UserId userId, CancellationToken cancellationToken) =>
         Database.Friendships
@@ -42,22 +32,27 @@ public abstract class HubBase<THubClient> : Hub<THubClient> where THubClient : c
 
     public override async Task OnConnectedAsync()
     {
-        var userId = await GetCurrentUserIdAsync(Context.ConnectionAborted);
+        var userId = CurrentUserId;
+        var headers = Context.GetHttpContext()?.Request.Headers
+                      ?? throw new HubException("The device session headers are missing.");
+        DeviceSession session;
+        try
+        {
+            session = await _deviceSessionService.GetOrCreateActiveAsync(
+                userId,
+                DeviceInfoReader.Read(headers),
+                CurrentUserService.FindIdentitySessionId(Context.User),
+                Context.ConnectionAborted);
+        }
+        catch (DeviceSessionRevokedException)
+        {
+            throw new HubException("This device was signed out.");
+        }
+
         await Groups.AddToGroupAsync(Context.ConnectionId, HubGroups.User(userId));
+        await Groups.AddToGroupAsync(Context.ConnectionId, HubGroups.DeviceSession(session.Id));
         await base.OnConnectedAsync();
     }
 
-    protected UserId? GetConnectedUserId() =>
-        Context.Items.TryGetValue(CurrentUserService.UserIdItemKey, out var value) && value is UserId userId
-            ? userId
-            : null;
-
-    private void SetHttpContextUserId(UserId userId)
-    {
-        var httpContext = Context.GetHttpContext();
-        if (httpContext is not null)
-        {
-            httpContext.Items[CurrentUserService.UserIdItemKey] = userId;
-        }
-    }
+    protected UserId? GetConnectedUserId() => CurrentUserService.FindUserId(Context.User);
 }

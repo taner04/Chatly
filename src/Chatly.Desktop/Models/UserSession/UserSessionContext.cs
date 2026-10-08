@@ -5,12 +5,9 @@ public sealed partial class UserSessionContext(UserRegistry userRegistry) : Obse
 {
     [ObservableProperty] public partial User? CurrentUser { get; private set; }
 
-    internal string? AccessToken { get; private set; }
+    internal event EventHandler? DeviceSessionRevoked;
 
-    internal void SetAccessToken(string accessToken)
-    {
-        AccessToken = accessToken;
-    }
+    internal void NotifyDeviceSessionRevoked() => DeviceSessionRevoked?.Invoke(this, EventArgs.Empty);
 
     internal void SetAuthenticated(User user)
     {
@@ -19,7 +16,6 @@ public sealed partial class UserSessionContext(UserRegistry userRegistry) : Obse
 
     internal void Clear()
     {
-        AccessToken = null;
         CurrentUser = null;
         userRegistry.Clear();
     }

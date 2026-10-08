@@ -9,6 +9,6 @@ public sealed class CheckStatusEndpointTests(TestingFixture fixture) : TestingBa
 
         var response = await client.CheckStatusAsync(CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
     }
 }

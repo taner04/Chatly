@@ -13,16 +13,16 @@ public sealed class AcceptFriendRequestEndpointTests(TestingFixture fixture) : T
             CurrentCancellationToken);
         var client = CreateAuthenticatedClient();
         var pending = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        var requestId = Assert.Single(pending.Content!.Items).FriendRequestId;
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
 
         var response = await client.AcceptFriendRequestAsync(requestId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.Equal(sender.Id.Value, response.Content!.FriendUserId);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.FriendUserId.Should().Be(sender.Id.Value);
         var friendships = await client.GetFriendshipsAsync(CurrentCancellationToken);
-        Assert.Equal(sender.Id.Value, Assert.Single(friendships.Content!).FriendUserId);
+        friendships.Content!.Should().ContainSingle().Subject.FriendUserId.Should().Be(sender.Id.Value);
         var chats = await CreateAuthenticatedClient(sender).GetChatsAsync(CurrentCancellationToken);
-        Assert.Equal(response.Content.DirectChatId, Assert.Single(chats.Content!).ChatId);
+        chats.Content!.Should().ContainSingle().Subject.ChatId.Should().Be(response.Content.DirectChatId);
     }
 
     [Fact]
@@ -32,12 +32,12 @@ public sealed class AcceptFriendRequestEndpointTests(TestingFixture fixture) : T
         var client = CreateAuthenticatedClient();
         await client.SendFriendRequestAsync(new SendFriendRequestRequest(receiver.Id.Value), CurrentCancellationToken);
         var pending = await CreateAuthenticatedClient(receiver).GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
-        var requestId = Assert.Single(pending.Content!.Items).FriendRequestId;
+        var requestId = pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId;
 
         var response = await client.AcceptFriendRequestAsync(requestId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         await using var dbContext = GetDbContext();
-        Assert.False(await dbContext.Friendships.AnyAsync(CurrentCancellationToken));
+        (await dbContext.Friendships.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 }

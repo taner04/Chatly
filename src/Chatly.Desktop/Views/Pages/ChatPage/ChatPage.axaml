@@ -60,8 +60,7 @@
                             Background="Transparent"
                             BorderThickness="0"
                             VerticalAlignment="Center"
-                            x:CompileBindings="False"
-                            Command="{Binding DataContext.RemoveDraftAttachmentCommand, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                            Command="{Binding $parent[UserControl].((viewModels:ChatPageViewModel)DataContext).RemoveDraftAttachmentCommand}"
                             CommandParameter="{Binding}">
                         <ic:SymbolIcon Symbol="Dismiss" FontSize="13" />
                     </Button>

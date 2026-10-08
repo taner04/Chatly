@@ -7,7 +7,7 @@ internal sealed class GetMessagesEndpoint : IEndpoint
     public void MapEndpoint(WebApplication app)
     {
         app.MapGet(
-                ApiRoutes.Chats.Messages,
+                ApiRoutes.Chats.ChatMessages,
                 async (
                     [AsParameters] GetMessagesRequest request,
                     [FromServices] IMediator mediator,

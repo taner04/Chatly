@@ -12,6 +12,8 @@ internal sealed partial class EmailService(
     IOptions<EmailOption> emailOptions,
     EmailTemplateRenderer renderer) : IEmailService
 {
+    private const int ImplicitTlsPort = 465;
+
     private readonly EmailOption _emailOption = emailOptions.Value;
 
     public async Task SendEmailAsync(
@@ -47,7 +49,7 @@ internal sealed partial class EmailService(
             await smtpClient.ConnectAsync(
                 _emailOption.Host,
                 _emailOption.Port,
-                SecureSocketOptions.Auto,
+                GetSocketOptions(_emailOption),
                 cancellationToken);
 
             if (!string.IsNullOrWhiteSpace(_emailOption.Username) &&
@@ -87,6 +89,14 @@ internal sealed partial class EmailService(
             }
         }
     }
+
+    internal static SecureSocketOptions GetSocketOptions(EmailOption option) =>
+        option switch
+        {
+            { UseSsl: false } => SecureSocketOptions.None,
+            { Port: ImplicitTlsPort } => SecureSocketOptions.SslOnConnect,
+            _ => SecureSocketOptions.StartTls
+        };
 
     [LoggerMessage(
         LogLevel.Information,

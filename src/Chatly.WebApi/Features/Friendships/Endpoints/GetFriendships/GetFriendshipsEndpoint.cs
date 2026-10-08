@@ -9,11 +9,9 @@ internal sealed class GetFriendshipsEndpoint : IEndpoint
         app.MapGet(
                 ApiRoutes.Friendships.Collection,
                 async (IMediator mediator, CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(
+                    Results.Ok(await mediator.Send(
                         new GetFriendshipsQuery(),
-                        cancellationToken));
-                })
+                        cancellationToken)))
             .WithName("GetFriendships")
             .WithTags("Friendships")
             .RequireAuthorization()

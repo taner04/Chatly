@@ -10,6 +10,7 @@ public readonly partial struct ReactionId : IGuidEntityId<ReactionId>
 
 public sealed class Reaction : Entity<ReactionId>
 {
+    [UsedImplicitly]
     private Reaction()
     {
     }

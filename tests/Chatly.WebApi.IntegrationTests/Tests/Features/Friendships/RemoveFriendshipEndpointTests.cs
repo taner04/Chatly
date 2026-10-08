@@ -1,3 +1,6 @@
+using Chatly.Contracts.Features.Hubs;
+using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
+
 namespace Chatly.WebApi.IntegrationTests.Tests.Features.Friendships;
 
 public sealed class RemoveFriendshipEndpointTests(TestingFixture fixture) : TestingBase(fixture)
@@ -11,12 +14,33 @@ public sealed class RemoveFriendshipEndpointTests(TestingFixture fixture) : Test
 
         var response = await client.RemoveFriendshipAsync(friend.Id.Value, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         var friendships = await client.GetFriendshipsAsync(CurrentCancellationToken);
-        Assert.Empty(friendships.Content!);
+        friendships.Content!.Should().BeEmpty();
         var send = await client.SendMessageAsync(chatId.Value, "still there?", CurrentCancellationToken);
-        Assert.Equal(HttpStatusCode.NotFound, send.StatusCode);
+        send.StatusCode.Should().Be(HttpStatusCode.NotFound);
         await using var dbContext = GetDbContext();
-        Assert.True(await dbContext.Chats.AnyAsync(chat => chat.Id == chatId, CurrentCancellationToken));
+        (await dbContext.Chats.AnyAsync(chat => chat.Id == chatId, CurrentCancellationToken)).Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task RemoveFriendship_Should_EndRunningCall_When_UsersAreInACall()
+    {
+        var friend = await CreateUserAsync("friend");
+        await CreateFriendshipAsync(CurrentUser, friend);
+        await using var caller = await ConnectCallHubAsync();
+        await using var receiver = await ConnectCallHubAsync(friend);
+        var started = await caller.StartCallAsync(friend.Id.Value);
+
+        var response = await CreateAuthenticatedClient()
+            .RemoveFriendshipAsync(friend.Id.Value, CurrentCancellationToken);
+
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
+        var ended = await receiver.ReceiveAsync<CallEndedNotification>();
+        ended.CallId.Should().Be(started.CallId);
+        ended.Reason.Should().Be(CallEndReason.Cancelled);
+        await using var dbContext = GetDbContext();
+        (await dbContext.Calls.SingleAsync(CurrentCancellationToken)).Status.Should().Be(CallState.Ended);
+        (await dbContext.ActiveCallParticipants.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 }

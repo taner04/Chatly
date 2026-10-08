@@ -16,7 +16,7 @@ internal sealed class SearchUsersQueryHandler(
         SearchUsersQuery query,
         CancellationToken cancellationToken)
     {
-        var currentUserId = currentUser.GetCurrentUserId();
+        var currentUserId = currentUser.UserId;
         var pattern = $"%{EscapeLikePattern(query.SearchName)}%";
 
         var page = await context.Users

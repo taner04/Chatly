@@ -2,16 +2,10 @@ namespace Chatly.Contracts.Common;
 
 public static class ApiRoutes
 {
-    public static class Attachments
-    {
-        public const string Collection = "/api/attachments";
-        public const string ById = "/api/attachments/{attachmentId}";
-    }
-
     public static class Chats
     {
         public const string Collection = "/api/chats";
-        public const string Messages = "/api/chats/{chatId}/messages";
+        public const string ChatMessages = "/api/chats/{chatId}/messages";
         public const string Read = "/api/chats/{chatId}/read";
     }
 
@@ -39,6 +33,11 @@ public static class ApiRoutes
         public const string Call = "/hubs/call";
     }
 
+    public static class Identity
+    {
+        public const string BackchannelLogout = "/api/identity/backchannel-logout";
+    }
+
     public static class LiveKit
     {
         public const string Webhook = "/api/livekit/webhook";
@@ -62,6 +61,9 @@ public static class ApiRoutes
         public const string Onboarding = "/api/users/me/onboarding";
         public const string ProfilePicture = "/api/users/me/profile-picture";
         public const string Search = "/api/users/search";
+        public const string Sessions = "/api/users/me/sessions";
+        public const string CurrentSession = "/api/users/me/sessions/current";
+        public const string SessionById = "/api/users/me/sessions/{sessionId}";
         public const string Username = "/api/users/me/username";
     }
 }

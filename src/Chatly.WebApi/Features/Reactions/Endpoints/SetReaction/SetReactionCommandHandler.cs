@@ -15,7 +15,7 @@ internal sealed class SetReactionCommandHandler(
         SetReactionCommand command,
         CancellationToken cancellationToken)
     {
-        var userId = userService.GetCurrentUserId();
+        var userId = userService.UserId;
 
         var chat = await chatAccessService.GetForMessageAsync(
                        command.MessageId,
@@ -28,6 +28,7 @@ internal sealed class SetReactionCommandHandler(
                 reaction => reaction.MessageId == command.MessageId && reaction.UserId == userId,
                 cancellationToken);
 
+        var isNew = reaction is null;
         if (reaction is null)
         {
             reaction = new Reaction(userId, command.MessageId, command.ReactionType);
@@ -38,7 +39,19 @@ internal sealed class SetReactionCommandHandler(
             reaction.Type = command.ReactionType;
         }
 
-        await context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (isNew && exception.IsUniqueViolation())
+        {
+            context.Entry(reaction).State = EntityState.Detached;
+            reaction = await context.Reactions.SingleAsync(
+                candidate => candidate.MessageId == command.MessageId && candidate.UserId == userId,
+                cancellationToken);
+            reaction.Type = command.ReactionType;
+            await context.SaveChangesAsync(cancellationToken);
+        }
 
         var response = new MessageReactionContract(
             reaction.Id.Value,

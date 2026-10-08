@@ -20,9 +20,9 @@ public sealed class RemoveReactionEndpointTests(TestingFixture fixture) : Testin
 
         var response = await client.RemoveReactionAsync(reaction.Content!.ReactionId, CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NoContent, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NoContent);
         await using var dbContext = GetDbContext();
-        Assert.False(await dbContext.Reactions.AnyAsync(CurrentCancellationToken));
+        (await dbContext.Reactions.AnyAsync(CurrentCancellationToken)).Should().BeFalse();
     }
 
     [Fact]
@@ -41,8 +41,8 @@ public sealed class RemoveReactionEndpointTests(TestingFixture fixture) : Testin
             reaction.Content!.ReactionId,
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.NotFound, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.NotFound);
         await using var dbContext = GetDbContext();
-        Assert.True(await dbContext.Reactions.AnyAsync(CurrentCancellationToken));
+        (await dbContext.Reactions.AnyAsync(CurrentCancellationToken)).Should().BeTrue();
     }
 }

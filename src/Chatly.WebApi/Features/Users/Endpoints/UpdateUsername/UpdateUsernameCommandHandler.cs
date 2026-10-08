@@ -5,7 +5,6 @@ namespace Chatly.WebApi.Features.Users.Endpoints.UpdateUsername;
 
 internal sealed class UpdateUsernameCommandHandler(
     UserService userService,
-    ChatlyDbContext context,
     UserProfileUpdateNotifier profileUpdateNotifier)
     : ICommandHandler<UpdateUsernameCommand, CurrentUserResponse>
 {
@@ -19,7 +18,7 @@ internal sealed class UpdateUsernameCommandHandler(
             command.NewUsername,
             cancellationToken);
 
-        await context.SaveChangesAsync(cancellationToken);
+        await userService.SaveAsync(user, cancellationToken);
         var response = userService.CreateResponse(user);
         await profileUpdateNotifier.PublishAsync(response, cancellationToken);
 

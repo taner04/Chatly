@@ -1,12 +1,13 @@
 using Chatly.Contracts.Features.Hubs;
 using Chatly.Contracts.Features.Hubs.Abstraction;
 using Chatly.Desktop.Services.Calls;
+using Chatly.Desktop.UnitTests.Infrastructure;
 using Chatly.Desktop.UnitTests.Tests.Services.Calls.TestDoubles;
 using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Chatly.Desktop.UnitTests.Tests.Services.Calls;
 
-public sealed class CallCoordinatorTests
+public sealed class CallCoordinatorTests : TestBase
 {
     private readonly Guid _callId = Guid.NewGuid();
     private readonly CallCoordinator _coordinator;
@@ -29,7 +30,7 @@ public sealed class CallCoordinatorTests
             .Returns(Task.FromException(new InvalidOperationException("The hub is not connected.")));
         await JoinActiveCallAsync(_callId);
 
-        var end = () => _coordinator.EndAsync(TestContext.Current.CancellationToken);
+        var end = () => _coordinator.EndAsync(CurrentCancellationToken);
 
         await end.Should().ThrowAsync<InvalidOperationException>();
         _session.Snapshot.Should().Be(CallSnapshot.Empty);
@@ -50,7 +51,7 @@ public sealed class CallCoordinatorTests
             acceptedAt));
         _session.SetCall(new CallInfo(_callId, Guid.NewGuid(), "caller", CallRole.Receiver, CallState.Ringing, null));
 
-        await _coordinator.AcceptAsync(TestContext.Current.CancellationToken);
+        await _coordinator.AcceptAsync(CurrentCancellationToken);
 
         _session.Snapshot.State.Should().Be(CallState.Active);
         _session.Snapshot.AcceptedAt.Should().Be(acceptedAt);
@@ -62,7 +63,7 @@ public sealed class CallCoordinatorTests
     {
         _hub.GetCurrentCallAsync().Returns(Info(_callId, CallRole.Caller, CallState.Active));
 
-        await _coordinator.ReconcileAsync(TestContext.Current.CancellationToken);
+        await _coordinator.ReconcileAsync(CurrentCancellationToken);
 
         _media.Joins.Should().ContainSingle();
         _session.Snapshot.CallId.Should().Be(_callId);
@@ -74,7 +75,7 @@ public sealed class CallCoordinatorTests
     {
         _hub.GetCurrentCallAsync().Returns(Info(_callId, CallRole.Receiver, CallState.Ringing));
 
-        await _coordinator.ReconcileAsync(TestContext.Current.CancellationToken);
+        await _coordinator.ReconcileAsync(CurrentCancellationToken);
 
         _session.Snapshot.CallId.Should().Be(_callId);
         _session.Snapshot.IsIncoming.Should().BeTrue();
@@ -88,7 +89,7 @@ public sealed class CallCoordinatorTests
         await JoinActiveCallAsync(_callId);
         _hub.GetCurrentCallAsync().Returns((CallInfo?)null);
 
-        await _coordinator.ReconcileAsync(TestContext.Current.CancellationToken);
+        await _coordinator.ReconcileAsync(CurrentCancellationToken);
 
         _session.Snapshot.Should().Be(CallSnapshot.Empty);
         _media.LeaveCount.Should().Be(1);
@@ -101,7 +102,7 @@ public sealed class CallCoordinatorTests
         var serverCallId = Guid.NewGuid();
         _hub.GetCurrentCallAsync().Returns(Info(serverCallId, CallRole.Caller, CallState.Active));
 
-        await _coordinator.ReconcileAsync(TestContext.Current.CancellationToken);
+        await _coordinator.ReconcileAsync(CurrentCancellationToken);
 
         _session.Snapshot.CallId.Should().Be(serverCallId);
         _media.LeaveCount.Should().Be(1);
@@ -112,8 +113,8 @@ public sealed class CallCoordinatorTests
     {
         _session.SetCall(Info(callId, CallRole.Receiver, CallState.Active));
         await _session.RunAsync(
-            () => _session.EnsureMediaAsync(TestContext.Current.CancellationToken),
-            TestContext.Current.CancellationToken);
+            () => _session.EnsureMediaAsync(CurrentCancellationToken),
+            CurrentCancellationToken);
     }
 
     private static CallInfo Info(Guid callId, CallRole role, CallState state) =>

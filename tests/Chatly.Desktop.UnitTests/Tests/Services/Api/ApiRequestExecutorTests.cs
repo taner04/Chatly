@@ -1,25 +1,19 @@
 using System.Net;
-using System.Text;
+using Chatly.Contracts.Common;
 using Chatly.Desktop.Services.Api;
+using Chatly.Desktop.UnitTests.Infrastructure;
 using Refit;
 
 namespace Chatly.Desktop.UnitTests.Tests.Services.Api;
 
-public sealed class ApiRequestExecutorTests
+public sealed class ApiRequestExecutorTests : TestBase
 {
-    private static readonly RefitSettings Settings = new();
-
     [Fact]
     public async Task ExecuteAsync_Should_ReturnContent_When_RequestSucceeds()
     {
-        var response = new HttpResponseMessage(HttpStatusCode.OK)
-        {
-            RequestMessage = new HttpRequestMessage(HttpMethod.Get, "https://api.test/users/me")
-        };
-
         var result = await ApiRequestExecutor.ExecuteAsync(
-            () => Task.FromResult(new ApiResponse<string>(response, "value", Settings)),
-            TestContext.Current.CancellationToken);
+            () => Task.FromResult(ApiResponses.Ok("value")),
+            CurrentCancellationToken);
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be("value");
@@ -28,19 +22,13 @@ public sealed class ApiRequestExecutorTests
     [Fact]
     public async Task ExecuteAsync_Should_MapProblemDetails_When_ApiReturnsError()
     {
-        var response = new HttpResponseMessage(HttpStatusCode.Conflict)
-        {
-            RequestMessage = new HttpRequestMessage(HttpMethod.Put, "https://api.test/users/me/username"),
-            Content = new StringContent(
-                """{"title":"Taken","detail":"Username is taken.","errorCode":"User.UsernameTaken"}""",
-                Encoding.UTF8,
-                "application/problem+json")
-        };
-        var exception = await ApiException.Create(response.RequestMessage, HttpMethod.Put, response, Settings);
+        var response = await ApiResponses.ProblemAsync<string>(
+            HttpStatusCode.Conflict,
+            new ApiProblemDetails { Title = "Taken", Detail = "Username is taken.", ErrorCode = "User.UsernameTaken" });
 
         var result = await ApiRequestExecutor.ExecuteAsync(
-            () => Task.FromResult(new ApiResponse<string>(response, null, Settings, exception)),
-            TestContext.Current.CancellationToken);
+            () => Task.FromResult(response),
+            CurrentCancellationToken);
 
         result.IsFailure.Should().BeTrue();
         result.Error.ErrorCode.Should().Be("User.UsernameTaken");
@@ -52,7 +40,7 @@ public sealed class ApiRequestExecutorTests
     {
         var result = await ApiRequestExecutor.ExecuteAsync(
             () => Task.FromException<ApiResponse<string>>(new HttpRequestException("connection refused")),
-            TestContext.Current.CancellationToken);
+            CurrentCancellationToken);
 
         result.IsFailure.Should().BeTrue();
         result.Error.ErrorCode.Should().Be("network.unavailable");
@@ -63,10 +51,11 @@ public sealed class ApiRequestExecutorTests
     {
         using var cancellation = new CancellationTokenSource();
         await cancellation.CancelAsync();
+        var token = cancellation.Token;
 
         var act = () => ApiRequestExecutor.ExecuteAsync(
-            () => Task.FromException<ApiResponse<string>>(new OperationCanceledException(cancellation.Token)),
-            cancellation.Token);
+            () => Task.FromException<ApiResponse<string>>(new OperationCanceledException(token)),
+            token);
 
         await act.Should().ThrowAsync<OperationCanceledException>();
     }

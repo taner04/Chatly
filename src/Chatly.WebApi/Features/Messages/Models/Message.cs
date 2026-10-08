@@ -13,6 +13,7 @@ public sealed class Message : Entity<MessageId>
 {
     internal const int MaxContentLength = 4_000;
 
+    [UsedImplicitly]
     private Message()
     {
     }

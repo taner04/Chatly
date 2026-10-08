@@ -10,11 +10,11 @@ public sealed class UpdateProfilePictureEndpointTests(TestingFixture fixture) : 
         var response =
             await client.UpdateProfilePictureAsync(CreateFile("me.png", "image/png"), CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.False(string.IsNullOrWhiteSpace(response.Content!.ProfilePictureUrl));
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        string.IsNullOrWhiteSpace(response.Content!.ProfilePictureUrl).Should().BeFalse();
         await using var dbContext = GetDbContext();
         var user = await dbContext.Users.SingleAsync(user => user.Id == CurrentUser.Id, CurrentCancellationToken);
-        Assert.NotNull(user.ProfilePictureFileId);
+        user.ProfilePictureFileId.Should().NotBeNull();
     }
 
     [Fact]
@@ -24,7 +24,7 @@ public sealed class UpdateProfilePictureEndpointTests(TestingFixture fixture) : 
             CreateFile("me.txt", "text/plain"),
             CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.BadRequest, response.StatusCode);
+        response.StatusCode.Should().Be(HttpStatusCode.BadRequest);
     }
 
     [Fact]
@@ -38,10 +38,10 @@ public sealed class UpdateProfilePictureEndpointTests(TestingFixture fixture) : 
         var response =
             await client.UpdateProfilePictureAsync(CreateFile("second.png", "image/png"), CurrentCancellationToken);
 
-        Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-        Assert.NotEqual(previousUrl, response.Content!.ProfilePictureUrl);
+        response.StatusCode.Should().Be(HttpStatusCode.OK);
+        response.Content!.ProfilePictureUrl.Should().NotBe(previousUrl);
         await using var dbContext = GetDbContext();
-        Assert.Equal(1, await dbContext.StoredFiles.CountAsync(CurrentCancellationToken));
-        Assert.Equal(HttpStatusCode.NotFound, await GetBlobStatusAsync(previousUrl));
+        (await dbContext.StoredFiles.CountAsync(CurrentCancellationToken)).Should().Be(1);
+        (await GetBlobStatusAsync(previousUrl)).Should().Be(HttpStatusCode.NotFound);
     }
 }

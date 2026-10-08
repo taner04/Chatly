@@ -11,7 +11,7 @@ internal sealed class RemoveMessageCommandHandler(
 {
     public async ValueTask<Unit> Handle(RemoveMessageCommand command, CancellationToken cancellationToken)
     {
-        var userId = userService.GetCurrentUserId();
+        var userId = userService.UserId;
 
         var message = await context.Messages
                           .Include(message => message.Chat)

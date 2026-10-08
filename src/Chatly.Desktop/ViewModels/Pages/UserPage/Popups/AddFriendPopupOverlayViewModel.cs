@@ -18,12 +18,15 @@ public sealed partial class AddFriendPopupOverlayViewModel(
 
     public override bool IsDismissible => true;
 
+    public override double PopupMinHeight => 0;
+
     [ObservableProperty] public partial string UserName { get; set; } = string.Empty;
     [ObservableProperty] public partial bool IsSearching { get; private set; }
     [ObservableProperty] public partial bool HasSearched { get; private set; }
 
     public ObservableCollection<UserSearchResultViewModel> SearchedUsers { get; } = [];
     public bool HasMoreUsers => _nextPageIndex.HasValue;
+    public bool HasSearchResults => SearchedUsers.Count > 0;
     public bool HasNoSearchResults => HasSearched && !IsSearching && SearchedUsers.Count == 0;
     public bool ShowSearchPrompt => !HasSearched && !IsSearching;
 
@@ -112,6 +115,7 @@ public sealed partial class AddFriendPopupOverlayViewModel(
     private void NotifySearchResultsChanged()
     {
         OnPropertyChanged(nameof(HasMoreUsers));
+        OnPropertyChanged(nameof(HasSearchResults));
         OnPropertyChanged(nameof(HasNoSearchResults));
         OnPropertyChanged(nameof(ShowSearchPrompt));
     }
@@ -124,5 +128,6 @@ public sealed partial class AddFriendPopupOverlayViewModel(
         }
 
         SearchedUsers.Clear();
+        OnPropertyChanged(nameof(HasSearchResults));
     }
 }

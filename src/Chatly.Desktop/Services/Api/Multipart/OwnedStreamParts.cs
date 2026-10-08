@@ -9,10 +9,6 @@ internal sealed class OwnedStreamParts(
 {
     internal IReadOnlyList<StreamPart> Parts { get; } = parts;
 
-    internal StreamPart Single => Parts.Count == 1
-        ? Parts[0]
-        : throw new InvalidOperationException("Exactly one multipart stream was expected.");
-
     public async ValueTask DisposeAsync()
     {
         foreach (var stream in streams)

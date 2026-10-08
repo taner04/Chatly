@@ -26,7 +26,7 @@ if (app.Environment.IsDevelopment())
 
 _ = app.UseExceptionHandler();
 
-_ = app.UseHttpsRedirection();
+_ = app.UseHttpsRedirectionForClients();
 
 _ = app.UseAuthentication();
 _ = app.UseAuthorization();
@@ -38,8 +38,12 @@ if (app.Environment.IsDevelopment())
 
 _ = app.MapEndpoints();
 
-_ = app.MapHub<NotificationHub>(ApiRoutes.Hubs.Notification);
-_ = app.MapHub<CallingHub>(ApiRoutes.Hubs.Call);
+_ = app.MapHub<NotificationHub>(
+    ApiRoutes.Hubs.Notification,
+    options => options.CloseOnAuthenticationExpiration = true);
+_ = app.MapHub<CallingHub>(
+    ApiRoutes.Hubs.Call,
+    options => options.CloseOnAuthenticationExpiration = true);
 
 _ = await app.InitializeBlobStorage();
 

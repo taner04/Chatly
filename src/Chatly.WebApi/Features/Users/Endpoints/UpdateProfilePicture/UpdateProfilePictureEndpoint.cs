@@ -7,14 +7,12 @@ internal sealed class UpdateProfilePictureEndpoint : IEndpoint
         app.MapPut(
                 ApiRoutes.Users.ProfilePicture,
                 async (
-                    [FromForm] IFormFile? file,
-                    [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(
+                        [FromForm] IFormFile? file,
+                        [FromServices] IMediator mediator,
+                        CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(
                         new UpdateProfilePictureCommand(file),
-                        cancellationToken));
-                })
+                        cancellationToken)))
             .WithName("UpdateProfilePicture")
             .WithTags("User")
             .RequireAuthorization()

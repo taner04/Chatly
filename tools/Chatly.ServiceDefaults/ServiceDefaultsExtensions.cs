@@ -57,9 +57,9 @@ public static class ServiceDefaultsExtensions
             .WithTracing(tracing =>
             {
                 tracing.AddSource(builder.Environment.ApplicationName)
-                    .AddAspNetCoreInstrumentation(tracing =>
+                    .AddAspNetCoreInstrumentation(instrumentation =>
                         // Exclude health check requests from tracing
-                        tracing.Filter = context =>
+                        instrumentation.Filter = context =>
                             !context.Request.Path.StartsWithSegments(HealthEndpointPath)
                             && !context.Request.Path.StartsWithSegments(AlivenessEndpointPath)
                     )
@@ -71,7 +71,7 @@ public static class ServiceDefaultsExtensions
         return builder;
     }
 
-    private static TBuilder AddOpenTelemetryExporters<TBuilder>(this TBuilder builder)
+    private static void AddOpenTelemetryExporters<TBuilder>(this TBuilder builder)
         where TBuilder : IHostApplicationBuilder
     {
         var useOtlpExporter = !string.IsNullOrWhiteSpace(builder.Configuration["OTEL_EXPORTER_OTLP_ENDPOINT"]);
@@ -80,8 +80,6 @@ public static class ServiceDefaultsExtensions
         {
             builder.Services.AddOpenTelemetry().UseOtlpExporter();
         }
-
-        return builder;
     }
 
     internal static TBuilder AddDefaultHealthChecks<TBuilder>(this TBuilder builder)

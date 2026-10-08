@@ -1,23 +1,23 @@
 using System.Net.Http;
 using System.Net.Http.Headers;
-using UserSessionContext = Chatly.Desktop.Models.UserSession.UserSessionContext;
+using Chatly.Desktop.Services.Authentication;
 
 namespace Chatly.Desktop.Services.Api.Refit.DelegatingHandlers;
 
 [TransientService]
-internal sealed class BearerDelegatingHandler(UserSessionContext context) : DelegatingHandler
+internal sealed class BearerDelegatingHandler(AuthenticationService authenticationService) : DelegatingHandler
 {
-    protected override Task<HttpResponseMessage> SendAsync(
+    protected override async Task<HttpResponseMessage> SendAsync(
         HttpRequestMessage request,
         CancellationToken cancellationToken)
     {
-        var accessToken = context.AccessToken;
+        var accessToken = await authenticationService.GetAccessTokenAsync(cancellationToken);
 
         if (!string.IsNullOrWhiteSpace(accessToken))
         {
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
         }
 
-        return base.SendAsync(request, cancellationToken);
+        return await base.SendAsync(request, cancellationToken);
     }
 }

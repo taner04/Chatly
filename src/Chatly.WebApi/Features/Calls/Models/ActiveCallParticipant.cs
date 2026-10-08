@@ -8,6 +8,7 @@ public readonly partial struct ActiveCallParticipantId : IGuidEntityId<ActiveCal
 
 public sealed class ActiveCallParticipant : Entity<ActiveCallParticipantId>
 {
+    [UsedImplicitly]
     private ActiveCallParticipant()
     {
     }

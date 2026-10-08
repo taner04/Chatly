@@ -15,9 +15,9 @@ public static class TestSettings
 
     public static string AzuriteImage => Required("TestContainers:AzuriteImage");
 
-    public static string Auth0Domain => Required($"{WebApiSection}:Auth0Option:Domain");
+    public static string OidcAuthority => Required($"{WebApiSection}:OidcOption:Authority");
 
-    public static string Auth0Audience => Required($"{WebApiSection}:Auth0Option:Audience");
+    public static string OidcAudience => Required($"{WebApiSection}:OidcOption:Audience");
 
     public static string LiveKitApiKey => Required($"{WebApiSection}:LiveKitOption:ApiKey");
 

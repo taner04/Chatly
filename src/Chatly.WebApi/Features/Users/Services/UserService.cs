@@ -9,9 +9,11 @@ internal sealed class UserService(
     CurrentUserService currentUser,
     ProfilePictureUrlFactory profilePictureUrlFactory)
 {
+    private const string UsernameIndexName = "IX_Users_Username";
+
     internal async Task<User> GetCurrentUserAsync(CancellationToken cancellationToken)
     {
-        var userId = currentUser.GetCurrentUserId();
+        var userId = currentUser.UserId;
 
         return await context.Users
                    .Include(user => user.ProfilePictureFile)
@@ -36,6 +38,18 @@ internal sealed class UserService(
         }
 
         user.Username = username;
+    }
+
+    internal async Task SaveAsync(User user, CancellationToken cancellationToken)
+    {
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (exception.IsUniqueViolation(UsernameIndexName))
+        {
+            throw new UsernameAlreadyExistsException(user.Username!);
+        }
     }
 
     internal CurrentUserResponse CreateResponse(User user) =>

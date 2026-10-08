@@ -3,11 +3,12 @@ using Chatly.Contracts.Features.Hubs.Abstraction;
 using Chatly.Desktop.Models.Calls;
 using Chatly.Desktop.Models.Settings;
 using Chatly.Desktop.Services.Calls;
+using Chatly.Desktop.UnitTests.Infrastructure;
 using Chatly.Desktop.UnitTests.Tests.Services.Calls.TestDoubles;
 
 namespace Chatly.Desktop.UnitTests.Tests.Services.Calls;
 
-public sealed class CallSessionTests
+public sealed class CallSessionTests : TestBase
 {
     private static readonly DateTimeOffset AcceptedAt = new(2026, 9, 25, 12, 0, 0, TimeSpan.Zero);
 
@@ -55,9 +56,9 @@ public sealed class CallSessionTests
     {
         var session = await CreateJoinedSessionAsync();
 
-        await session.RunAsync(() => session.SetMutedAsync(true), TestContext.Current.CancellationToken);
+        await session.RunAsync(() => session.SetMutedAsync(true), CurrentCancellationToken);
         session.Snapshot.IsMuted.Should().BeTrue();
-        await session.RunAsync(() => session.SetMutedAsync(false), TestContext.Current.CancellationToken);
+        await session.RunAsync(() => session.SetMutedAsync(false), CurrentCancellationToken);
 
         session.Snapshot.IsMuted.Should().BeFalse();
         _media.MicrophoneStates.Should().Equal(false, true);
@@ -116,8 +117,8 @@ public sealed class CallSessionTests
         session.SetCall(new CallInfo(_callId, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Active, null));
 
         var join = () => session.RunAsync(
-            () => session.EnsureMediaAsync(TestContext.Current.CancellationToken),
-            TestContext.Current.CancellationToken);
+            () => session.EnsureMediaAsync(CurrentCancellationToken),
+            CurrentCancellationToken);
 
         await join.Should().ThrowAsync<InvalidOperationException>();
         await _hub.Received(1).EndCallAsync(_callId);
@@ -130,11 +131,11 @@ public sealed class CallSessionTests
         session.SetCall(new CallInfo(_callId, Guid.NewGuid(), "remote", CallRole.Caller, CallState.Active, null,
             AcceptedAt));
         await session.RunAsync(
-            () => session.EnsureMediaAsync(TestContext.Current.CancellationToken),
-            TestContext.Current.CancellationToken);
+            () => session.EnsureMediaAsync(CurrentCancellationToken),
+            CurrentCancellationToken);
         return session;
     }
 
     private static Task FlushAsync(CallSession session) =>
-        session.RunAsync(() => Task.CompletedTask, TestContext.Current.CancellationToken);
+        session.RunAsync(() => Task.CompletedTask, CurrentCancellationToken);
 }

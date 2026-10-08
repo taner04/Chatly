@@ -9,11 +9,26 @@ namespace Chatly.WebApi.Common.Composition.Extensions;
 
 internal static class WebApplicationExtensions
 {
+    private static readonly string[] ServerCallbackRoutes =
+    [
+        ApiRoutes.Identity.BackchannelLogout,
+        ApiRoutes.LiveKit.Webhook
+    ];
+
     extension(WebApplication app)
     {
+        internal WebApplication UseHttpsRedirectionForClients()
+        {
+            app.UseWhen(
+                context => !ServerCallbackRoutes.Any(route => context.Request.Path.StartsWithSegments(route)),
+                branch => branch.UseHttpsRedirection());
+
+            return app;
+        }
+
         internal WebApplication MapScalar()
         {
-            var auth0 = app.Configuration.GetOption<Auth0Option>();
+            var oidc = app.Configuration.GetOption<OidcOption>();
 
             app.MapScalarApiReference(options =>
             {
@@ -24,14 +39,13 @@ internal static class WebApplicationExtensions
                     .AddOAuth2Authentication("OAuth", scheme => scheme
                         .WithFlows(flows => flows
                             .WithAuthorizationCode(flow => flow
-                                .WithAuthorizationUrl($"https://{auth0.Domain}/authorize")
-                                .WithTokenUrl($"https://{auth0.Domain}/oauth/token")
-                                .WithClientId(auth0.ClientId)
-                                .WithPkce(Pkce.Sha256)
-                                .AddQueryParameter("audience", auth0.Audience)))
+                                .WithAuthorizationUrl(oidc.AuthorizationEndpoint)
+                                .WithTokenUrl(oidc.TokenEndpoint)
+                                .WithClientId(oidc.ClientId)
+                                .WithPkce(Pkce.Sha256)))
                         .WithDefaultScopes("openid", "profile", "email"));
 
-                if (auth0.UsePersistentStorage)
+                if (oidc.UsePersistentStorage)
                 {
                     options.EnablePersistentAuthentication();
                 }

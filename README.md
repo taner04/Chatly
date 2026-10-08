@@ -27,7 +27,7 @@
 Chatly is a messenger for people who talk to the same few friends every day. Add a friend, open the chat, and write, share files, react or call — everything updates live on every device you are signed in on.
 
 > [!WARNING]
-> Chatly is under active development. It is developed and tested on macOS; **Windows support is not fully tested yet**, so expect rough edges there, especially with voice calls. See [Project Status](#project-status).
+> Chatly is under active development. It is primarily developed and tested on macOS; **Windows support is not fully tested yet**, so expect rough edges there, especially with voice calls. If you run into a problem on Windows, please [open an issue](https://github.com/taner04/Chatly/issues/new) or contribute a fix via pull request. See [Project Status](#project-status).
 
 ## Table of Contents
 
@@ -49,10 +49,11 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
 - **Reactions** — react to any message with emoji
 - **Voice calls** — one-to-one calls with echo cancellation, noise suppression and automatic gain control, plus mute and microphone/speaker selection
 - **Multiple devices** — accept a call on one device and your other devices stop ringing
+- **Device management** — see every device you are signed in on and sign out a single device or all others; a signed-out device closes immediately
 - **Friends** — search by username, send and answer friend requests, see who is online
 - **Personalization** — light, dark or system theme, accent colors, username and profile picture
 - **Sounds and notifications** — a ringtone while a call is ringing, and a notification sound for new messages and friend requests that you can turn on or off in the settings
-- **Secure sign-in** — Auth0 with tokens stored in the operating system's secure storage
+- **Secure sign-in** — Keycloak with a Chatly-styled login, refresh tokens stored in the operating system's secure storage
 
 ## Screenshots
 
@@ -87,7 +88,6 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
 
 - [.NET 10 SDK](https://dotnet.microsoft.com/download/dotnet/10.0)
 - [Docker Desktop](https://www.docker.com/products/docker-desktop)
-- An [Auth0](https://auth0.com/signup) account
 - Windows or macOS for the desktop client
 
 ### Installation
@@ -99,9 +99,16 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
    cd Chatly
    ```
 
-2. Configure Auth0 and create the three `appsettings.json` files described in [Configuration](#configuration).
+2. Create the three `appsettings.json` files with development defaults:
 
-3. Start PostgreSQL, Azure Storage, Papercut SMTP, the LiveKit media server, the database migrations and the Web API:
+   ```bash
+   ./scripts/unix/init.sh          # Linux/macOS
+   ./scripts/windows/init.ps1      # Windows
+   ```
+
+   Existing files are kept; pass `--force` (or `-Force` on Windows) to overwrite them. The LiveKit secret and the Keycloak API client secret are generated randomly. The files and their values are described in [Configuration](#configuration).
+
+3. Start PostgreSQL, Azure Storage, Papercut SMTP, the LiveKit media server, Keycloak, the database migrations and the Web API:
 
    ```bash
    dotnet run --project ./tools/Chatly.AppHost
@@ -115,22 +122,27 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
    dotnet run --project ./src/Chatly.Desktop
    ```
 
-   The client waits until the API, database and blob storage are ready, then opens the Auth0 sign-in.
+   The client waits until the API, database and blob storage are ready, then opens the Keycloak sign-in in your browser. In development you can sign in with a seeded account, see [Keycloak](#configuration).
 
 ### Configuration
 
 <details>
-<summary><strong>Auth0</strong></summary>
+<summary><strong>Keycloak</strong></summary>
 
-1. Go to the [Auth0 Dashboard](https://manage.auth0.com/)
-2. Create a **Native Application**
-3. Create an **API** in Auth0 and set its **Identifier** (Audience)
-4. Enable refresh tokens and offline access for the application
-5. Copy the **Domain**, **Client ID**, and **API Audience**
-6. Set the following URLs in the Auth0 application settings:
-   - **Allowed Callback URLs**: `http://127.0.0.1:7890/callback/`
-   - **Allowed Logout URLs**: `http://127.0.0.1:7890/callback/`
-   - Add `http://127.0.0.1:7891/callback/` to both lists to run two clients side by side with `scripts/unix/launch-two-clients.sh` or `scripts/windows/launch-two-clients.ps1`
+The AppHost starts Keycloak and imports the `chatly` realm from `tools/Chatly.AppHost/Realms/chatly-realm.json`. No manual setup is needed.
+
+| Account | Where | Login | Password |
+|---|---|---|---|
+| Keycloak admin | `https://localhost:8180` (realm `master`) | `admin` | value of `keycloak-admin-password` |
+| Seeded user | Chatly and `https://localhost:8180/realms/chatly/account` | `taner@byom.de` | value of `keycloak-seed-user-password` |
+| Seeded user | Chatly and `https://localhost:8180/realms/chatly/account` | `test@byom.de` | value of `keycloak-seed-user-password` |
+
+- Switch to the **chatly** realm in the admin console to see its clients and users.
+- Users register with email and password only. Username and profile picture are set in Chatly's onboarding.
+- The login and email pages use the Chatly theme from `tools/Chatly.AppHost/Themes/chatly`. Keycloak runs in development mode, so theme changes show after a browser reload.
+- With `PersistData` set to `false`, Keycloak starts without a data volume and imports the realm fresh on every start. Sessions and self-registered users are lost on restart, and the desktop client has to sign in again. Set it to `true` to keep Keycloak's data; changes to the realm file then only apply after removing the volume.
+- Emails such as password reset are sent to Papercut at `http://localhost:8025`.
+- Signing out a device in Chatly also ends its Keycloak session. Sign-outs started in Keycloak (account console, admin console, or "Sign out from other devices" when changing the password) reach Chatly through OIDC back-channel logout.
 
 </details>
 
@@ -168,13 +180,28 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
     "HttpPort": 7880,
     "RtcTcpPort": 7881,
     "RtcUdpPort": 7882,
-    "ApiKey": "your-livekit-api-key",
-    "ApiSecret": "your-livekit-api-secret-at-least-32-characters"
+    "ApiKey": "your-livekit-api-key"
+  },
+  "KeycloakOption": {
+    "Registry": "docker.io",
+    "Image": "keycloak/keycloak",
+    "Tag": "26.4",
+    "Port": 8180,
+    "RealmImportPath": "Realms",
+    "ThemesPath": "Themes",
+    "PersistData": false
+  },
+  "Parameters": {
+    "keycloak-admin-username": "admin",
+    "keycloak-admin-password": "dev",
+    "keycloak-api-client-secret": "your-keycloak-api-client-secret",
+    "keycloak-seed-user-password": "dev",
+    "livekit-api-secret": "your-livekit-api-secret-at-least-32-characters"
   }
 }
 ```
 
-The AppHost starts Papercut and the LiveKit media server with these values. It passes the LiveKit server URL, API key and secret to the Web API, and points the Web API's `EmailOption` at Papercut's SMTP endpoint using the sender and login values from `EmailOption`.
+The AppHost starts Papercut, the LiveKit media server and Keycloak with these values. It passes the LiveKit server URL, API key and secret to the Web API, and points the Web API's `EmailOption` at Papercut's SMTP endpoint using the sender and login values from `EmailOption`. Keycloak sends its emails to Papercut as well. The `keycloak-api-client-secret` is set on the realm's `chatly-api` client and passed to the Web API, which uses it to end Keycloak sessions. All secrets are Aspire parameters under `Parameters`, so the dashboard masks them; `livekit-api-secret` must be at least 32 characters.
 
 </details>
 
@@ -190,11 +217,16 @@ The AppHost starts Papercut and the LiveKit media server with these values. It p
     }
   },
   "AllowedHosts": "*",
-  "Auth0Option": {
-    "Domain": "your-auth0-domain",
-    "Audience": "your-auth0-api-audience",
-    "ClientId": "your-auth0-client-id",
+  "OidcOption": {
+    "Authority": "https://localhost:8180/realms/chatly",
+    "Audience": "chatly-api",
+    "ClientId": "chatly-api-docs",
+    "BackchannelLogoutAudience": "chatly-desktop",
     "UsePersistentStorage": false
+  },
+  "IdentityAdminOption": {
+    "ClientId": "chatly-api",
+    "ClientSecret": ""
   }
 }
 ```
@@ -206,12 +238,10 @@ The AppHost starts Papercut and the LiveKit media server with these values. It p
 
 ```json
 {
-  "Auth0Option": {
-    "Domain": "your-auth0-domain",
-    "ClientId": "your-auth0-client-id",
-    "Audience": "your-auth0-api-audience",
-    "ConnectionName": "Username-Password-Authentication",
-    "Scope": "openid profile email offline_access",
+  "OidcOption": {
+    "Authority": "https://localhost:8180/realms/chatly",
+    "ClientId": "chatly-desktop",
+    "Scope": "openid profile email",
     "RedirectUri": "http://127.0.0.1:7890/callback/"
   },
   "DesktopProfileOption": {
@@ -234,7 +264,7 @@ The AppHost starts Papercut and the LiveKit media server with these values. It p
 | Backend | ASP.NET Core Minimal APIs, SignalR, Mediator (CQRS) |
 | Voice | [LiveKit](https://livekit.io/) media server, WebRTC in a native WebView |
 | Data | PostgreSQL with Entity Framework Core, Azure Blob Storage for files |
-| Sign-in | Auth0 (OIDC with PKCE) |
+| Sign-in | [Keycloak](https://www.keycloak.org/) (OIDC with PKCE, back-channel logout) |
 | Local orchestration | .NET Aspire, OpenTelemetry, health checks |
 | API docs | Scalar |
 
@@ -243,7 +273,6 @@ The AppHost starts Papercut and the LiveKit media server with these values. It p
 Chatly is a work in progress. These tasks are still open:
 
 - [ ] Test the desktop client end to end on Windows, including voice calls (`scripts/windows/webview-call-probe.ps1`)
-- [ ] Show active sessions in the settings and let users sign out of other devices
 - [ ] Add a setting to turn the ringtone on or off
 - [ ] Let users withdraw a friend request they have sent
 - [ ] Let users block other users
@@ -257,8 +286,8 @@ Chatly is a work in progress. These tasks are still open:
 Chatly/
 ├── docs/                                          # Documentation, logo and screenshots
 ├── scripts/                                       # Platform-specific development helpers
-│   ├── unix/                                      # Linux/macOS test and desktop launch scripts
-│   └── windows/                                   # PowerShell test and desktop launch scripts
+│   ├── unix/                                      # Linux/macOS setup and test scripts
+│   └── windows/                                   # PowerShell setup and test scripts
 ├── src/
 │   ├── Chatly.Contracts/                          # REST and SignalR contracts
 │   ├── Chatly.Desktop/                            # Avalonia desktop client and WebView call media
@@ -272,7 +301,7 @@ Chatly/
 │   ├── Chatly.WebApi.UnitTests/                   # Contract serialization and LiveKit unit tests
 │   └── Chatly.WebViewCallProbe.IntegrationTests/  # Explicit WebView WebRTC checks per OS
 └── tools/
-    ├── Chatly.AppHost/                            # .NET Aspire orchestration
+    ├── Chatly.AppHost/                            # .NET Aspire orchestration, Keycloak realm and themes
     ├── Chatly.MigrationService/                   # Database migrations and development seeding
     ├── Chatly.ServiceDefaults/                    # Telemetry, health, discovery, and resilience
     └── Chatly.WebViewCallProbe/                   # WebView WebRTC capability check for Windows and macOS

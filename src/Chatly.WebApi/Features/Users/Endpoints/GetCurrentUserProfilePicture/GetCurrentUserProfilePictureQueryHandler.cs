@@ -13,7 +13,7 @@ internal sealed class GetCurrentUserProfilePictureQueryHandler(
         GetCurrentUserProfilePictureQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = currentUser.GetCurrentUserId();
+        var userId = currentUser.UserId;
 
         var profile = await context.Users
             .AsNoTracking()

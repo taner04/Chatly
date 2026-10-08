@@ -33,6 +33,7 @@
             <ProgressBar Width="160"
                          Height="3"
                          Margin="0,4,0,0"
+                         IsVisible="{Binding !ViewModel.HasError}"
                          IsIndeterminate="True"
                          Foreground="{DynamicResource ChatlyAccentBrush}" />
 
@@ -43,6 +44,16 @@
                        TextWrapping="Wrap"
                        FontSize="13"
                        Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+
+            <Button Margin="0,4,0,0"
+                    Padding="14,6"
+                    HorizontalAlignment="Center"
+                    Classes="accent-button"
+                    CornerRadius="8"
+                    IsVisible="{Binding ViewModel.HasError}"
+                    Command="{Binding ViewModel.RetryCommand}">
+                Try again
+            </Button>
 
             <Button x:Name="CancelButton"
                     Margin="0,4,0,0"

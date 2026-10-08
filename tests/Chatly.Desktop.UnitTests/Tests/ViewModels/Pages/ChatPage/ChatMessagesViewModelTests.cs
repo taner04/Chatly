@@ -8,11 +8,12 @@ using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Services.Api.Clients;
 using Chatly.Desktop.Services.Api.Refit;
 using Chatly.Desktop.Services.Storage;
+using Chatly.Desktop.UnitTests.Infrastructure;
 using Chatly.Desktop.ViewModels.Pages.ChatPage.Messages;
 
 namespace Chatly.Desktop.UnitTests.Tests.ViewModels.Pages.ChatPage;
 
-public sealed class ChatMessagesViewModelTests
+public sealed class ChatMessagesViewModelTests : TestBase
 {
     private readonly Guid _chatId = Guid.NewGuid();
     private readonly Guid _currentUserId = Guid.NewGuid();
@@ -80,7 +81,7 @@ public sealed class ChatMessagesViewModelTests
     {
         var viewModel = CreateOpenConversation();
         var staleVersion = viewModel.ConversationVersion;
-        viewModel.BeginConversation(Guid.NewGuid(), _currentUserId, "other", TestContext.Current.CancellationToken);
+        viewModel.BeginConversation(Guid.NewGuid(), _currentUserId, "other", CurrentCancellationToken);
 
         var added = viewModel.AddSentMessage(Message(_chatId, _currentUserId), staleVersion);
 
@@ -97,7 +98,7 @@ public sealed class ChatMessagesViewModelTests
             Substitute.For<IFilePicker>(),
             new FileDownloadClient(),
             Substitute.For<IToastService>());
-        viewModel.BeginConversation(_chatId, _currentUserId, "friend", TestContext.Current.CancellationToken);
+        viewModel.BeginConversation(_chatId, _currentUserId, "friend", CurrentCancellationToken);
         return viewModel;
     }
 

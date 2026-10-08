@@ -6,10 +6,9 @@
              x:DataType="local:PopupOverlayHost"
              IsVisible="{Binding ViewModel.IsOpen}">
     <Grid Background="{DynamicResource ChatlyOverlayBrush}" PointerPressed="OnBackdropPointerPressed">
-        <Border Width="540"
-                MinWidth="440"
+        <Border Width="{Binding ViewModel.Current.PopupWidth}"
                 MaxWidth="720"
-                MinHeight="300"
+                MinHeight="{Binding ViewModel.Current.PopupMinHeight}"
                 MaxHeight="620"
                 Padding="24"
                 HorizontalAlignment="Center"

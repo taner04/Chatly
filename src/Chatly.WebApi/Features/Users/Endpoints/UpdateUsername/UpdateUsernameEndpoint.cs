@@ -9,14 +9,12 @@ internal sealed class UpdateUsernameEndpoint : IEndpoint
         app.MapPut(
                 ApiRoutes.Users.Username,
                 async (
-                    [FromBody] UpdateUsernameRequest request,
-                    [FromServices] IMediator mediator,
-                    CancellationToken cancellationToken) =>
-                {
-                    return Results.Ok(await mediator.Send(
+                        [FromBody] UpdateUsernameRequest request,
+                        [FromServices] IMediator mediator,
+                        CancellationToken cancellationToken) =>
+                    Results.Ok(await mediator.Send(
                         new UpdateUsernameCommand(request.NewUsername),
-                        cancellationToken));
-                })
+                        cancellationToken)))
             .WithName("UpdateUsername")
             .WithTags("User")
             .RequireAuthorization()

@@ -10,7 +10,7 @@ internal sealed class MarkChatReadCommandHandler(
 {
     public async ValueTask<Unit> Handle(MarkChatReadCommand command, CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
         if (await chatAccessService.GetAsync(command.ChatId, userId, cancellationToken) is null)
         {
             throw new ChatAccessDeniedException(command.ChatId);
@@ -31,7 +31,13 @@ internal sealed class MarkChatReadCommandHandler(
             readState.LastReadAt = DateTimeOffset.UtcNow;
         }
 
-        await context.SaveChangesAsync(cancellationToken);
+        try
+        {
+            await context.SaveChangesAsync(cancellationToken);
+        }
+        catch (DbUpdateException exception) when (readState is null && exception.IsUniqueViolation())
+        {
+        }
 
         return Unit.Value;
     }

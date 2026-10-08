@@ -1,4 +1,5 @@
 using Chatly.Contracts.Features.Hubs;
+using Chatly.Contracts.Features.Hubs.Notifications.CallSignalingHubServer;
 using Chatly.WebApi.Features.Calls.Jobs;
 using Chatly.WebApi.Features.Calls.Models;
 using Chatly.WebApi.Features.Hubs;
@@ -50,6 +51,39 @@ internal sealed partial class CallService(
             Finish(call, reason, DateTimeOffset.UtcNow);
             return true;
         }, true, cancellationToken);
+
+    internal async Task EndCallBetweenAsync(
+        UserId actorUserId,
+        UserId otherUserId,
+        CancellationToken cancellationToken)
+    {
+        var callId = await context.Calls
+            .Where(call => call.Status != CallState.Ended &&
+                           ((call.CallerUserId == actorUserId && call.ReceiverUserId == otherUserId) ||
+                            (call.CallerUserId == otherUserId && call.ReceiverUserId == actorUserId)))
+            .Select(call => (CallId?)call.Id)
+            .FirstOrDefaultAsync(cancellationToken);
+        if (callId is not { } id)
+        {
+            return;
+        }
+
+        Call? ended;
+        try
+        {
+            ended = await EndAsync(id, actorUserId, cancellationToken);
+        }
+        catch (CallTransitionException)
+        {
+            return;
+        }
+
+        if (ended is not null)
+        {
+            await PublishEndedAsync(ended, static (callId, remoteId, remoteName, role, state, reason) =>
+                new CallEndedNotification(callId, remoteId, remoteName, role, state, reason));
+        }
+    }
 
     internal Task<Call?> ExpireAsync(CallId callId, CancellationToken cancellationToken) =>
         TryTransitionAsync(callId, call =>

@@ -10,6 +10,7 @@ public readonly partial struct CallId : IGuidEntityId<CallId>
 
 public sealed class Call : Entity<CallId>
 {
+    [UsedImplicitly]
     private Call()
     {
     }

@@ -3,8 +3,6 @@
     <PropertyGroup>
         <TargetFramework>netstandard2.0</TargetFramework>
         <LangVersion>latest</LangVersion>
-        <ImplicitUsings>enable</ImplicitUsings>
-        <Nullable>enable</Nullable>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
         <NoWarn>$(NoWarn);RS2000;RS2008</NoWarn>
     </PropertyGroup>
@@ -21,6 +19,16 @@
         <EmbeddedResource Include="Generators/Services/Services.cs.template"
                           LogicalName="Chatly.SourceGenerator.Templates.Services.cs.template"
                           WithCulture="false"/>
+    </ItemGroup>
+
+    <ItemGroup>
+        <Using Include="System.Collections.Immutable"/>
+        <Using Include="System.Text"/>
+        <Using Include="Chatly.SourceGenerator.Generators.Services.Models"/>
+        <Using Include="Chatly.SourceGenerator.Templates"/>
+        <Using Include="Microsoft.CodeAnalysis"/>
+        <Using Include="Microsoft.CodeAnalysis.CSharp.Syntax"/>
+        <Using Include="Microsoft.CodeAnalysis.Text"/>
     </ItemGroup>
 
 </Project>

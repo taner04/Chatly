@@ -20,7 +20,7 @@ public sealed class SendAbsenceEmailJobTests(TestingFixture fixture) : TestingBa
             Arg.Any<CancellationToken>());
         await using var dbContext = GetDbContext();
         var user = await dbContext.Users.SingleAsync(user => user.Id == CurrentUser.Id, CurrentCancellationToken);
-        Assert.NotNull(user.LastAbsenceEmailAt);
+        user.LastAbsenceEmailAt.Should().NotBeNull();
     }
 
     [Fact]
@@ -41,11 +41,12 @@ public sealed class SendAbsenceEmailJobTests(TestingFixture fixture) : TestingBa
             .SendEmailAsync(Arg.Any<string>(), Arg.Any<EmailRequest>(), Arg.Any<CancellationToken>())
             .Returns(Task.FromException(new InvalidOperationException("SMTP down")));
 
-        await Assert.ThrowsAsync<InvalidOperationException>(() => RunJobAsync(CurrentUser));
+        await FluentActions.Awaiting(() => RunJobAsync(CurrentUser))
+            .Should().ThrowExactlyAsync<InvalidOperationException>();
 
         await using var dbContext = GetDbContext();
         var user = await dbContext.Users.SingleAsync(user => user.Id == CurrentUser.Id, CurrentCancellationToken);
-        Assert.Null(user.LastAbsenceEmailAt);
+        user.LastAbsenceEmailAt.Should().BeNull();
     }
 
     private async Task SetLastSeenAsync(TestUser user, TimeSpan ago)

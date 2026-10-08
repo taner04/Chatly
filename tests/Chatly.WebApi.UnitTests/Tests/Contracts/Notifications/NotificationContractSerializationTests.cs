@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Chatly.Contracts.Features.DeviceSessions.Notifications;
 using Chatly.Contracts.Features.FriendRequests.Endpoints.AcceptFriendRequest;
 using Chatly.Contracts.Features.FriendRequests.Endpoints.SendFriendRequest;
 using Chatly.Contracts.Features.FriendRequests.Models;
@@ -38,7 +39,9 @@ public sealed class NotificationContractSerializationTests
         new TypingStatusChangedNotification(Id, true),
         new OnlineStatusChangedNotification(Id, false),
         new FriendshipRemovedNotification(Id),
-        new UserProfileUpdatedNotification(Id, "renamed", null)
+        new UserProfileUpdatedNotification(Id, "renamed", null),
+        new DeviceSessionRevokedNotification(),
+        new DeviceSessionsChangedNotification()
     ];
 
     [Theory]

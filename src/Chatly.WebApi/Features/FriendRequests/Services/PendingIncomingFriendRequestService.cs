@@ -12,7 +12,7 @@ internal sealed class PendingIncomingFriendRequestService(
         Guid friendRequestId,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
         var requestId = FriendRequestId.From(friendRequestId);
 
         return await context.FriendRequests.FirstOrDefaultAsync(

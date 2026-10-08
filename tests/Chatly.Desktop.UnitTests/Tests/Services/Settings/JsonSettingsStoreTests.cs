@@ -1,5 +1,6 @@
 using Chatly.Desktop.Abstraction.Settings;
 using Chatly.Desktop.Models.Settings;
+using Chatly.Desktop.Options;
 using Chatly.Desktop.Services.Settings;
 using Microsoft.Extensions.Logging.Abstractions;
 
@@ -54,8 +55,21 @@ public sealed class JsonSettingsStoreTests : IDisposable
         settings.EchoCancellation.Should().BeTrue();
     }
 
-    private JsonSettingsStore CreateStore() =>
-        new(new FixedDirectoryProvider(_root), NullLogger<JsonSettingsStore>.Instance);
+    [Fact]
+    public void SaveSettings_Should_KeepProfilesSeparate_When_ProfilesDiffer()
+    {
+        CreateStore("primary").SaveSettings(new DeviceSettings { DeviceId = Guid.NewGuid() });
+
+        var secondary = CreateStore("secondary").LoadSettings<DeviceSettings>();
+
+        secondary.DeviceId.Should().BeNull();
+    }
+
+    private JsonSettingsStore CreateStore(string profileName = DesktopProfileOption.DefaultName) =>
+        new(
+            new FixedDirectoryProvider(_root),
+            Microsoft.Extensions.Options.Options.Create(new DesktopProfileOption { Name = profileName }),
+            NullLogger<JsonSettingsStore>.Instance);
 
     private sealed class FixedDirectoryProvider(string root) : ISettingsDirectoryProvider
     {

@@ -1,5 +1,6 @@
 using Chatly.Shared.Extensions;
 using Chatly.WebApi.Common.Composition.Options;
+using Chatly.WebApi.Features.DeviceSessions.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
 
@@ -11,7 +12,7 @@ internal static class AuthenticationServiceCollectionExtensions
     {
         internal IServiceCollection AddChatlyAuthentication(IConfiguration configuration)
         {
-            var auth0 = configuration.GetOption<Auth0Option>();
+            var oidc = configuration.GetOption<OidcOption>();
 
             services.AddAuthentication(options =>
                 {
@@ -20,20 +21,20 @@ internal static class AuthenticationServiceCollectionExtensions
                 })
                 .AddJwtBearer(options =>
                 {
-                    options.Authority = $"https://{auth0.Domain}";
-                    options.Audience = auth0.Audience;
+                    options.Authority = oidc.Authority;
+                    options.Audience = oidc.Audience;
                     options.MapInboundClaims = false;
 
                     options.TokenValidationParameters = new TokenValidationParameters
                     {
-                        ValidAudience = auth0.Audience,
-                        ValidIssuer = $"https://{auth0.Domain}/",
-                        RoleClaimType = CurrentUserService.RoleClaim,
+                        ValidAudience = oidc.Audience,
+                        ValidIssuer = oidc.Authority,
                         NameClaimType = CurrentUserService.SubClaim
                     };
                 });
 
             services.AddAuthorization();
+            services.AddHttpClient<IdentitySessionClient>();
 
             return services;
         }

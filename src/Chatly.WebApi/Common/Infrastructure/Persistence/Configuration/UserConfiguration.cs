@@ -12,9 +12,9 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
             .IsRequired()
             .HasMaxLength(User.MaxEmailLength);
 
-        builder.Property(user => user.Auth0Id)
+        builder.Property(user => user.IdentityId)
             .IsRequired()
-            .HasMaxLength(User.MaxAuth0IdLength);
+            .HasMaxLength(User.MaxIdentityIdLength);
 
         builder.Property(user => user.Username)
             .HasColumnType(PostgresDataType.CaseInsensitiveText)
@@ -34,7 +34,7 @@ internal sealed class UserConfiguration : EntityConfiguration<User, UserId>
         builder.HasIndex(user => user.Email)
             .IsUnique();
 
-        builder.HasIndex(user => user.Auth0Id)
+        builder.HasIndex(user => user.IdentityId)
             .IsUnique();
 
         builder.HasIndex(user => user.Username)

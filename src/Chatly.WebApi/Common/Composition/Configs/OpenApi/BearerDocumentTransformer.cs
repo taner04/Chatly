@@ -5,9 +5,9 @@ using Microsoft.OpenApi;
 
 namespace Chatly.WebApi.Common.Composition.Configs.OpenApi;
 
-internal sealed class BearerDocumentTransformer(IOptions<Auth0Option> auth0Options) : IOpenApiDocumentTransformer
+internal sealed class BearerDocumentTransformer(IOptions<OidcOption> oidcOptions) : IOpenApiDocumentTransformer
 {
-    private readonly Auth0Option _auth0Config = auth0Options.Value;
+    private readonly OidcOption _oidcOption = oidcOptions.Value;
 
     public Task TransformAsync(
         OpenApiDocument document,
@@ -29,13 +29,13 @@ internal sealed class BearerDocumentTransformer(IOptions<Auth0Option> auth0Optio
         document.Components.SecuritySchemes["OAuth"] = new OpenApiSecurityScheme
         {
             Type = SecuritySchemeType.OAuth2,
-            Description = "Auth0 OAuth2 Login",
+            Description = "Keycloak OAuth2 Login",
             Flows = new OpenApiOAuthFlows
             {
                 AuthorizationCode = new OpenApiOAuthFlow
                 {
-                    AuthorizationUrl = new Uri($"https://{_auth0Config.Domain}/authorize"),
-                    TokenUrl = new Uri($"https://{_auth0Config.Domain}/oauth/token"),
+                    AuthorizationUrl = new Uri(_oidcOption.AuthorizationEndpoint),
+                    TokenUrl = new Uri(_oidcOption.TokenEndpoint),
                     Scopes = new Dictionary<string, string>
                     {
                         { "openid", "OpenID Connect scope" },

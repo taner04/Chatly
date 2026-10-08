@@ -1,5 +1,6 @@
 using Chatly.Contracts.Features.Hubs.Notifications.NotificationHubServer;
 using Chatly.WebApi.Features.Chats.Services;
+using Chatly.WebApi.Features.DeviceSessions.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.SignalR;
 
@@ -8,9 +9,10 @@ namespace Chatly.WebApi.Features.Hubs.NotificationHub;
 [Authorize]
 public sealed class NotificationHub(
     ChatlyDbContext context,
+    DeviceSessionService deviceSessionService,
     ChatAccessService chatAccessService,
     OnlinePresenceTracker presenceTracker,
-    OnlineStatusPublisher onlineStatusPublisher) : HubBase<INotificationHubClient>(context),
+    OnlineStatusPublisher onlineStatusPublisher) : HubBase<INotificationHubClient>(context, deviceSessionService),
     INotificationHubServer
 {
     public Task StartTyping(Guid chatId) => PublishTypingStatusAsync(chatId, true);
@@ -20,14 +22,27 @@ public sealed class NotificationHub(
     public override async Task OnConnectedAsync()
     {
         await base.OnConnectedAsync();
-        var userId = await GetCurrentUserIdAsync(Context.ConnectionAborted);
+        var userId = CurrentUserId;
         await UpdateLastSeenAsync(userId, Context.ConnectionAborted);
-        if (presenceTracker.Connect(userId, Context.ConnectionId))
+        var cameOnline = presenceTracker.Connect(userId, Context.ConnectionId);
+        try
         {
-            await onlineStatusPublisher.PublishAsync(userId, true, Context.ConnectionAborted);
-        }
+            if (cameOnline)
+            {
+                await onlineStatusPublisher.PublishAsync(userId, true, Context.ConnectionAborted);
+            }
 
-        await PublishOnlineFriendsSnapshotAsync(userId);
+            await PublishOnlineFriendsSnapshotAsync(userId);
+        }
+        catch
+        {
+            if (presenceTracker.TryBeginOffline(userId, Context.ConnectionId, out var offlineVersion))
+            {
+                onlineStatusPublisher.PublishOfflineAfterGracePeriod(userId, offlineVersion);
+            }
+
+            throw;
+        }
     }
 
     public override async Task OnDisconnectedAsync(Exception? exception)
@@ -46,7 +61,7 @@ public sealed class NotificationHub(
 
     private async Task PublishTypingStatusAsync(Guid chatId, bool isTyping)
     {
-        var userId = await GetCurrentUserIdAsync(Context.ConnectionAborted);
+        var userId = CurrentUserId;
         var chat = await chatAccessService.GetAsync(
                        ChatId.From(chatId),
                        userId,

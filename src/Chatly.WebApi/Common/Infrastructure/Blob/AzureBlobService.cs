@@ -11,6 +11,8 @@ internal sealed partial class AzureBlobService(
     ILogger<AzureBlobService> logger,
     BlobServiceClient blobServiceClient)
 {
+    private static readonly TimeSpan ReadUrlLifetime = TimeSpan.FromDays(2);
+
     private BlobContainerClient _containerClient = null!;
 
     internal async Task InitializeAsync()
@@ -94,6 +96,10 @@ internal sealed partial class AzureBlobService(
             LogUploadSucceeded(blobName);
             return BlobUploadResult.Succeeded(blobName);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            throw;
+        }
         catch (Exception exception)
         {
             LogUploadFailed(blobName, exception);
@@ -125,17 +131,15 @@ internal sealed partial class AzureBlobService(
         }
     }
 
-    internal Uri? CreateReadUrl(string? blobName) => CreateReadUrl(blobName, TimeSpan.FromMinutes(15));
-
-    private Uri? CreateReadUrl(string? blobName, TimeSpan lifetime)
+    internal Uri? CreateReadUrl(string? blobName)
     {
         if (string.IsNullOrEmpty(blobName))
         {
             return null;
         }
 
-        var blobClient = _containerClient.GetBlobClient(blobName);
-        return blobClient.GenerateSasUri(BlobSasPermissions.Read, DateTimeOffset.UtcNow.Add(lifetime));
+        var expiresOn = new DateTimeOffset(DateTime.UtcNow.Date, TimeSpan.Zero) + ReadUrlLifetime;
+        return _containerClient.GetBlobClient(blobName).GenerateSasUri(BlobSasPermissions.Read, expiresOn);
     }
 
     private static string CreateProfilePictureBlobName(UserId userId, string contentType)

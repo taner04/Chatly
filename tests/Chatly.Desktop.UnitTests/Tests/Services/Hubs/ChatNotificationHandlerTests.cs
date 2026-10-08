@@ -28,7 +28,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 
 namespace Chatly.Desktop.UnitTests.Tests.Services.Hubs;
 
-public sealed class ChatNotificationHandlerTests
+public sealed class ChatNotificationHandlerTests : TestBase
 {
     private readonly IChatlyApi _api = Substitute.For<IChatlyApi>();
     private readonly Guid _currentUserId = Guid.NewGuid();
@@ -80,7 +80,7 @@ public sealed class ChatNotificationHandlerTests
     {
         CreateViewModels();
         var chatId = Guid.NewGuid();
-        _messages.BeginConversation(chatId, _currentUserId, "friend", TestContext.Current.CancellationToken);
+        _messages.BeginConversation(chatId, _currentUserId, "friend", CurrentCancellationToken);
         await _typing.CurrentChatChangedAsync(chatId);
         _typing.ReceiveTypingStatus(new TypingStatusChangedNotification(chatId, true));
 
@@ -113,7 +113,7 @@ public sealed class ChatNotificationHandlerTests
         CreateViewModels();
         var chatId = Guid.NewGuid();
         var message = Message(chatId);
-        _messages.BeginConversation(chatId, _currentUserId, "friend", TestContext.Current.CancellationToken);
+        _messages.BeginConversation(chatId, _currentUserId, "friend", CurrentCancellationToken);
         _messages.ReceiveIncomingMessage(new IncomingMessageNotification(message));
 
         await new MessageDeletedNotificationHandler(_messages)
@@ -128,7 +128,7 @@ public sealed class ChatNotificationHandlerTests
         CreateViewModels();
         var chatId = Guid.NewGuid();
         var message = Message(chatId);
-        _messages.BeginConversation(chatId, _currentUserId, "friend", TestContext.Current.CancellationToken);
+        _messages.BeginConversation(chatId, _currentUserId, "friend", CurrentCancellationToken);
         _messages.ReceiveIncomingMessage(new IncomingMessageNotification(message));
 
         await new ReactionChangedNotificationHandler(_messages).HandleAsync(new ReactionChangedNotification(

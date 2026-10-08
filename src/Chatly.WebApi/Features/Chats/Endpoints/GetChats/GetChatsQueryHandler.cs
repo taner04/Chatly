@@ -13,7 +13,7 @@ internal sealed class GetChatsQueryHandler(
         GetChatsQuery query,
         CancellationToken cancellationToken)
     {
-        var userId = currentUserService.GetCurrentUserId();
+        var userId = currentUserService.UserId;
         var chats = await (
                 from chat in context.Chats.AsNoTracking().ForUser(userId)
                 where context.Friendships.Any(friendship =>
@@ -29,6 +29,7 @@ internal sealed class GetChatsQueryHandler(
                 let unreadMessageCount = context.Messages.Count(message =>
                     message.ChatId == chat.Id &&
                     message.SenderUserId != userId &&
+                    !message.IsDeleted &&
                     (lastReadAt == null || message.SentAt > lastReadAt))
                 orderby associatedUser.Username, associatedUser.Id
                 select new

@@ -30,9 +30,9 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         var stopped =
             await listener.ReceiveAsync<TypingStatusChangedNotification>(notification => !notification.IsTyping);
 
-        Assert.Equal(chatId.Value, started.ChatId);
-        Assert.True(started.IsTyping);
-        Assert.Equal(chatId.Value, stopped.ChatId);
+        started.ChatId.Should().Be(chatId.Value);
+        started.IsTyping.Should().BeTrue();
+        stopped.ChatId.Should().Be(chatId.Value);
     }
 
     [Fact]
@@ -43,7 +43,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         var chatId = await CreateFriendshipAsync(first, second);
         await using var intruder = await ConnectNotificationHubAsync();
 
-        await Assert.ThrowsAsync<HubException>(() => intruder.StartTypingAsync(chatId.Value));
+        await intruder.Awaiting(client => client.StartTypingAsync(chatId.Value))
+            .Should().ThrowExactlyAsync<HubException>();
     }
 
     [Fact]
@@ -60,8 +61,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         var offline =
             await listener.ReceiveAsync<OnlineStatusChangedNotification>(notification => !notification.IsOnline);
 
-        Assert.Equal(CurrentUser.Id.Value, online.UserId);
-        Assert.Equal(CurrentUser.Id.Value, offline.UserId);
+        online.UserId.Should().Be(CurrentUser.Id.Value);
+        offline.UserId.Should().Be(CurrentUser.Id.Value);
     }
 
     [Fact]
@@ -77,10 +78,10 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         await using var second = await ConnectNotificationHubAsync();
         await Task.Delay(OnlineStatusPublisher.OfflineGracePeriod + TimeSpan.FromSeconds(2), CurrentCancellationToken);
 
-        Assert.DoesNotContain(listener.ReceivedSoFar<OnlineStatusChangedNotification>(),
-            notification => !notification.IsOnline);
+        listener.ReceivedSoFar<OnlineStatusChangedNotification>()
+            .Should().NotContain(notification => !notification.IsOnline);
         var friendships = await CreateAuthenticatedClient(friend).GetFriendshipsAsync(CurrentCancellationToken);
-        Assert.True(Assert.Single(friendships.Content!).IsOnline);
+        friendships.Content!.Should().ContainSingle().Subject.IsOnline.Should().BeTrue();
     }
 
     [Fact]
@@ -96,9 +97,9 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         await client.RemoveMessageAsync(sent.Content!.MessageId, CurrentCancellationToken);
         var deleted = await receiver.ReceiveAsync<MessageDeletedNotification>();
 
-        Assert.Equal(sent.Content.MessageId, incoming.Message.MessageId);
-        Assert.Equal("ping", incoming.Message.Content);
-        Assert.Equal(sent.Content.MessageId, deleted.MessageId);
+        incoming.Message.MessageId.Should().Be(sent.Content.MessageId);
+        incoming.Message.Content.Should().Be("ping");
+        deleted.MessageId.Should().Be(sent.Content.MessageId);
     }
 
     [Fact]
@@ -112,7 +113,7 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
             CurrentCancellationToken);
         var notification = await receiver.ReceiveAsync<IncomingFriendRequestNotification>();
 
-        Assert.Equal(CurrentUser.Id.Value, notification.Request.SenderUserId);
+        notification.Request.SenderUserId.Should().Be(CurrentUser.Id.Value);
     }
 
     [Fact]
@@ -126,11 +127,11 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         var client = CreateAuthenticatedClient();
         var pending = await client.GetFriendRequestsAsync(1, 10, CurrentCancellationToken);
 
-        await client.AcceptFriendRequestAsync(Assert.Single(pending.Content!.Items).FriendRequestId,
+        await client.AcceptFriendRequestAsync(pending.Content!.Items.Should().ContainSingle().Subject.FriendRequestId,
             CurrentCancellationToken);
         var notification = await senderHub.ReceiveAsync<FriendRequestAcceptedNotification>();
 
-        Assert.Equal(CurrentUser.Id.Value, notification.Friendship.FriendUserId);
+        notification.Friendship.FriendUserId.Should().Be(CurrentUser.Id.Value);
     }
 
     [Fact]
@@ -143,7 +144,7 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
         await CreateAuthenticatedClient().RemoveFriendshipAsync(friend.Id.Value, CurrentCancellationToken);
         var notification = await friendHub.ReceiveAsync<FriendshipRemovedNotification>();
 
-        Assert.Equal(CurrentUser.Id.Value, notification.AssociatedUserId);
+        notification.AssociatedUserId.Should().Be(CurrentUser.Id.Value);
     }
 
     [Fact]
@@ -161,8 +162,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
             CurrentCancellationToken);
         var notification = await friendHub.ReceiveAsync<ReactionChangedNotification>();
 
-        Assert.Equal(sent.Content.MessageId, notification.MessageId);
-        Assert.Equal(CurrentUser.Id.Value, notification.UserId);
+        notification.MessageId.Should().Be(sent.Content.MessageId);
+        notification.UserId.Should().Be(CurrentUser.Id.Value);
     }
 
     [Fact]
@@ -177,8 +178,8 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
             CurrentCancellationToken);
         var notification = await friendHub.ReceiveAsync<UserProfileUpdatedNotification>();
 
-        Assert.Equal(CurrentUser.Id.Value, notification.UserId);
-        Assert.Equal("renamed", notification.Username);
+        notification.UserId.Should().Be(CurrentUser.Id.Value);
+        notification.Username.Should().Be("renamed");
     }
 
     [Fact]
@@ -201,6 +202,6 @@ public sealed class NotificationHubTests(TestingFixture fixture) : TestingBase(f
             var user = await dbContext.Users.SingleAsync(user => user.Id == CurrentUser.Id, CurrentCancellationToken);
             return user.LastSeenAt > DateTimeOffset.UtcNow.AddMinutes(-1) ? user.LastSeenAt : null;
         });
-        Assert.NotNull(lastSeenAt);
+        lastSeenAt.Should().NotBeNull();
     }
 }

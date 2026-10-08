@@ -1,5 +1,6 @@
 using Chatly.Desktop.Abstraction.Hubs;
 using Chatly.Desktop.Services.Calls;
+using Chatly.Desktop.Utilities;
 
 namespace Chatly.Desktop.Services.Api.Hubs.CallHub;
 
@@ -9,12 +10,12 @@ internal sealed class CallHubHost(
     IHubMessageDispatcher dispatcher,
     CallCoordinator coordinator) : IHubHost
 {
+    private readonly AtomicFlag _subscribed = new();
     private IDisposable? _messageRegistration;
-    private int _subscribed;
 
     public Task StartAsync(CancellationToken cancellationToken)
     {
-        if (Interlocked.Exchange(ref _subscribed, 1) == 0)
+        if (_subscribed.TrySet())
         {
             _messageRegistration =
                 connection.On<CallMessage>(nameof(ICallingHubClient.Receive), dispatcher.DispatchAsync);
@@ -26,7 +27,7 @@ internal sealed class CallHubHost(
 
     public Task StopAsync(CancellationToken cancellationToken)
     {
-        if (Interlocked.Exchange(ref _subscribed, 0) != 0)
+        if (_subscribed.TryReset())
         {
             connection.Reconnected -= OnReconnectedAsync;
             _messageRegistration?.Dispose();

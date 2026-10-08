@@ -1,0 +1,32 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:popups="using:Chatly.Desktop.ViewModels.Popups"
+             x:ClassModifier="internal"
+             x:Class="Chatly.Desktop.Views.Popups.ConfirmationPopup"
+             x:DataType="popups:ConfirmationPopupViewModel">
+    <Grid RowDefinitions="Auto,Auto">
+        <TextBlock Text="{Binding Message}"
+                   FontSize="14"
+                   TextWrapping="Wrap"
+                   Foreground="{DynamicResource ChatlyMutedTextBrush}" />
+
+        <StackPanel Grid.Row="1"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Right"
+                    Spacing="10"
+                    Margin="0,22,0,0">
+            <Button Classes="fluent-button"
+                    Padding="16,8"
+                    IsVisible="{Binding IsCancelVisible}"
+                    Command="{Binding CancelCommand}">
+                <TextBlock Text="{Binding CancelText}" />
+            </Button>
+            <Button Classes="accent-button"
+                    Padding="16,8"
+                    IsDefault="True"
+                    Command="{Binding ConfirmCommand}">
+                <TextBlock Text="{Binding ConfirmText}" />
+            </Button>
+        </StackPanel>
+    </Grid>
+</UserControl>
