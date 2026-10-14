@@ -52,7 +52,7 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
 - **Device management** — see every device you are signed in on and sign out a single device or all others; a signed-out device closes immediately
 - **Friends** — search by username, send and answer friend requests, see who is online
 - **Personalization** — light, dark or system theme, accent colors, username and profile picture
-- **Sounds and notifications** — a ringtone while a call is ringing, and a notification sound for new messages and friend requests that you can turn on or off in the settings
+- **Sounds and notifications** — a ringtone while a call is ringing, and a notification sound for new messages and friend requests; both can be turned on or off in the settings
 - **Secure sign-in** — Keycloak with a Chatly-styled login, refresh tokens stored in the operating system's secure storage
 
 ## Screenshots
@@ -285,7 +285,6 @@ The AppHost starts Papercut, the LiveKit media server and Keycloak with these va
 Chatly is a work in progress. These tasks are still open:
 
 - [ ] Test the desktop client end to end on Windows, including voice calls (`scripts/windows/webview-call-probe.ps1`)
-- [ ] Add a setting to turn the ringtone on or off
 - [ ] Let users withdraw a friend request they have sent
 - [ ] Let users block other users
 - [ ] Let users edit and reply to messages

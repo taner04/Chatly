@@ -37,8 +37,13 @@ internal sealed partial class CrossPlatformNotificationSoundPlayer(
         }
     }
 
-    public async Task<IAudioPlayback> PlayRingtoneAsync()
+    public async Task<IAudioPlayback?> PlayRingtoneAsync()
     {
+        if (!appSettings.NotificationSettings.PlayRingtone)
+        {
+            return null;
+        }
+        
         try
         {
             await using var audio = AssetLoader.Open(new Uri("avares://Chatly.Desktop/Assets/ringtone.wav"));

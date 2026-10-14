@@ -15,10 +15,10 @@ internal sealed class FakeNotificationSoundPlayer : INotificationSoundPlayer
         return Task.CompletedTask;
     }
 
-    public Task<IAudioPlayback> PlayRingtoneAsync()
+    public Task<IAudioPlayback?> PlayRingtoneAsync()
     {
         var playback = new FakeAudioPlayback();
         Playbacks.Add(playback);
-        return Task.FromResult<IAudioPlayback>(playback);
+        return Task.FromResult<IAudioPlayback?>(playback);
     }
 }

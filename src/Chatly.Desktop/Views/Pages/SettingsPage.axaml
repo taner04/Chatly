@@ -88,7 +88,7 @@
             <Setter Property="MaxHeight" Value="140" />
         </Style>
         <Style Selector="Border.settings-card-content.notifications.expanded">
-            <Setter Property="MaxHeight" Value="84" />
+            <Setter Property="MaxHeight" Value="140" />
         </Style>
         <Style Selector="Border.settings-card-content.calls.expanded">
             <Setter Property="MaxHeight" Value="400" />
@@ -226,6 +226,16 @@
                                     <ToggleSwitch Grid.Column="1"
                                                   VerticalAlignment="Center"
                                                   IsChecked="{Binding NotificationSettings.PlaySound, Mode=TwoWay}" />
+                                </Grid>
+                                <Grid ColumnDefinitions="*,Auto" ColumnSpacing="20">
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock Text="Ringtone" Classes="settings-label" />
+                                        <TextBlock Text="Play a ringtone for incoming and outgoing calls."
+                                                   Classes="settings-description" />
+                                    </StackPanel>
+                                    <ToggleSwitch Grid.Column="1"
+                                                  VerticalAlignment="Center"
+                                                  IsChecked="{Binding NotificationSettings.PlayRingtone, Mode=TwoWay}" />
                                 </Grid>
                             </StackPanel>
                         </Border>
