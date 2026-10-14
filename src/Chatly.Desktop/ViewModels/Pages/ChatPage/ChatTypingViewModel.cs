@@ -8,9 +8,10 @@ public sealed partial class ChatTypingViewModel(
     INotificationHubServer notificationHubServer,
     ILogger<ChatTypingViewModel> logger) : ObservableObject
 {
-    private static readonly TimeSpan TypingIdleDelay = TimeSpan.FromSeconds(2);
-    private static readonly TimeSpan TypingRefreshInterval = TimeSpan.FromSeconds(2);
-    private static readonly TimeSpan TypingStatusExpiry = TimeSpan.FromSeconds(3);
+    private static readonly TimeSpan TypingIdleDelay = TimeSpan.FromSeconds(5);
+    private static readonly TimeSpan TypingRefreshInterval = TimeSpan.FromSeconds(8);
+    private static readonly TimeSpan TypingStatusExpiry = TimeSpan.FromSeconds(10);
+    
     private Guid? _currentChatId;
     private bool _isTyping;
     private DateTimeOffset? _lastTypingStatusSentAt;

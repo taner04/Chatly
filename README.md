@@ -229,9 +229,19 @@ The AppHost starts Papercut, the LiveKit media server and Keycloak with these va
   "IdentityAdminOption": {
     "ClientId": "chatly-api",
     "ClientSecret": ""
+  },
+  "RateLimitingOption": {
+    "HttpPermitLimit": 100,
+    "HttpWindow": "00:01:00",
+    "HubPermitLimit": 120,
+    "HubWindow": "00:01:00",
+    "HubConnectionPermitLimit": 10,
+    "HubConnectionWindow": "00:01:00"
   }
 }
 ```
+
+`RateLimitingOption` limits each signed-in user, or each IP address for anonymous requests, to `HttpPermitLimit` API requests, `HubPermitLimit` SignalR hub calls and `HubConnectionPermitLimit` new hub connections per window. Requests over the limit get `429 Too Many Requests` with a `Retry-After` header; hub calls over the limit fail with an error that says when to retry. Raise the values for load tests, for example with the environment variable `RateLimitingOption__HttpPermitLimit`.
 
 </details>
 
@@ -278,7 +288,6 @@ Chatly is a work in progress. These tasks are still open:
 - [ ] Add a setting to turn the ringtone on or off
 - [ ] Let users withdraw a friend request they have sent
 - [ ] Let users block other users
-- [ ] Add rate limiting to the API
 - [ ] Let users edit and reply to messages
 - [ ] Show system notifications while the app is in the background
 

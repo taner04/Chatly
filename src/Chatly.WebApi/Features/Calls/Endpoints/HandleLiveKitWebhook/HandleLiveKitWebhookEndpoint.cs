@@ -1,5 +1,6 @@
 using Chatly.WebApi.Features.Calls.Jobs;
 using Chatly.WebApi.Features.Calls.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Chatly.WebApi.Features.Calls.Endpoints.HandleLiveKitWebhook;
 
@@ -35,6 +36,8 @@ internal sealed class HandleLiveKitWebhookEndpoint : IEndpoint
             .WithTags("Calls")
             .AllowAnonymous()
             .DisableAntiforgery()
+            // Server-to-server callbacks from a single address; limiting them would drop call and sign-out events.
+            .DisableRateLimiting()
             .ExcludeFromDescription();
     }
 }

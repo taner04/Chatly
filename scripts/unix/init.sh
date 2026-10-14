@@ -107,6 +107,14 @@ write_settings "src/Chatly.WebApi/appsettings.json" <<'JSON'
     "ClientId": "chatly-api",
     "ClientSecret": ""
   },
+  "RateLimitingOption": {
+    "HttpPermitLimit": 100,
+    "HttpWindow": "00:01:00",
+    "HubPermitLimit": 120,
+    "HubWindow": "00:01:00",
+    "HubConnectionPermitLimit": 10,
+    "HubConnectionWindow": "00:01:00"
+  },
   "EmailOption": {
     "Host": "smtp.example.com",
     "Port": 587,

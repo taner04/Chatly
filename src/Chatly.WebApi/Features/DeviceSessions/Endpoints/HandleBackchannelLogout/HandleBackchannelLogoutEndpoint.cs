@@ -1,4 +1,5 @@
 using Chatly.WebApi.Features.DeviceSessions.Services;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace Chatly.WebApi.Features.DeviceSessions.Endpoints.HandleBackchannelLogout;
 
@@ -41,6 +42,8 @@ internal sealed class HandleBackchannelLogoutEndpoint : IEndpoint
             .WithTags("DeviceSessions")
             .AllowAnonymous()
             .DisableAntiforgery()
+            // Server-to-server callbacks from a single address; limiting them would drop call and sign-out events.
+            .DisableRateLimiting()
             .ExcludeFromDescription();
     }
 }

@@ -2,6 +2,8 @@ using Azure.Storage.Blobs;
 using Chatly.ServiceDefaults;
 using Chatly.WebApi.Common.Behaviours;
 using Chatly.WebApi.Common.Infrastructure.BackgroundServices;
+using Chatly.WebApi.Features.Hubs.HubFilters;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Chatly.WebApi.Common.Composition.Extensions.ServiceCollection.Modules;
 
@@ -35,7 +37,12 @@ internal static class ApplicationServiceCollectionExtensions
                 ];
             });
 
-            services.AddSignalR();
+            services.AddSingleton<RateLimiterHubFilter>();
+            services.AddSignalR(options =>
+            {
+                options.AddFilter<RateLimiterHubFilter>();
+                options.AddFilter<LoggingHubFilter>();
+            });
             services.AddValidatorsFromAssembly(typeof(Program).Assembly, includeInternalTypes: true);
 
             return services;
