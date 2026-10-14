@@ -5,7 +5,7 @@ using Chatly.Desktop.ViewModels.Popups;
 namespace Chatly.Desktop.ViewModels.Pages.UserPage;
 
 [SingletonService]
-public sealed partial class UserPageViewModel : PageViewModelBase
+public sealed partial class UserPageViewModel : PageViewModelBase, IDisposable, IAsyncDisposable
 {
     private static readonly Type[] TabTypes =
     [
@@ -16,7 +16,6 @@ public sealed partial class UserPageViewModel : PageViewModelBase
 
     private readonly ILogger<UserPageViewModel> _logger;
     private readonly IPopupService _popupService;
-    private readonly INavigationService _tabNavigation;
 
     public UserPageViewModel(
         UserSessionContext userContext,
@@ -29,8 +28,7 @@ public sealed partial class UserPageViewModel : PageViewModelBase
         FriendRequestState = friendRequestState;
         _popupService = popupService;
         _logger = logger;
-        _tabNavigation = navigationServiceFactory.Create();
-        _tabNavigation.Navigated += TabNavigation_OnNavigated;
+        TabNavigation = navigationServiceFactory.Create();
     }
 
     public UserSessionContext UserContext { get; }
@@ -39,15 +37,13 @@ public sealed partial class UserPageViewModel : PageViewModelBase
 
     [ObservableProperty] public partial int SelectedTabIndex { get; set; }
 
-    [ObservableProperty] public partial INavigableViewModel? CurrentTab { get; private set; }
+    public INavigationService TabNavigation { get; }
 
-    public override async Task OnNavigatedToAsync(
-        object? parameter,
-        CancellationToken cancellationToken)
+    public override async Task OnNavigatedToAsync(CancellationToken cancellationToken)
     {
-        if (CurrentTab is null)
+        if (TabNavigation.CurrentPage is null)
         {
-            await _tabNavigation.NavigateToAsync(TabTypes[SelectedTabIndex], cancellationToken);
+            await TabNavigation.NavigateToAsync(TabTypes[SelectedTabIndex], cancellationToken);
         }
     }
 
@@ -57,7 +53,7 @@ public sealed partial class UserPageViewModel : PageViewModelBase
         {
             try
             {
-                await _tabNavigation.NavigateToAsync(TabTypes[value]);
+                await TabNavigation.NavigateToAsync(TabTypes[value]);
             }
             catch (Exception exception)
             {
@@ -66,10 +62,9 @@ public sealed partial class UserPageViewModel : PageViewModelBase
         }
     }
 
-    private void TabNavigation_OnNavigated(object? sender, NavigatedEventArgs e)
-    {
-        CurrentTab = e.Page;
-    }
+    public void Dispose() => TabNavigation.Dispose();
+
+    public ValueTask DisposeAsync() => TabNavigation.DisposeAsync();
 
     [LoggerMessage(LogLevel.Error, "Navigating to tab {TabType} failed.")]
     private partial void LogTabNavigationFailed(Type tabType, Exception exception);

@@ -8,7 +8,7 @@ using Chatly.Contracts.Features.Messages.Endpoints.SendMessage;
 using Chatly.Contracts.Features.Messages.Models;
 using Chatly.Contracts.Features.Reactions.Models;
 using Chatly.Contracts.Features.Reactions.Notifications;
-using Chatly.Desktop.Abstraction.Navigation;
+using Fluently;
 using Chatly.Desktop.Abstraction.Storage;
 using Chatly.Desktop.Abstraction.Toasts;
 using Chatly.Desktop.Models;

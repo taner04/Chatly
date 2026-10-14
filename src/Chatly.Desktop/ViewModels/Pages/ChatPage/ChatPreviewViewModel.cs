@@ -48,7 +48,7 @@ public sealed partial class ChatPreviewViewModel : ViewModelBase, IDisposable
     {
         if (DirectChatId is { } chatId)
         {
-            await _navigationService.NavigateToAsync<ChatPageViewModel>(chatId, cancellationToken);
+            await _navigationService.NavigateToAsync<ChatPageViewModel, Guid>(chatId, cancellationToken);
         }
     }
 

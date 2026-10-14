@@ -23,6 +23,7 @@
     <PackageVersion Include="Duende.IdentityModel.OidcClient" Version="7.1.0" />
     <PackageVersion Include="FluentAssertions" Version="7.2.2" />
     <PackageVersion Include="FluentIcons.Avalonia" Version="2.1.339.1" />
+    <PackageVersion Include="Fluently.Avalonia" Version="0.2.1" />
     <PackageVersion Include="FluentValidation" Version="12.1.1" />
     <PackageVersion Include="FluentValidation.DependencyInjectionExtensions" Version="12.1.1" />
     <PackageVersion Include="Hangfire" Version="1.8.25" />

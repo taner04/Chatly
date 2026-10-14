@@ -7,6 +7,7 @@
         xmlns:ic="using:FluentIcons.Avalonia"
         xmlns:chat="using:Chatly.Desktop.ViewModels.Pages.ChatPage"
         xmlns:controls="using:Chatly.Desktop.Views.Controls"
+        xmlns:fluently="https://github.com/taner04/fluently"
         x:ClassModifier="internal"
         x:Class="Chatly.Desktop.Views.Windows.MainWindow"
         x:DataType="windows:MainWindow"
@@ -249,7 +250,7 @@
                             </StackPanel>
                         </Grid>
                     </Border>
-                    <ContentControl Content="{Binding ViewModel.CurrentPage}" Grid.Row="1" Margin="24" />
+                    <fluently:NavigationHost Navigation="{Binding ViewModel.Navigation}" Grid.Row="1" Margin="24" />
                 </Grid>
             </Border>
         </DockPanel>

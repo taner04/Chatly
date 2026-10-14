@@ -43,9 +43,7 @@ public sealed partial class PendingFriendRequestsTabPageViewModel : PageViewMode
 
     [ObservableProperty] public partial bool IsLoadingFriendRequests { get; private set; }
 
-    public override async Task OnNavigatedToAsync(
-        object? parameter,
-        CancellationToken cancellationToken)
+    public override async Task OnNavigatedToAsync(CancellationToken cancellationToken)
     {
         await LoadFriendRequestsPageAsync(1, true, cancellationToken);
     }

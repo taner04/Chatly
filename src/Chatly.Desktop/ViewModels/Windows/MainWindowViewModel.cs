@@ -9,13 +9,11 @@ namespace Chatly.Desktop.ViewModels.Windows;
 [SingletonService]
 public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
 {
-    private readonly INavigationService _navigationService;
-
     public MainWindowViewModel(
         INavigationService navigationService,
         ChatSidebarViewModel chatSidebar)
     {
-        _navigationService = navigationService;
+        Navigation = navigationService;
         TopNavigationItems =
         [
             NavigationItemViewModel.Create<UserPageViewModel>("User", Symbol.People, navigationService),
@@ -30,22 +28,21 @@ public sealed partial class MainWindowViewModel : ViewModelBase, IDisposable
         navigationService.Navigated += NavigationService_OnNavigated;
     }
 
+    public INavigationService Navigation { get; }
+
     public List<NavigationItemViewModel> TopNavigationItems { get; }
 
     public ObservableCollection<ChatPreviewViewModel> Chats { get; }
 
     public List<NavigationItemViewModel> FooterNavigationItems { get; }
 
-    [ObservableProperty] public partial INavigableViewModel? CurrentPage { get; private set; }
-
     public void Dispose()
     {
-        _navigationService.Navigated -= NavigationService_OnNavigated;
+        Navigation.Navigated -= NavigationService_OnNavigated;
     }
 
     private void NavigationService_OnNavigated(object? sender, NavigatedEventArgs e)
     {
-        CurrentPage = e.Page;
         var currentViewModelType = e.Page.GetType();
 
         foreach (var item in TopNavigationItems.Concat(FooterNavigationItems))

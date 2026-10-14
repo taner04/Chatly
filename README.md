@@ -116,6 +116,8 @@ Chatly is a messenger for people who talk to the same few friends every day. Add
 
    The Aspire dashboard lists the running resources. In development, the Scalar API documentation is available from the `chatly-api` resource at `/scalar/v1`.
 
+   The first start downloads the container images, which takes a few minutes; the Azure Storage emulator (Azurite) alone is about 430 MB. Until a download finishes, its resource only shows as starting in the dashboard.
+
 4. In another terminal, start the desktop client:
 
    ```bash
@@ -260,7 +262,7 @@ The AppHost starts Papercut, the LiveKit media server and Keycloak with these va
 
 | Area | Technology |
 |---|---|
-| Desktop client | [Avalonia](https://avaloniaui.net/) 12, CommunityToolkit.Mvvm |
+| Desktop client | [Avalonia](https://avaloniaui.net/) 12, CommunityToolkit.Mvvm, [Fluently](https://github.com/taner04/Fluently) (view-model-first navigation and source-generated view location) |
 | Backend | ASP.NET Core Minimal APIs, SignalR, Mediator (CQRS) |
 | Voice | [LiveKit](https://livekit.io/) media server, WebRTC in a native WebView |
 | Data | PostgreSQL with Entity Framework Core, Azure Blob Storage for files |

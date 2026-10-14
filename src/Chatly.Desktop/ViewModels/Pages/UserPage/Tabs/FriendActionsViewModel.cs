@@ -18,7 +18,7 @@ public sealed partial class FriendActionsViewModel(
     {
         if (friend?.ChatId is { } chatId)
         {
-            await navigationService.NavigateToAsync<ChatPageViewModel>(chatId, cancellationToken);
+            await navigationService.NavigateToAsync<ChatPageViewModel, Guid>(chatId, cancellationToken);
         }
     }
 

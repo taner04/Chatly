@@ -36,6 +36,7 @@ internal static class ServiceCollectionExtensions
                 .AddHttpMessageHandler<BearerDelegatingHandler>()
                 .AddHttpMessageHandler<DeviceSessionDelegatingHandler>();
 
+            services.AddFluently();
             services.AddOsSpecificServices();
 
             services.AddGeneratedOptions();

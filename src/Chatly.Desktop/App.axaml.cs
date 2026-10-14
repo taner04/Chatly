@@ -5,7 +5,6 @@ using Chatly.Desktop.DependencyInjection;
 using Chatly.Desktop.Models.Settings;
 using Chatly.Desktop.Services.Startup;
 using Chatly.Desktop.Utilities;
-using Chatly.Desktop.Views;
 using Chatly.Desktop.Views.Windows;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -31,7 +30,6 @@ public class App : Application
         {
             _desktop = desktop;
             _services = BuildServices();
-            DataTemplates.Add(_services.GetRequiredService<ViewLocator>());
             _services.GetRequiredService<AppSettings>();
             _mainWindow = _services.GetRequiredService<MainWindow>();
             _mainWindow.Closing += MainWindow_OnClosing;

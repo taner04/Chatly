@@ -1,4 +1,4 @@
-using Chatly.Desktop.Abstraction.Navigation;
+using Fluently;
 using Chatly.Desktop.Models;
 using Chatly.Desktop.Models.UserSession;
 using Chatly.Desktop.ViewModels.Pages.ChatPage;

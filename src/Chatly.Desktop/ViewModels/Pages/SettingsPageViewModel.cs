@@ -60,7 +60,7 @@ public sealed partial class SettingsPageViewModel(
     public string ApplicationVersion => appSettings.AppVersion;
     public string Platform => appSettings.Platform;
 
-    public override Task OnNavigatedToAsync(object? parameter, CancellationToken cancellationToken)
+    public override Task OnNavigatedToAsync(CancellationToken cancellationToken)
     {
         if (RefreshDevicesCommand.CanExecute(null))
         {

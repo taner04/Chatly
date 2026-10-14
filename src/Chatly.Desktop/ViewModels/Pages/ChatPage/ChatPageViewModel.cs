@@ -21,7 +21,7 @@ public sealed partial class ChatPageViewModel(
     UserSessionContext userSessionContext,
     IToastService toastService,
     ILogger<ChatPageViewModel> logger)
-    : PageViewModelBase
+    : PageViewModelBase, INavigatedTo<Guid>
 {
     public ObservableCollection<ChatPreviewViewModel> Chats => chatSidebar.Chats;
 
@@ -43,26 +43,12 @@ public sealed partial class ChatPageViewModel(
 
     public bool HasDraftAttachments => DraftAttachments.Count > 0;
 
-    public override async Task OnNavigatedToAsync(
-        object? parameter,
-        CancellationToken cancellationToken)
+    public async Task OnNavigatedToAsync(Guid selectedChatId, CancellationToken cancellationToken)
     {
-        if (parameter is null)
-        {
-            return;
-        }
-
-        if (parameter is not Guid selectedChatId)
-        {
-            throw new ArgumentException(
-                "Expected a chat ID navigation parameter.",
-                nameof(parameter));
-        }
-
         var chatPreviewViewModel = Chats.FirstOrDefault(chat => chat.DirectChatId == selectedChatId)
                                    ?? throw new ArgumentException(
                                        $"No chat found with ID {selectedChatId}.",
-                                       nameof(parameter));
+                                       nameof(selectedChatId));
 
         var currentUserId = userSessionContext.CurrentUser?.Id
                             ?? throw new InvalidOperationException(

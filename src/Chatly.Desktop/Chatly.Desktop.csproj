@@ -25,6 +25,7 @@
             <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
         </PackageReference>
         <PackageReference Include="CommunityToolkit.Mvvm"/>
+        <PackageReference Include="Fluently.Avalonia"/>
         <PackageReference Include="Duende.IdentityModel.OidcClient"/>
         <PackageReference Include="FluentIcons.Avalonia"/>
         <PackageReference Include="Microsoft.AspNetCore.SignalR.Client"/>
@@ -131,15 +132,14 @@
         <Using Include="Chatly.Contracts.Features.Hubs"/>
         <Using Include="Chatly.Contracts.Features.Hubs.Abstraction"/>
         <Using Include="Chatly.DependencyInjection"/>
-        <Using Include="Chatly.Desktop.Abstraction.Navigation"/>
         <Using Include="Chatly.Desktop.Abstraction.Popups"/>
         <Using Include="Chatly.Desktop.Abstraction.Toasts"/>
-        <Using Include="Chatly.Desktop.Abstraction.Views"/>
         <Using Include="Chatly.Desktop.Extensions"/>
         <Using Include="Chatly.Desktop.Models"/>
         <Using Include="Chatly.Desktop.Models.UserSession"/>
         <Using Include="CommunityToolkit.Mvvm.ComponentModel"/>
         <Using Include="CommunityToolkit.Mvvm.Input"/>
+        <Using Include="Fluently"/>
         <Using Include="Microsoft.Extensions.Logging"/>
     </ItemGroup>
 
